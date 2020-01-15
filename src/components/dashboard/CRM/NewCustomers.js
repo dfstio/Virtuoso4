@@ -6,20 +6,20 @@ import {Avatar} from "antd";
 const userImageList = [
   {
     id: 1,
-    image: "https://via.placeholder.com/150x150",
+    image: require('assets/images/avatar/a5.png'),
   },
   {
     id: 2,
-    image: "https://via.placeholder.com/150x150",
+    image: require('assets/images/avatar/a6.png'),
   },
   {
     id: 3,
-    image: "https://via.placeholder.com/150x150",
+    image: require('assets/images/avatar/domnic-harris.png'),
 
   },
   {
     id: 4,
-    image: "https://via.placeholder.com/150x150",
+    image: require('assets/images/avatar/a8.png'),
     name: 'Mila Alba',
     rating: '5.0',
     deals: '27 Deals'

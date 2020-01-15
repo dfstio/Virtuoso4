@@ -29,11 +29,13 @@ const CommentBox = (props) => {
 
 
   const handleLikeToggle = () => {
-    setCommentData({
-        ...commentData,
-        isLike: !commentData.isLike,
-        likeCount: (commentData.isLike === true ? commentData.likeCount - 1 :commentData.likeCount + 1)
-    });
+    setCommentData((previousState) => ({
+      commentData: {
+        ...previousState.commentData,
+        isLike: !previousState.commentData.isLike,
+        likeCount: (previousState.commentData.isLike === true ? previousState.commentData.likeCount - 1 : previousState.commentData.likeCount + 1)
+      }
+    }));
   };
 
   const handleCommentToggle = () => {

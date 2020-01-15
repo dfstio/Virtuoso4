@@ -51,7 +51,6 @@ const settings = (state = initialSettings, action) => {
         themeType: action.themeType
       };
     case THEME_COLOR:
-      console.log("yes",action.themeColor);
       return {
         ...state,
         themeColor: action.themeColor

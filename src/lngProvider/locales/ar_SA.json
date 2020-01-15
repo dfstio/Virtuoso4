@@ -1,8 +1,8 @@
 {
   "app.announced": "سيتم إصدار نسخة جديدة في 25 ديسمبر. ترّقب!",
   "sidebar.main": "الأساسية",
+  "sidebar.samplePage": "نموذج الصفحة",
   "sidebar.dashboard": "لوحة القيادة",
-  "sidebar.layouts": "تخطيطات",
   "sidebar.dashboard.crm": "إدارة علاقات العملاء",
   "sidebar.components": "المكونات",
   "sidebar.components.general": "جنرال لواء",
@@ -80,8 +80,6 @@
   "sidebar.contactsApp": "اتصالات التطبيق",
   "sidebar.chatApp": "تطبيق الدردشة",
   "sidebar.pickers": "جامعي",
-  "sidebar.notes": "ملاحظات",
-  "sidebar.crud": "Firebase CRUD",
   "sidebar.pickers.dateTimePickers": "التاريخ والوقت",
   "sidebar.pickers.colorPickers": "قارورة اللون",
   "sidebar.chart": "خريطة",

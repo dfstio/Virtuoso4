@@ -37,28 +37,28 @@ const data = [
     key: '1',
     name: 'Jeniffer L.',
     transfer: '2 hrs. ago',
-    image: "https://via.placeholder.com/150x150",
+    image: require('assets/images/avatar/a5.png'),
     status: 'Pay'
   },
   {
     key: '2',
     name: 'Jim Green',
     transfer: '17 days ago',
-    image: "https://via.placeholder.com/150x150",
+    image: require('assets/images/avatar/a6.png'),
     status: 'Pay'
   },
   {
     key: '3',
     name: 'Joe Black',
     transfer: '1 month ago',
-    image: "https://via.placeholder.com/150x150",
+    image: require('assets/images/avatar/a7.png'),
     status: 'Pay'
   },
   {
     key: '4',
     name: 'Mila Alba',
     transfer: '1 month ago',
-    image: "https://via.placeholder.com/150x150",
+    image: require('assets/images/avatar/a10.png'),
     status: 'Pay'
   }
 ];

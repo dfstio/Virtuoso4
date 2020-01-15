@@ -8,7 +8,7 @@ const UserCard =()=> {
     <Widget styleName="gx-card-full gx-dot-arrow-hover">
       <div className="gx-user-wid-row">
         <div className="gx-user-wid gx-mr-3">
-          <img alt="..." src={"https://via.placeholder.com/150x150"} className="gx-object-cover"/>
+          <img alt="..." src={require('assets/images/avatar/selena.jpg')} className="gx-object-cover"/>
         </div>
         <div className="gx-user-wid-body gx-py-3 gx-pr-3">
           <div className="ant-row-flex">

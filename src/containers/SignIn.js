@@ -1,7 +1,7 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {Button, Checkbox, Form, Icon, Input, message} from "antd";
-import {useDispatch, useSelector} from "react-redux";
-import {Link, useHistory} from "react-router-dom";
+import {connect} from "react-redux";
+import {Link} from "react-router-dom";
 
 import {
   hideMessage,
@@ -12,42 +12,37 @@ import {
   userSignIn,
   userTwitterSignIn
 } from "appRedux/actions/Auth";
-
 import IntlMessages from "util/IntlMessages";
 import CircularProgress from "components/CircularProgress/index";
 
 const FormItem = Form.Item;
 
-const SignIn =(props)=> {
+class SignIn extends React.Component {
 
-  const dispatch = useDispatch();
-  const {loader, alertMessage, showMessage,authUser}= useSelector(({auth}) => auth);
-  const history = useHistory();
-
-  useEffect(() => {
-    if (showMessage) {
-      setTimeout(() => {
-       dispatch(hideMessage());
-      }, 100);
-    }
-    if (authUser !== null) {
-      history.push('/');
-    }
-  });
-
-  const handleSubmit = (e) => {
+  handleSubmit = (e) => {
     e.preventDefault();
-    props.form.validateFields((err, values) => {
+    this.props.form.validateFields((err, values) => {
       if (!err) {
-        dispatch(showAuthLoader());
-        dispatch(userSignIn(values));
+        this.props.showAuthLoader();
+        this.props.userSignIn(values);
       }
     });
   };
 
+  componentDidUpdate() {
+    if (this.props.showMessage) {
+      setTimeout(() => {
+        this.props.hideMessage();
+      }, 100);
+    }
+    if (this.props.authUser !== null) {
+      this.props.history.push('/');
+    }
+  }
 
-
-    const {getFieldDecorator} = props.form;
+  render() {
+    const {getFieldDecorator} = this.props.form;
+    const {showMessage, loader, alertMessage} = this.props;
 
     return (
       <div className="gx-app-login-wrap">
@@ -55,7 +50,7 @@ const SignIn =(props)=> {
           <div className="gx-app-login-main-content">
             <div className="gx-app-logo-content">
               <div className="gx-app-logo-content-bg">
-                <img src={"https://via.placeholder.com/272x395"} alt='Neature'/>
+                <img src={require('assets/images/appModule/neature.jpg')} alt='Neature'/>
               </div>
               <div className="gx-app-logo-wid">
                 <h1><IntlMessages id="app.userAuth.signIn"/></h1>
@@ -67,7 +62,7 @@ const SignIn =(props)=> {
               </div>
             </div>
             <div className="gx-app-login-content">
-              <Form onSubmit={handleSubmit} className="gx-signin-form gx-form-row0">
+              <Form onSubmit={this.handleSubmit} className="gx-signin-form gx-form-row0">
 
                 <FormItem>
                   {getFieldDecorator('email', {
@@ -109,26 +104,26 @@ const SignIn =(props)=> {
                   <ul className="gx-social-link">
                     <li>
                       <Icon type="google" onClick={() => {
-                        dispatch(showAuthLoader());
-                        dispatch(userGoogleSignIn());
+                        this.props.showAuthLoader();
+                        this.props.userGoogleSignIn();
                       }}/>
                     </li>
                     <li>
                       <Icon type="facebook" onClick={() => {
-                        dispatch(showAuthLoader());
-                        dispatch(userFacebookSignIn());
+                        this.props.showAuthLoader();
+                        this.props.userFacebookSignIn();
                       }}/>
                     </li>
                     <li>
                       <Icon type="github" onClick={() => {
-                        dispatch(showAuthLoader());
-                        dispatch(userGithubSignIn());
+                        this.props.showAuthLoader();
+                        this.props.userGithubSignIn();
                       }}/>
                     </li>
                     <li>
                       <Icon type="twitter" onClick={() => {
-                        dispatch(showAuthLoader());
-                        dispatch(userTwitterSignIn());
+                        this.props.showAuthLoader();
+                        this.props.userTwitterSignIn();
                       }}/>
                     </li>
                   </ul>
@@ -148,8 +143,22 @@ const SignIn =(props)=> {
         </div>
       </div>
     );
-  };
+  }
+}
 
 const WrappedNormalLoginForm = Form.create()(SignIn);
 
-export default WrappedNormalLoginForm;
+const mapStateToProps = ({auth}) => {
+  const {loader, alertMessage, showMessage, authUser} = auth;
+  return {loader, alertMessage, showMessage, authUser}
+};
+
+export default connect(mapStateToProps, {
+  userSignIn,
+  hideMessage,
+  showAuthLoader,
+  userFacebookSignIn,
+  userGoogleSignIn,
+  userGithubSignIn,
+  userTwitterSignIn
+})(WrappedNormalLoginForm);

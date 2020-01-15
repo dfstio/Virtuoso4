@@ -9,7 +9,7 @@ const FriendshipCard =()=> {
     <Widget styleName="gx-p-lg-1">
       <Row>
         <Col xl={9} lg={10} md={10} sm={10} xs={24}>
-          <img className="gx-rounded-lg gx-w-100" alt="..." src={"https://via.placeholder.com/392x470"}/>
+          <img className="gx-rounded-lg gx-w-100" alt="..." src={require('assets/images/widget/sarfing.png')}/>
         </Col>
         <Col xl={15} lg={14} md={14} sm={14} xs={24}>
           <div className="gx-fnd-content">
@@ -19,11 +19,11 @@ const FriendshipCard =()=> {
             <p>Had a great time with family on beach this
               weekend.</p>
             <ul className="gx-fnd-gallery-list">
-              <li><img alt="..." src={"https://via.placeholder.com/70x70"}
+              <li><img alt="..." src={require('assets/images/widget/sager.jpg')}
                        className="gx-rounded-lg gx-img-fluid"/></li>
-              <li><img alt="..." src={"https://via.placeholder.com/70x70"}
+              <li><img alt="..." src={require('assets/images/widget/dil.jpg')}
                        className="gx-rounded-lg gx-img-fluid"/></li>
-              <li><img alt="..." src={"https://via.placeholder.com/70x70"}
+              <li><img alt="..." src={require('assets/images/widget/ships.jpg')}
                        className="gx-rounded-lg gx-img-fluid"/></li>
             </ul>
           </div>

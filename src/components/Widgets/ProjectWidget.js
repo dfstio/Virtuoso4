@@ -36,9 +36,9 @@ const ProjectWidget = () => {
         <h2 className="gx-mb-3 gx-mb-sm-4">Eagal Hunt App</h2>
 
         <ul className="gx-list-inline gx-mb-3 gx-mb-lg-4">
-          <li><Avatar src={"https://via.placeholder.com/150x150"}/></li>
-          <li><Avatar src={"https://via.placeholder.com/150x150"}/></li>
-          <li><Avatar src={"https://via.placeholder.com/150x150"}/></li>
+          <li><Avatar src={require("assets/images/avatar/steve-smith.png")}/></li>
+          <li><Avatar src={require("assets/images/avatar/stella-johnson.png")}/></li>
+          <li><Avatar src={require("assets/images/avatar/domnic-harris.png")}/></li>
           <li><Avatar className="gx-bg-primary gx-text-white">Ms</Avatar></li>
           <li><span className="ant-avatar gx-border gx-border-grey gx-bg-transparent gx-text-grey"><i
             className="icon icon-add"/></span></li>
