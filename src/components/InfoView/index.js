@@ -21,7 +21,7 @@ const InfoView = () => {
         dispatch(hideMessage());
       }, 3000);
     }
-  }, [error, dispatch]);
+  }, [error, message, dispatch]);
 
 
   return (

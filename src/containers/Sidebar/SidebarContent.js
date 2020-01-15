@@ -24,7 +24,12 @@ const SidebarContent = () => {
     }
     return "";
   };
-
+  // const getNavStyleSubMenuClass = (navStyle) => {
+  //   if (navStyle === NAV_STYLE_NO_HEADER_MINI_SIDEBAR) {
+  //     return "gx-no-header-submenu-popup";
+  //   }
+  //   return "";
+  // };
   const selectedKeys = pathname.substr(1);
   const defaultOpenKeys = selectedKeys.split('/')[1];
 

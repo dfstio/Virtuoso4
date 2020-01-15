@@ -1,16 +1,13 @@
-import React, {memo, useEffect} from "react";
+import React, {useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import URLSearchParams from 'url-search-params'
-import {Redirect, Route, Switch, useHistory, useLocation, useRouteMatch} from "react-router-dom";
+import {Redirect, Route} from "react-router-dom";
 import {LocaleProvider} from "antd";
 import {IntlProvider} from "react-intl";
 
 import AppLocale from "lngProvider";
 import MainApp from "./MainApp";
-import SignIn from "../SignIn";
-import SignUp from "../SignUp";
-import {setInitUrl} from "appRedux/actions/Auth";
-import {onLayoutTypeChange, onNavStyleChange, setThemeType} from "appRedux/actions/Setting";
+import {onLayoutTypeChange, onNavStyleChange, setThemeType} from "../../appRedux/actions/Setting";
 
 import {
   LAYOUT_TYPE_BOXED,
@@ -20,50 +17,23 @@ import {
   NAV_STYLE_BELOW_HEADER,
   NAV_STYLE_DARK_HORIZONTAL,
   NAV_STYLE_DEFAULT_HORIZONTAL,
-  NAV_STYLE_INSIDE_HEADER_HORIZONTAL
+  NAV_STYLE_INSIDE_HEADER_HORIZONTAL,
+  THEME_TYPE_DARK
 } from "../../constants/ThemeSetting";
 
-const RestrictedRoute = ({component: Component, location, token, ...rest}) =>
-  <Route
-    {...rest}
-    render={props =>
-      token
-        ? <Component {...props} />
-        : <Redirect
-          to={{
-            pathname: '/signin',
-            state: {from: location}
-          }}
-        />}
-  />;
+const App = (props) => {
 
-
-const App = () => {
+  const {match, location} = props;
 
   const dispatch = useDispatch();
-  const {locale, navStyle, layoutType} = useSelector(({settings}) => settings);
-  const {token, initURL} = useSelector(({auth}) => auth);
 
-  const location = useLocation();
-  const history = useHistory();
-  const match = useRouteMatch();
-
+  const locale = useSelector(({settings}) => settings.locale);
+  const navStyle = useSelector(({settings}) => settings.navStyle);
+  const themeType = useSelector(({settings}) => settings.themeType);
+  const layoutType = useSelector(({settings}) => settings.layoutType);
 
   useEffect(() => {
-    let link = document.createElement('link');
-    link.type = 'text/css';
-    link.rel = 'stylesheet';
-    link.href = "/css/style.css";
-    link.className = 'gx-style';
-    document.body.appendChild(link);
-  });
-
-  useEffect(() => {
-    if (initURL === '') {
-      dispatch(setInitUrl(location.pathname));
-    }
     const params = new URLSearchParams(location.search);
-
     if (params.has("theme")) {
       dispatch(setThemeType(params.get('theme')));
     }
@@ -73,9 +43,8 @@ const App = () => {
     if (params.has("layout-type")) {
       dispatch(onLayoutTypeChange(params.get('layout-type')));
     }
-    setLayoutType(layoutType);
-    setNavStyle(navStyle);
-  }, [dispatch, initURL, layoutType, location.pathname, location.search, navStyle]);
+  }, [dispatch, location.search]);
+
 
   const setLayoutType = (layoutType) => {
     if (layoutType === LAYOUT_TYPE_FULL) {
@@ -107,17 +76,16 @@ const App = () => {
     }
   };
 
-  useEffect(() => {
-    if (location.pathname === '/') {
-      if (token === null) {
-        history.push('/signin');
-      } else if (initURL === '' || initURL === '/' || initURL === '/signin') {
-        history.push('/sample');
-      } else {
-        history.push(initURL);
-      }
-    }
-  }, [token, initURL, location, history]);
+  if (themeType === THEME_TYPE_DARK) {
+    document.body.classList.add('dark-theme');
+  }
+  if (location.pathname === '/') {
+    return (<Redirect to={'/sample'}/>);
+  }
+
+  setLayoutType(layoutType);
+
+  setNavStyle(navStyle);
 
   const currentAppLocale = AppLocale[locale.locale];
 
@@ -126,16 +94,10 @@ const App = () => {
       <IntlProvider
         locale={currentAppLocale.locale}
         messages={currentAppLocale.messages}>
-
-        <Switch>
-          <Route exact path='/signin' component={SignIn}/>
-          <Route exact path='/signup' component={SignUp}/>
-          <RestrictedRoute path={`${match.url}`} token={token} location={location}
-                           component={MainApp}/>
-        </Switch>
+        <Route path={`${match.url}`} component={MainApp}/>
       </IntlProvider>
     </LocaleProvider>
   )
 };
 
-export default memo(App);
+export default App;

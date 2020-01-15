@@ -4,6 +4,7 @@ import { ConnectedRouter } from 'connected-react-router'
 import {Route, Switch} from "react-router-dom";
 import "assets/vendors/style";
 import "styles/wieldy.less";
+
 import configureStore, { history } from './appRedux/store';
 import App from "./containers/App/index";
 

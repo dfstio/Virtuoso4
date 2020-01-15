@@ -1,5 +1,5 @@
 const path = require('path');
-const {override, fixBabelImports, addLessLoader} = require('customize-cra');
+const {override, addLessLoader} = require('customize-cra');
 
 const overrideProcessEnv = value => config => {
   config.resolve.modules = [
@@ -9,13 +9,11 @@ const overrideProcessEnv = value => config => {
 };
 
 module.exports = override(
-  fixBabelImports('import', {
-    libraryName: 'antd',
-    libraryDirectory: 'es',
-    style: 'css',
-  }),
   addLessLoader({
     javascriptEnabled: true,
+    modifyVars: {
+      '@primary-color': '#038fde',
+    }
   }),
   overrideProcessEnv({
     VERSION: JSON.stringify(require('./package.json').version),

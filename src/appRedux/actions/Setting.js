@@ -1,5 +1,5 @@
 import {SWITCH_LANGUAGE, TOGGLE_COLLAPSED_NAV, WINDOW_WIDTH} from "constants/ActionTypes";
-import {LAYOUT_TYPE, NAV_STYLE, THEME_COLOR_SELECTION, THEME_TYPE} from "../../constants/ThemeSetting";
+import {LAYOUT_TYPE, NAV_STYLE, THEME_COLOR, THEME_TYPE} from "../../constants/ThemeSetting";
 
 
 export function toggleCollapsedSideNav(navCollapsed) {
@@ -7,28 +7,41 @@ export function toggleCollapsedSideNav(navCollapsed) {
 }
 
 export function updateWindowWidth(width) {
-  return {type: WINDOW_WIDTH, width};
+  return (dispatch) => {
+    dispatch({type: WINDOW_WIDTH, width});
+  }
+
 }
 
 export function setThemeType(themeType) {
-  return {type: THEME_TYPE, themeType};
+  return (dispatch) => {
+    dispatch({type: THEME_TYPE, themeType});
+  }
 }
 
-export function setThemeColorSelection(colorSelection) {
-  return {type: THEME_COLOR_SELECTION, colorSelection};
+export function setThemeColor(themeColor) {
+  return (dispatch) => {
+    dispatch({type: THEME_COLOR, themeColor});
+  }
 }
 
 export function onNavStyleChange(navStyle) {
-  return {type: NAV_STYLE, navStyle};
+  return (dispatch) => {
+    dispatch({type: NAV_STYLE, navStyle});
+  }
 }
 
 export function onLayoutTypeChange(layoutType) {
-  return {type: LAYOUT_TYPE, layoutType};
+  return (dispatch) => {
+    dispatch({type: LAYOUT_TYPE, layoutType});
+  }
 }
 
 export function switchLanguage(locale) {
-  return {
-    type: SWITCH_LANGUAGE,
-    payload: locale
-  };
+  return (dispatch) => {
+    dispatch({
+      type: SWITCH_LANGUAGE,
+      payload: locale
+    });
+  }
 }

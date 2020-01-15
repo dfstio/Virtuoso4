@@ -26,7 +26,7 @@ const SignIn = (props) => {
     if (token !== null) {
       props.history.push('/');
     }
-  }, [token, props.history]);
+  });
 
   const {getFieldDecorator} = props.form;
 
