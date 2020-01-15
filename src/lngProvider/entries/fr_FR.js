@@ -6,6 +6,6 @@ const saLang = {
     ...saMessages
   },
   antd: antdSA,
-  locale: 'fr-FR'
+  locale: 'fr-FR',
 };
 export default saLang;

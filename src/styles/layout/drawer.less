@@ -70,12 +70,6 @@
     }
   }
 
-  &-wrapper-body {
-    .framed-layout & {
-      height: calc(100%~"-"2 * @framed-layout-base);
-    }
-  }
-
   .boxed-layout & {
     max-width: @screen-xl-min + 80px;
     margin: 0 auto;
@@ -86,17 +80,6 @@
   }
 
   &-open {
-
-    &.ant-drawer-left,
-    &.ant-drawer-right {
-      .framed-layout &,
-      .boxed-layout & {
-        position: absolute;
-        left: 0;
-        right: 0;
-        margin: 0 auto;
-      }
-    }
 
     .framed-layout & {
       width: calc(100%~"-"2 * @framed-layout-base);

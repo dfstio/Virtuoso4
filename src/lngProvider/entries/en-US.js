@@ -6,6 +6,6 @@ const EnLang = {
     ...enMessages
   },
   antd: antdEn,
-  locale: 'en-US'
+  locale: 'en-US',
 };
 export default EnLang;

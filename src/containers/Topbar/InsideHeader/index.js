@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Button, Dropdown, Icon, Layout, Menu, message, Popover} from 'antd';
-import {connect, useDispatch, useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import CustomScrollbars from "util/CustomScrollbars";
 import languageData from "../languageData";
 import SearchBox from "components/SearchBox";
@@ -142,8 +142,4 @@ const InsideHeader = () => {
   );
 };
 
-const mapStateToProps = ({settings}) => {
-  const {locale, navCollapsed} = settings;
-  return {locale, navCollapsed}
-};
-export default connect(mapStateToProps, {toggleCollapsedSideNav, switchLanguage})(InsideHeader);
+export default InsideHeader;

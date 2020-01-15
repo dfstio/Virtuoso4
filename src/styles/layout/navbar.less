@@ -511,10 +511,6 @@
     > a:hover {
       color: @menu-dark-highlight-color;
     }
-
-    & span {
-      color: inherit;
-    }
   }
 
   &&-dark &-item-selected,
@@ -538,14 +534,14 @@
     color: @menu-dark-color;
   }
 
-  &-dark .ant-menu-submenu-selected .ant-menu-sub .ant-menu-submenu-open .ant-menu-submenu-title,
   &-dark .ant-menu-submenu-selected .ant-menu-submenu-title,
   &-dark .ant-menu-submenu-selected .ant-menu-submenu-selected .ant-menu-submenu-title {
     color: @white-color;
+  }
 
-    &:hover {
-      color: @menu-dark-highlight-color;
-    }
+  &-dark .ant-menu-submenu-selected .ant-menu-submenu-title:hover,
+  &-dark .ant-menu-submenu-selected .ant-menu-submenu-selected .ant-menu-submenu-title:hover {
+    color: @menu-dark-highlight-color;
   }
 }
 
@@ -859,14 +855,14 @@
     &.ant-menu-item-selected > a {
       color: @menu-dark-bg;
       background-color: @menu-dark-highlight-color;
-      .border-radius(@border-radius-sm - 2);
+      .border-radius(@border-radius-sm - 2)
     }
   }
 
   & .ant-menu-inline-collapsed > .ant-menu-submenu.ant-menu-submenu-selected > .ant-menu-submenu-title > span {
     color: @menu-dark-bg;
     background-color: @menu-dark-highlight-color;
-    .border-radius(@border-radius-sm - 2);
+    .border-radius(@border-radius-sm - 2)
   }
 
   & .ant-menu-vertical .ant-menu-item .icon,

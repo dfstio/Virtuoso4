@@ -5,7 +5,9 @@ export const THEME_TYPE_DARK = 'THEME_TYPE_DARK';
 export const THEME_TYPE_SEMI_DARK = 'THEME_TYPE_SEMI_DARK';
 
 
-export const THEME_COLOR = 'THEME_COLOR';
+export const THEME_COLOR_SELECTION = 'THEME_COLOR_SELECTION';
+export const THEME_COLOR_SELECTION_PRESET = 'THEME_COLOR_SELECTION_PRESET';
+export const THEME_COLOR_SELECTION_CUSTOMIZE = 'THEME_COLOR_SELECTION_CUSTOMIZE';
 
 export const HORIZONTAL_NAVIGATION = 'HORIZONTAL_NAVIGATION';
 
@@ -39,41 +41,50 @@ export const NAV_STYLE_BELOW_HEADER = 'NAV_STYLE_BELOW_HEADER';
 export const NAV_STYLE_ABOVE_HEADER = 'NAV_STYLE_ABOVE_HEADER';
 
 
-export const LIGHT_PURPLE = 'light_purple';
+export const LIGHT_PURPLE = '#8A2BE2';
 export const LIGHT_PURPLE_SEC = '#00B378';
+export const LIGHT_PURPLE_NAV_DARK_BG = '#32394F';
 export const LIGHT_PURPLE_DARK_TEXT_COLOR = '#9799AC';
 
-export const RED = 'red';
+export const RED = '#FF2B7A';
 export const RED_SEC = '#00D9C9';
+export const RED_NAV_DARK_BG = '#3C3766';
 export const RED_DARK_TEXT_COLOR = '#878BAB';
 
-export const BLUE = 'blue';
+export const BLUE = '#3DA4E6';
 export const BLUE_SEC = '#FCB53B';
+export const BLUE_NAV_DARK_BG = '#444342';
 export const BLUE_DARK_TEXT_COLOR = '#AAA59A';
 
-export const DARK_BLUE = 'dark_blue';
+export const DARK_BLUE = '#0469B9';
 export const DARK_BLUE_SEC = '#17BDE5';
+export const DARK_BLUE_NAV_DARK_BG = '#086880';
 export const DARK_BLUE_DARK_TEXT_COLOR = '#9DDAE9';
 
-export const ORANGE = 'orange';
+export const ORANGE = '#F18805';
 export const ORANGE_SEC = '#F1D065';
+export const ORANGE_NAV_DARK_BG = '#272932';
 export const ORANGE_DARK_TEXT_COLOR = '#ABA895';
 
-export const LIGHT_BLUE = 'light_blue';
+export const LIGHT_BLUE = '#6A95FF';
 export const LIGHT_BLUE_SEC = '#59DCFF';
+export const LIGHT_BLUE_NAV_DARK_BG = '#1B2642';
 export const LIGHT_BLUE_DARK_TEXT_COLOR = '#92A2C8';
 
 
-export const DEEP_ORANGE = 'deep_orange';
+export const DEEP_ORANGE = '#F87060';
 export const DEEP_ORANGE_SEC = '#70A288';
+export const DEEP_ORANGE_NAV_DARK_BG = '#08415C';
 export const DEEP_ORANGE_DARK_TEXT_COLOR = '#97B8C7';
 
-export const LIGHT_PURPLE_1 = 'light_purple_1';
+export const LIGHT_PURPLE_1 = '#A172E7';
 export const LIGHT_PURPLE_1_SEC = '#E14594';
+export const LIGHT_PURPLE_1_NAV_DARK_BG = '#182952';
 export const LIGHT_PURPLE_1_DARK_TEXT_COLOR = '#8288B4';
 
-export const LIGHT_PURPLE_2 = 'light_purple_2';
+export const LIGHT_PURPLE_2 = '#956FE7';
 export const LIGHT_PURPLE_2_SEC = '#64D7D6';
+export const LIGHT_PURPLE_2_NAV_DARK_BG = '#284C7C';
 export const LIGHT_PURPLE_2_DARK_TEXT_COLOR = '#5782BB';
 
 

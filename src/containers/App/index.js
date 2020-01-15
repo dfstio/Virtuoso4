@@ -23,11 +23,11 @@ import {
   NAV_STYLE_INSIDE_HEADER_HORIZONTAL
 } from "../../constants/ThemeSetting";
 
-const RestrictedRoute = ({component: Component, location, authUser, ...rest}) =>
+const RestrictedRoute = ({component: Component, location, token, ...rest}) =>
   <Route
     {...rest}
     render={props =>
-      authUser
+      token
         ? <Component {...props} />
         : <Redirect
           to={{
@@ -38,11 +38,11 @@ const RestrictedRoute = ({component: Component, location, authUser, ...rest}) =>
   />;
 
 
-const App = (props) => {
+const App = () => {
 
   const dispatch = useDispatch();
   const {locale, navStyle, layoutType} = useSelector(({settings}) => settings);
-  const {authUser, initURL} = useSelector(({auth}) => auth);
+  const {token, initURL} = useSelector(({auth}) => auth);
 
   const location = useLocation();
   const history = useHistory();
@@ -59,7 +59,7 @@ const App = (props) => {
   });
 
   useEffect(() => {
-        if (initURL === '') {
+    if (initURL === '') {
       dispatch(setInitUrl(location.pathname));
     }
     const params = new URLSearchParams(location.search);
@@ -75,8 +75,7 @@ const App = (props) => {
     }
     setLayoutType(layoutType);
     setNavStyle(navStyle);
-  });
-
+  }, [dispatch, initURL, layoutType, location.pathname, location.search, navStyle]);
 
   const setLayoutType = (layoutType) => {
     if (layoutType === LAYOUT_TYPE_FULL) {
@@ -110,7 +109,7 @@ const App = (props) => {
 
   useEffect(() => {
     if (location.pathname === '/') {
-      if (authUser === null) {
+      if (token === null) {
         history.push('/signin');
       } else if (initURL === '' || initURL === '/' || initURL === '/signin') {
         history.push('/sample');
@@ -118,7 +117,7 @@ const App = (props) => {
         history.push(initURL);
       }
     }
-  }, [authUser, initURL, location, history]);
+  }, [token, initURL, location, history]);
 
   const currentAppLocale = AppLocale[locale.locale];
 
@@ -131,7 +130,7 @@ const App = (props) => {
         <Switch>
           <Route exact path='/signin' component={SignIn}/>
           <Route exact path='/signup' component={SignUp}/>
-          <RestrictedRoute path={`${match.url}`} authUser={authUser} location={location}
+          <RestrictedRoute path={`${match.url}`} token={token} location={location}
                            component={MainApp}/>
         </Switch>
       </IntlProvider>
