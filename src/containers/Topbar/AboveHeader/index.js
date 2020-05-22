@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Button, Dropdown, Icon, Layout, Menu, message, Popover, Select} from 'antd';
+import {Button, Dropdown,Layout, Menu, message, Popover, Select} from 'antd';
 import {useDispatch, useSelector} from "react-redux";
 import CustomScrollbars from "util/CustomScrollbars";
 
@@ -14,6 +14,7 @@ import {TAB_SIZE} from "../../../constants/ThemeSetting";
 import HorizontalNav from "../HorizontalNav";
 import {Link} from "react-router-dom";
 import IntlMessages from "../../../util/IntlMessages";
+import DownOutlined from "@ant-design/icons/lib/icons/DownOutlined";
 
 const {Header} = Layout;
 
@@ -129,7 +130,7 @@ const AboveHeader = () => {
                 <Popover overlayClassName="gx-popover-horizantal" placement="bottomRight" content={
                   <div className="gx-d-flex"><Dropdown overlay={menu}>
                     <Button>
-                      Category <Icon type="down"/>
+                      Category <DownOutlined />
                     </Button>
                   </Dropdown>
                     <SearchBox styleName="gx-popover-search-bar"

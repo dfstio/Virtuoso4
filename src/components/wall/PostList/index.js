@@ -1,20 +1,18 @@
 import React, {useEffect, useState} from "react";
 import PostItem from "./PostItem";
 import WriteBox from "../../../components/wall/WriteBox/index";
-import Auxiliary from "../../../util/Auxiliary";
 
 const PostList = (props) => {
 
-  const [postList, setPostList] = useState([]);
-  const [user, setUser] = useState({});
+  const [postList, setPostList] = useState(props.postList);
+  const [user, setUser] = useState(props.user);
 
   useEffect(() => {
-    setPostList(props.postList);
     setUser(props.user)
-  }, [props.postList, props.user]);
+  }, [props.user]);
 
   const addPost = (commentText, imageList) => {
-
+    console.log("click ho gya");
     const post = {
       id: Math.random() * 1343300,
       text: commentText,
@@ -29,20 +27,17 @@ const PostList = (props) => {
       commentCount: 0,
       commentList: [],
     };
-
-    let postArray = postList;
-    postArray.unshift(post);
-    setPostList(postArray);
+    setPostList([post, ...postList]);
   };
 
   return (
-    <Auxiliary>
+    <>
       <WriteBox addPost={addPost} user={user}/>
       {postList.map((post) => {
           return <PostItem key={post.id} index={post.id} postData={post} user={user}/>
         }
       )}
-    </Auxiliary>
+    </>
   )
 };
 

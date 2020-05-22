@@ -1,5 +1,6 @@
 import React, {useState} from "react";
-import {Button, Dropdown, Icon, Layout, Menu, message, Popover, Select} from 'antd';
+import {Button, Dropdown, Layout, Menu, message, Popover, Select} from 'antd';
+import Icon from '@ant-design/icons';
 import {useDispatch, useSelector} from "react-redux";
 import CustomScrollbars from "util/CustomScrollbars";
 import languageData from "../languageData";
@@ -81,7 +82,8 @@ const HorizontalDefault = () => {
             <div className="gx-d-block gx-d-lg-none gx-linebar gx-mr-xs-3">
               <i className="gx-icon-btn icon icon-menu"
                  onClick={() => {
-                   toggleCollapsedSideNav(!navCollapsed);
+                   console.log("navCollapsed",!navCollapsed)
+                   dispatch(toggleCollapsedSideNav(!navCollapsed));
                  }}
               />
 
@@ -112,7 +114,7 @@ const HorizontalDefault = () => {
                         Category <Icon type="down"/>
                       </Button>
                     </Dropdown>
-                    <SearchBox styleName="gx-popover-search-bar" z
+                    <SearchBox styleName="gx-popover-search-bar"
                                placeholder="Search in app..."
                                onChange={updateSearchChatUser}
                                value={searchText}/>

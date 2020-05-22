@@ -50,7 +50,8 @@ const SidebarContent = () => {
 
             <Menu.Item key="sample">
               <Link to="/sample"><i className="icon icon-widgets"/>
-                <IntlMessages id="sidebar.samplePage"/></Link>
+                <span><IntlMessages id="sidebar.samplePage"/></span>
+              </Link>
             </Menu.Item>
 
           </Menu>
