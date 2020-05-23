@@ -28,7 +28,7 @@ const PostItem = (props) => {
   const _handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       const commentData = {
-        postUser: props.user,
+        user: props.user,
         comment: message,
         date: new Date().toString(),
         likeCount: 0,
@@ -38,12 +38,12 @@ const PostItem = (props) => {
 
       let commentArray = post.commentList;
       commentArray.push(commentData);
-      setPost((previousState) => ({
-        post: {
-          ...previousState.post,
+      setPost({ ...post,
           commentList: commentArray
-        }, message: ''
-      }));
+        },
+      );
+      setMessage('');
+
     }
   };
 
@@ -53,23 +53,21 @@ const PostItem = (props) => {
   };
 
   const handleLikeToggle = () => {
-    setPost((previousState) => ({
-      post: {
-        ...previousState.post,
-        isLike: !previousState.post.isLike,
-        likeCount: (previousState.post.isLike === true ? previousState.post.likeCount - 1 : previousState.post.likeCount + 1)
-      }
-    }));
+    setPost({
+        ...post,
+        isLike: !post.isLike,
+        likeCount: (post.isLike === true ? post.likeCount - 1 : post.likeCount + 1)
+    });
   };
 
-  const {postUser, date, mediaList, viewCount, likeCount, isLike, commentList, text} = post;
+  const {user, date, mediaList, viewCount, likeCount, isLike, commentList, text} = post;
   return (
     <Card className="gx-card">
       <div className="gx-wall-content">
         <div className="gx-media gx-wall-user-info gx-flex-nowrap gx-align-items-center">
-          <Avatar className="gx-mr-3 gx-mb-2 gx-size-50" src={postUser.image}/>
+          <Avatar className="gx-mr-3 gx-mb-2 gx-size-50" src={user.image}/>
           <div className="gx-media-body">
-            <h5 className="gx-wall-user-title">{postUser.name}</h5>
+            <h5 className="gx-wall-user-title">{user.name}</h5>
             <DisplayDate date={date}/>
           </div>
         </div>
@@ -104,7 +102,7 @@ const PostItem = (props) => {
         </div>
         <div className="gx-wall-comment-box">
           <div className="gx-media gx-mb-2">
-            <Avatar className="gx-mr-3 gx-size-36" src={postUser.image}/>
+            <Avatar className="gx-mr-3 gx-size-36" src={user.image}/>
             <div className="gx-media-body">
                 <textarea
                   id="required" className="gx-border-0 ant-input"

@@ -3,17 +3,18 @@ import CircularProgress from "components/CircularProgress/index";
 import Auxiliary from "util/Auxiliary";
 import {useDispatch, useSelector} from "react-redux";
 import {hideMessage} from "appRedux/actions/Common";
-import {message} from 'antd';
 
 const InfoView = () => {
 
   const dispatch = useDispatch();
 
-  const error = useSelector(({commonData}) => commonData.error);
+  const error = useSelector(({common}) => common.error);
 
-  const loading = useSelector(({commonData}) => commonData.loading);
+  const loading = useSelector(({common}) => common.loading);
 
-  const displayMessage = useSelector(({commonData}) => commonData.message);
+  const message = useSelector(({common}) => common.message);
+
+  const displayMessage = message;
 
   useEffect(() => {
     if (error || message) {

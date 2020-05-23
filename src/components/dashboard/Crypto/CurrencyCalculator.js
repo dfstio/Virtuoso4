@@ -33,7 +33,7 @@ const CurrencyCalculator = () => {
         <FormItem label="Amount (BTC)" className="gx-form-item-two-fourth">
           <Input placeholder="0.0"/>
         </FormItem>
-        <FormItem className="gx-d-block gx-mb-1">
+        <FormItem className="gx-d-block gx-mb-1 gx-mt-1">
           <Button className="gx-mb-0" type="primary">Transfer Now</Button>
         </FormItem>
       </Form>

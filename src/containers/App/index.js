@@ -2,7 +2,7 @@ import React, {useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import URLSearchParams from 'url-search-params'
 import {Redirect, Route} from "react-router-dom";
-import {LocaleProvider} from "antd";
+import { ConfigProvider } from 'antd';
 import {IntlProvider} from "react-intl";
 
 import AppLocale from "lngProvider";
@@ -90,13 +90,13 @@ const App = (props) => {
   const currentAppLocale = AppLocale[locale.locale];
 
   return (
-    <LocaleProvider locale={currentAppLocale.antd}>
+    <ConfigProvider locale={currentAppLocale.antd}>
       <IntlProvider
         locale={currentAppLocale.locale}
         messages={currentAppLocale.messages}>
         <Route path={`${match.url}`} component={MainApp}/>
       </IntlProvider>
-    </LocaleProvider>
+    </ConfigProvider>
   )
 };
 
