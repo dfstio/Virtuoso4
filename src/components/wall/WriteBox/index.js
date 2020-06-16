@@ -1,5 +1,6 @@
 import React, {useState} from "react";
-import {Avatar, Button, Card, Divider, Icon, Input, Modal, Upload} from "antd";
+import {Avatar, Button, Card, Divider, Input, Modal, Upload} from "antd";
+import Icon from '@ant-design/icons';
 
 const {TextArea} = Input;
 
@@ -30,9 +31,7 @@ const WriteBox = (props) => {
   };
 
   const handleClickImage = () => {
-    setIsOpen((previousState) => ({
-      isOpen: !previousState.isOpen
-    }));
+    setIsOpen(!isOpen);
   };
 
   const handleAddPost = () => {
