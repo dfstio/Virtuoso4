@@ -143,8 +143,9 @@ const InsideHeader = () => {
   );
 };
 
-const mapStateToProps = ({settings}) => {
-  const {locale, navCollapsed} = settings;
+const mapStateToProps = ({settings,common }) => {
+  const {navCollapsed} = common;
+  const {locale} = settings;
   return {locale, navCollapsed}
 };
 export default connect(mapStateToProps, {toggleCollapsedSideNav, switchLanguage})(InsideHeader);
