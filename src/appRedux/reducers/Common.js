@@ -1,13 +1,29 @@
-import {FETCH_ERROR, FETCH_START, FETCH_SUCCESS, HIDE_MESSAGE, SHOW_MESSAGE} from '../../constants/ActionTypes'
+import {FETCH_ERROR, FETCH_START, FETCH_SUCCESS, HIDE_MESSAGE, SHOW_MESSAGE} from 'constants/ActionTypes'
+import {TOGGLE_COLLAPSED_NAV} from "../../constants/ActionTypes";
 
 const INIT_STATE = {
   error: "",
   loading: false,
-  message: ''
+  message: '',
+  navCollapsed: true,
+  pathname: '/',
 };
 
 export default (state = INIT_STATE, action) => {
   switch (action.type) {
+    case '@@router/LOCATION_CHANGE': {
+      return {
+        ...state,
+        pathname: action.payload.location.pathname,
+        navCollapsed: false
+      }
+    }
+    case TOGGLE_COLLAPSED_NAV: {
+      return {
+        ...state,
+        navCollapsed: action.navCollapsed
+      }
+    }
     case FETCH_START: {
       return {...state, error: '', message: '', loading: true};
     }

@@ -6,7 +6,7 @@ import IntlMessages from "util/IntlMessages";
 const NoHeaderNotification = () => {
 
   const dispatch = useDispatch();
-  const navCollapsed = useSelector(({settings}) => settings.navCollapsed);
+  const { navCollapsed} = useSelector(({common}) => common);
 
   return (
     <div className="gx-no-header-horizontal">

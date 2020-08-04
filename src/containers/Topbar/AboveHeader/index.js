@@ -42,7 +42,7 @@ const AboveHeader = () => {
 
   const [searchText, setSearchText] = useState('');
   const locale = useSelector(({settings}) => settings.locale);
-  const navCollapsed = useSelector(({settings}) => settings.navCollapsed);
+  const { navCollapsed} = useSelector(({common}) => common);
   const width = useSelector(({settings}) => settings.width);
 
   const languageMenu = () => (

@@ -33,7 +33,7 @@ const InsideHeader = () => {
 
   const [searchText, setSearchText] = useState('');
   const locale = useSelector(({settings}) => settings.locale);
-  const navCollapsed = useSelector(({settings}) => settings.navCollapsed);
+  const { navCollapsed} = useSelector(({common}) => common);
 
   const languageMenu = () => (
     <CustomScrollbars className="gx-popover-lang-scroll">
