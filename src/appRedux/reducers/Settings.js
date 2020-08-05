@@ -1,23 +1,20 @@
-import {SWITCH_LANGUAGE, TOGGLE_COLLAPSED_NAV, WINDOW_WIDTH} from "constants/ActionTypes";
+import {SWITCH_LANGUAGE, WINDOW_WIDTH} from "constants/ActionTypes";
 import {
   LAYOUT_TYPE,
   LAYOUT_TYPE_FULL,
   NAV_STYLE,
   NAV_STYLE_FIXED,
-  THEME_COLOR_SELECTION,
-  THEME_COLOR_SELECTION_PRESET,
+  THEME_COLOR,
   THEME_TYPE,
   THEME_TYPE_SEMI_DARK
 } from "../../constants/ThemeSetting";
 
 const initialSettings = {
-  navCollapsed: true,
   navStyle: NAV_STYLE_FIXED,
   layoutType: LAYOUT_TYPE_FULL,
   themeType: THEME_TYPE_SEMI_DARK,
-  colorSelection: THEME_COLOR_SELECTION_PRESET,
+  themeColor: THEME_COLOR,
 
-  pathname: '',
   width: window.innerWidth,
   isDirectionRTL: false,
   locale: {
@@ -30,17 +27,7 @@ const initialSettings = {
 
 const settings = (state = initialSettings, action) => {
   switch (action.type) {
-    case '@@router/LOCATION_CHANGE':
-      return {
-        ...state,
-        pathname: action.payload.location.pathname,
-        navCollapsed: false
-      };
-    case TOGGLE_COLLAPSED_NAV:
-      return {
-        ...state,
-        navCollapsed: action.navCollapsed
-      };
+
     case WINDOW_WIDTH:
       return {
         ...state,
@@ -51,10 +38,11 @@ const settings = (state = initialSettings, action) => {
         ...state,
         themeType: action.themeType
       };
-    case THEME_COLOR_SELECTION:
+    case THEME_COLOR:
+      console.log("yes", action.themeColor);
       return {
         ...state,
-        colorSelection: action.colorSelection
+        themeColor: action.themeColor
       };
 
     case NAV_STYLE:
