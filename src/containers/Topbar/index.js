@@ -19,8 +19,8 @@ const {Header} = Layout;
 
 const Topbar = () => {
 
-  const {locale, width, navStyle} = useSelector(({settings}) => settings);
-  const { navCollapsed} = useSelector(({common}) => common);
+  const {locale, navStyle} = useSelector(({settings}) => settings);
+  const { navCollapsed, width} = useSelector(({common}) => common);
   const {searchText, setSearchText} = useState('');
   const dispatch = useDispatch();
 

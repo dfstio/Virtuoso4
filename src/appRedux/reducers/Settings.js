@@ -1,4 +1,4 @@
-import {SWITCH_LANGUAGE, WINDOW_WIDTH} from "constants/ActionTypes";
+import {SWITCH_LANGUAGE} from "constants/ActionTypes";
 import {
   LAYOUT_TYPE,
   LAYOUT_TYPE_FULL,
@@ -15,7 +15,6 @@ const initialSettings = {
   themeType: THEME_TYPE_SEMI_DARK,
   themeColor: THEME_COLOR,
 
-  width: window.innerWidth,
   isDirectionRTL: false,
   locale: {
     languageId: 'english',
@@ -28,18 +27,13 @@ const initialSettings = {
 const settings = (state = initialSettings, action) => {
   switch (action.type) {
 
-    case WINDOW_WIDTH:
-      return {
-        ...state,
-        width: action.width,
-      };
     case THEME_TYPE:
       return {
         ...state,
         themeType: action.themeType
       };
     case THEME_COLOR:
-      console.log("yes", action.themeColor);
+      console.log("yes",action.themeColor);
       return {
         ...state,
         themeColor: action.themeColor
