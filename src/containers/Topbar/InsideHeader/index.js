@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Button, Dropdown, Icon, Layout, Menu, message, Popover} from 'antd';
+import {Button, Dropdown, Layout, Menu, message, Popover} from 'antd';
 import {connect, useDispatch, useSelector} from "react-redux";
 import CustomScrollbars from "util/CustomScrollbars";
 import languageData from "../languageData";
@@ -11,6 +11,7 @@ import HorizontalNav from "../HorizontalNav";
 import {Link} from "react-router-dom";
 import {switchLanguage, toggleCollapsedSideNav} from "../../../appRedux/actions/Setting";
 import IntlMessages from "../../../util/IntlMessages";
+import DownOutlined from "@ant-design/icons/lib/icons/DownOutlined";
 
 const {Header} = Layout;
 
@@ -32,7 +33,7 @@ const InsideHeader = () => {
 
   const [searchText, setSearchText] = useState('');
   const locale = useSelector(({settings}) => settings.locale);
-  const navCollapsed = useSelector(({settings}) => settings.navCollapsed);
+  const { navCollapsed} = useSelector(({common}) => common);
 
   const languageMenu = () => (
     <CustomScrollbars className="gx-popover-lang-scroll">
@@ -95,7 +96,7 @@ const InsideHeader = () => {
                          placement="bottomRight" content={
                   <div className="gx-d-flex"><Dropdown overlay={menu}>
                     <Button>
-                      Category <Icon type="down"/>
+                      Category <DownOutlined />
                     </Button>
                   </Dropdown>
                     <SearchBox styleName="gx-popover-search-bar"
@@ -142,8 +143,9 @@ const InsideHeader = () => {
   );
 };
 
-const mapStateToProps = ({settings}) => {
-  const {locale, navCollapsed} = settings;
+const mapStateToProps = ({settings,common }) => {
+  const {navCollapsed} = common;
+  const {locale} = settings;
   return {locale, navCollapsed}
 };
 export default connect(mapStateToProps, {toggleCollapsedSideNav, switchLanguage})(InsideHeader);

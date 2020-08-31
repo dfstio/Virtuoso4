@@ -6,5 +6,5 @@ import {connectRouter} from 'connected-react-router'
 export default (history) => combineReducers({
   router: connectRouter(history),
   settings: Settings,
-  commonData: Common,
+  common: Common,
 });

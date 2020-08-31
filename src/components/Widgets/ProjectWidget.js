@@ -40,7 +40,7 @@ const ProjectWidget = () => {
           <li><Avatar src={require("assets/images/avatar/stella-johnson.png")}/></li>
           <li><Avatar src={require("assets/images/avatar/domnic-harris.png")}/></li>
           <li><Avatar className="gx-bg-primary gx-text-white">Ms</Avatar></li>
-          <li><span className="ant-avatar gx-border gx-border-grey gx-bg-transparent gx-text-grey"><i
+          <li><span className="ant-avatar gx-border gx-border-grey gx-bg-transparent gx-text-grey gx-d-flex gx-align-items-center gx-justify-content-center"><i
             className="icon icon-add"/></span></li>
         </ul>
         <button className="gx-btn gx-btn-primary gx-text-white gx-mb-1">Go to project</button>

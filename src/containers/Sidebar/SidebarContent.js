@@ -16,7 +16,8 @@ import IntlMessages from "../../util/IntlMessages";
 
 const SidebarContent = () => {
 
-  let {navStyle, themeType, pathname} = useSelector(({settings}) => settings);
+  let {navStyle, themeType} = useSelector(({settings}) => settings);
+  const {pathname} = useSelector(({common}) => common);
 
   const getNoHeaderClass = (navStyle) => {
     if (navStyle === NAV_STYLE_NO_HEADER_MINI_SIDEBAR || navStyle === NAV_STYLE_NO_HEADER_EXPANDED_SIDEBAR) {
@@ -50,7 +51,8 @@ const SidebarContent = () => {
 
             <Menu.Item key="sample">
               <Link to="/sample"><i className="icon icon-widgets"/>
-                <IntlMessages id="sidebar.samplePage"/></Link>
+                <span><IntlMessages id="sidebar.samplePage"/></span>
+              </Link>
             </Menu.Item>
 
           </Menu>

@@ -1,5 +1,6 @@
 import React, {useState} from "react";
-import {Button, Dropdown, Icon, Layout, Menu, message, Popover, Select} from 'antd';
+import {Button, Dropdown, Layout, Menu, message, Popover, Select} from 'antd';
+import Icon from '@ant-design/icons';
 import {useDispatch, useSelector} from "react-redux";
 import CustomScrollbars from "util/CustomScrollbars";
 import languageData from "../languageData";
@@ -37,7 +38,7 @@ const HorizontalDark = () => {
 
   const [searchText, setSearchText] = useState('');
   const locale = useSelector(({settings}) => settings.locale);
-  const navCollapsed = useSelector(({settings}) => settings.navCollapsed);
+  const { navCollapsed} = useSelector(({common}) => common);
 
 
   const languageMenu = () => (
