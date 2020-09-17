@@ -1280,19 +1280,29 @@ body.dark-theme {
     }
   }
 
-  & .ant-modal .ant-input {
-    background-color: @white-color !important;
-    border-color: lighten(@dark-theme-border-color, 55%);
-    color: @grey-8;
-
-    &:focus,
-    &:hover {
-      border-color: lighten(@dark-theme-border-color, 50%);
+  & .ant-modal {
+    &-content,
+    &-header {
+      background-color: lighten(@dark-theme-primary-color, 5%);
+      color: @dark-theme-text-color;
     }
-  }
 
-  & .ant-modal .ant-upload-list-item-info .anticon-paper-clip {
-    color: @grey-8;
+    &-header {
+      border-bottom-color: lighten(@dark-theme-border-color, 5%);
+    }
+
+    &-footer {
+      border-top-color: lighten(@dark-theme-border-color, 5%);
+    }
+
+    &-title,
+    &-close,
+    &-confirm-body .ant-modal-confirm-content,
+    &-confirm-body .ant-modal-confirm-title,
+    & .ant-upload-list,
+    & .ant-upload-list-item-card-actions .anticon {
+      color: @dark-theme-text-color;
+    }
   }
 
   & .ant-mention {
