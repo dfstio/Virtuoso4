@@ -22,8 +22,7 @@ import {
   NAV_STYLE_INSIDE_HEADER_HORIZONTAL,
   NAV_STYLE_MINI_SIDEBAR,
   NAV_STYLE_NO_HEADER_EXPANDED_SIDEBAR,
-  NAV_STYLE_NO_HEADER_MINI_SIDEBAR,
-  TAB_SIZE
+  NAV_STYLE_NO_HEADER_MINI_SIDEBAR
 } from "../../constants/ThemeSetting";
 import NoHeaderNotification from "../Topbar/NoHeaderNotification/index";
 
@@ -32,7 +31,6 @@ const {Content, Footer} = Layout;
 const MainApp = (props) => {
 
   const navStyle = useSelector(({settings}) => settings.navStyle);
-  const width = useSelector(({settings}) => settings.width);
 
   const getContainerClass = (navStyle) => {
     switch (navStyle) {
@@ -76,31 +74,12 @@ const MainApp = (props) => {
         return null;
     }
   };
-  const getSidebar = (navStyle, width) => {
-    if (width < TAB_SIZE) {
-      return <Sidebar/>;
-    }
-    switch (navStyle) {
-      case NAV_STYLE_FIXED :
-        return <Sidebar/>;
-      case NAV_STYLE_DRAWER :
-        return <Sidebar/>;
-      case NAV_STYLE_MINI_SIDEBAR :
-        return <Sidebar/>;
-      case NAV_STYLE_NO_HEADER_MINI_SIDEBAR :
-        return <Sidebar/>;
-      case NAV_STYLE_NO_HEADER_EXPANDED_SIDEBAR:
-        return <Sidebar/>;
-      default :
-        return null;
-    }
-  };
 
   const {match} = props;
 
   return (
     <Layout className="gx-app-layout">
-      {getSidebar(navStyle, width)}
+      <Sidebar/>
       <Layout>
         {getNavStyles(navStyle)}
         <Content className={`gx-layout-content ${getContainerClass(navStyle)}`}>

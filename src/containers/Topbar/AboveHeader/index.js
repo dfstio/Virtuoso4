@@ -42,8 +42,7 @@ const AboveHeader = () => {
 
   const [searchText, setSearchText] = useState('');
   const locale = useSelector(({settings}) => settings.locale);
-  const { navCollapsed} = useSelector(({common}) => common);
-  const width = useSelector(({settings}) => settings.width);
+  const { navCollapsed, width} = useSelector(({common}) => common);
 
   const languageMenu = () => (
     <CustomScrollbars className="gx-popover-lang-scroll">

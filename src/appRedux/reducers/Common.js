@@ -1,11 +1,12 @@
 import {FETCH_ERROR, FETCH_START, FETCH_SUCCESS, HIDE_MESSAGE, SHOW_MESSAGE} from 'constants/ActionTypes'
-import {TOGGLE_COLLAPSED_NAV} from "../../constants/ActionTypes";
+import {TOGGLE_COLLAPSED_NAV, WINDOW_WIDTH} from "../../constants/ActionTypes";
 
 const INIT_STATE = {
   error: "",
   loading: false,
   message: '',
   navCollapsed: true,
+  width: window.innerWidth,
   pathname: '/',
 };
 
@@ -18,6 +19,11 @@ export default (state = INIT_STATE, action) => {
         navCollapsed: false
       }
     }
+    case WINDOW_WIDTH:
+      return {
+        ...state,
+        width: action.width,
+      };
     case TOGGLE_COLLAPSED_NAV: {
       return {
         ...state,
