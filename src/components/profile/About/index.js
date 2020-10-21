@@ -10,8 +10,8 @@ const TabPane = Tabs.TabPane;
 const About = () => {
 
     return (
-      <Widget title="About" styleName="gx-card-tabs gx-card-tabs-right gx-card-profile">
-        <Tabs defaultActiveKey="1">
+      <Widget title="About" styleName="gx-card-tabs gx-card-profile">
+        <Tabs className='gx-tabs-right' defaultActiveKey="1">
           <TabPane tab="Overview" key="1">
             <div className="gx-mb-2">
               <Row>
