@@ -1,5 +1,4 @@
 import React from "react";
-import {useSelector} from "react-redux";
 import {Menu} from "antd";
 import {Link} from "react-router-dom";
 
@@ -13,11 +12,13 @@ import {
   THEME_TYPE_LITE
 } from "../../constants/ThemeSetting";
 import IntlMessages from "../../util/IntlMessages";
+import {useSelector} from "react-redux";
 
-const SidebarContent = () => {
+
+const SidebarContent = ({sidebarCollapsed, setSidebarCollapsed}) => {
 
   let {navStyle, themeType} = useSelector(({settings}) => settings);
-  const {pathname} = useSelector(({common}) => common);
+  let {pathname} = useSelector(({common}) => common);
 
   const getNoHeaderClass = (navStyle) => {
     if (navStyle === NAV_STYLE_NO_HEADER_MINI_SIDEBAR || navStyle === NAV_STYLE_NO_HEADER_EXPANDED_SIDEBAR) {
@@ -33,10 +34,9 @@ const SidebarContent = () => {
   // };
   const selectedKeys = pathname.substr(1);
   const defaultOpenKeys = selectedKeys.split('/')[1];
-
-  return (<>
-
-      <SidebarLogo/>
+  return (
+    <>
+      <SidebarLogo sidebarCollapsed={sidebarCollapsed} setSidebarCollapsed={setSidebarCollapsed}/>
       <div className="gx-sidebar-content">
         <div className={`gx-sidebar-notifications ${getNoHeaderClass(navStyle)}`}>
           <UserProfile/>
@@ -63,6 +63,5 @@ const SidebarContent = () => {
 };
 
 SidebarContent.propTypes = {};
-
 export default SidebarContent;
 
