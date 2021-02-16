@@ -4,11 +4,11 @@ import {Link} from "react-router-dom";
 
 import CustomScrollbars from "util/CustomScrollbars";
 import languageData from "./languageData";
-import {switchLanguage, toggleCollapsedSideNav} from "../../appRedux/actions/Setting";
-import SearchBox from "components/SearchBox";
-import UserInfo from "components/UserInfo";
-import AppNotification from "components/AppNotification";
-import MailNotification from "components/MailNotification";
+import {switchLanguage, toggleCollapsedSideNav} from "../../appRedux/actions";
+import SearchBox from "../../components/SearchBox";
+import UserInfo from "../../components/UserInfo";
+import AppNotification from "../../components/AppNotification";
+import MailNotification from "../../components/MailNotification";
 import Auxiliary from "util/Auxiliary";
 
 
@@ -21,14 +21,14 @@ const Topbar = () => {
 
   const {locale, navStyle} = useSelector(({settings}) => settings);
   const { navCollapsed, width} = useSelector(({common}) => common);
-  const {searchText, setSearchText} = useState('');
+  const [searchText, setSearchText] = useState('');
   const dispatch = useDispatch();
 
   const languageMenu = () => (
     <CustomScrollbars className="gx-popover-lang-scroll">
       <ul className="gx-sub-popover">
         {languageData.map(language =>
-          <li className="gx-media gx-pointer" key={JSON.stringify(language)} onClick={(e) =>
+          <li className="gx-media gx-pointer" key={JSON.stringify(language)} onClick={() =>
             dispatch(switchLanguage(language))
           }>
             <i className={`flag flag-24 gx-mr-2 flag-${language.icon}`}/>
