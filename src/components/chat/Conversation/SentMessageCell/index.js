@@ -5,7 +5,7 @@ const SentMessageCell = ({conversation}) => {
   return (
     <div className="gx-chat-item gx-flex-row-reverse">
 
-      <Avatar className="gx-size-40 gx-align-self-end" src={require("assets/images/avatar/domnic-harris.png")}
+      <Avatar className="gx-size-40 gx-align-self-end" src="assets/images/avatar/domnic-harris.png"
               alt={conversation.name}/>
 
       <div className="gx-bubble-block">

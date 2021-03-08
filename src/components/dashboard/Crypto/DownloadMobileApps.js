@@ -13,9 +13,9 @@ const DownloadMobileApps = () => {
         </Col>
         <Col xl={8} lg={10} md={12} sm={12} xs={12} className="gx-text-right">
           <div className="gx-flex-column gx-justify-content-center gx-h-100">
-            <span className="gx-mb-2 gx-app-thumb"><img src={require('assets/images/dashboard/google.png')} alt="..."/>
+            <span className="gx-mb-2 gx-app-thumb"><img src="/assets/images/dashboard/google.png" alt="..."/>
             </span>
-            <span className="gx-app-thumb"><img src={require('assets/images/dashboard/apple.png')} alt="..."/></span>
+            <span className="gx-app-thumb"><img src="/assets/images/dashboard/apple.png" alt="..."/></span>
           </div>
         </Col>
       </Row>
