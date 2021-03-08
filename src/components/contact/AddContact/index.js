@@ -26,7 +26,7 @@ class AddContact extends React.Component {
     const {id, name, email, phone, designation, selected, starred, frequently} = this.state;
     let {thumb} = this.state;
     if (!thumb) {
-      thumb = require('assets/images/placeholder.jpg');
+      thumb = '/assets/images/placeholder.jpg';
     }
     return (
       <Modal
