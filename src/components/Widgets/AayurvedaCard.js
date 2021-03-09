@@ -14,7 +14,7 @@ const AayurvedaCard = () => {
         <span className="gx-text-primary gx-pointer gx-text-uppercase gx-mb-3 gx-mb-xxl-2 gx-d-block">learn More</span>
       </div>
       <div className="gx-mt-xxl-3 gx-ayurveda-thumb">
-        <img className="gx-img-fluid gx-w-100" alt="ayurveda" src={require("assets/images/widget/ayurveda.png")}/>
+        <img className="gx-img-fluid gx-w-100" alt="ayurveda" src={"https://via.placeholder.com/576X330"}/>
       </div>
     </Widget>
   );

@@ -6,7 +6,7 @@ const DefaultTimeLineItem = ({styleName, timeLine}) => {
   return (
     <div className={`gx-timeline-item ${styleName}`}>
       <div className="gx-timeline-badge gx-timeline-img">
-        <img src={require("assets/images/pentagon.png")} alt="Pentagon" title="Pentagon"/>
+        <img src="/assets/images/pentagon.png" alt="Pentagon" title="Pentagon"/>
       </div>
 
       <div className="gx-timeline-panel">
