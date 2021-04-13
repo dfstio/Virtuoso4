@@ -11,7 +11,7 @@
     "@testing-library/react": "^11.2.3",
     "@testing-library/user-event": "^12.6.0",
     "amcharts3": "^3.21.15",
-    "antd": "^4.10.2",
+    "antd": "^4.15.1",
     "antd-theme-webpack-plugin": "^1.3.7",
     "app-redux": "^2.0.3",
     "axios": "^0.21.1",
@@ -67,7 +67,7 @@
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired --env=jsdom",
-    "less": "lessc --js src/styles/wieldy.less public/css/style.css"
+    "less": "lessc --js src/styles/wieldy.less public/css/style.css && lessc --js src/styles/wieldy.less public/css/style.min.css --compress -x"
   },
   "eslintConfig": {
     "extends": "react-app"
