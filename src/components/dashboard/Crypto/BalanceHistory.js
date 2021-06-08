@@ -25,7 +25,6 @@ const Option = Select.Option;
 
 const BalanceHistory = () => {
   function handleChange(value) {
-    console.log(`selected ${value}`);
   }
 
   return (

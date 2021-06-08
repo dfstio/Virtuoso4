@@ -8,7 +8,6 @@ const FormItem = Form.Item;
 const CurrencyCalculator = () => {
 
   function handleChange(value) {
-    console.log(`selected ${value}`);
   }
 
   return (

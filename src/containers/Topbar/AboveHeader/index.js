@@ -28,11 +28,9 @@ const menu = (
 );
 
 function handleMenuClick() {
-  message.info('Click on menu item.');
 }
 
 function handleChange(value) {
-  console.log(`selected ${value}`);
 }
 
 

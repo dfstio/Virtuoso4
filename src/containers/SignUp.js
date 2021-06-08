@@ -17,7 +17,6 @@ const SignUp = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     props.form.validateFields((err, values) => {
-      console.log("values", values);
       if (!err) {
         dispatch(userSignUp(values));
       }

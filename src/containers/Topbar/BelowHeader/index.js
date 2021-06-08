@@ -25,11 +25,9 @@ const menu = (
 );
 
 function handleMenuClick(e) {
-  message.info('Click on menu item.');
 }
 
 function handleChange(value) {
-  console.log(`selected ${value}`);
 }
 
 const BelowHeader = () => {

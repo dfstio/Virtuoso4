@@ -20,7 +20,6 @@ export function setThemeType(themeType) {
 }
 
 export function setThemeColor(themeColor) {
-  console.log("ms",themeColor)
   return (dispatch) => {
     dispatch({type: THEME_COLOR, themeColor});
   }

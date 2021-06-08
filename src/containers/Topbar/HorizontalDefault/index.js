@@ -24,11 +24,9 @@ const menu = (
 );
 
 function handleMenuClick(e) {
-  message.info('Click on menu item.');
 }
 
 function handleChange(value) {
-  console.log(`selected ${value}`);
 }
 
 const HorizontalDefault = () => {
@@ -82,7 +80,6 @@ const HorizontalDefault = () => {
             <div className="gx-d-block gx-d-lg-none gx-linebar gx-mr-xs-3">
               <i className="gx-icon-btn icon icon-menu"
                  onClick={() => {
-                   console.log("navCollapsed",!navCollapsed)
                    dispatch(toggleCollapsedSideNav(!navCollapsed));
                  }}
               />
