@@ -1,13 +1,11 @@
 import React, {useEffect} from "react";
-import {useDispatch, useSelector} from "react-redux";
-import URLSearchParams from 'url-search-params'
+import {useSelector} from "react-redux";
 import {Redirect, Route} from "react-router-dom";
-import { ConfigProvider } from 'antd';
+import {ConfigProvider} from 'antd';
 import {IntlProvider} from "react-intl";
 
 import AppLocale from "lngProvider";
 import MainApp from "./MainApp";
-import {onLayoutTypeChange, onNavStyleChange, setThemeType} from "../../appRedux/actions/Setting";
 
 import {
   LAYOUT_TYPE_BOXED,
@@ -22,29 +20,31 @@ import {
 } from "../../constants/ThemeSetting";
 
 const App = (props) => {
-
   const {match, location} = props;
-
-  const dispatch = useDispatch();
-
-  const locale = useSelector(({settings}) => settings.locale);
-  const navStyle = useSelector(({settings}) => settings.navStyle);
-  const themeType = useSelector(({settings}) => settings.themeType);
-  const layoutType = useSelector(({settings}) => settings.layoutType);
+  const {locale, navStyle, layoutType, themeType, isDirectionRTL} = useSelector(({settings}) => settings);
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    if (params.has("theme")) {
-      dispatch(setThemeType(params.get('theme')));
+    if (isDirectionRTL) {
+      document.documentElement.classList.add('rtl');
+      document.documentElement.setAttribute('data-direction', 'rtl')
+    } else {
+      document.documentElement.classList.remove('rtl');
+      document.documentElement.setAttribute('data-direction', 'ltr')
     }
-    if (params.has("nav-style")) {
-      dispatch(onNavStyleChange(params.get('nav-style')));
-    }
-    if (params.has("layout-type")) {
-      dispatch(onLayoutTypeChange(params.get('layout-type')));
-    }
-  }, [dispatch, location.search]);
+  }, [isDirectionRTL]);
 
+  useEffect(() => {
+    if (locale)
+      document.documentElement.lang = locale.locale;
+  }, [locale]);
+
+  useEffect(() => {
+    if (themeType === THEME_TYPE_DARK) {
+      document.body.classList.add('dark-theme');
+    } else if (document.body.classList.contains('dark-theme')) {
+      document.body.classList.remove('dark-theme');
+    }
+  }, [themeType]);
 
   const setLayoutType = (layoutType) => {
     if (layoutType === LAYOUT_TYPE_FULL) {
@@ -76,9 +76,6 @@ const App = (props) => {
     }
   };
 
-  if (themeType === THEME_TYPE_DARK) {
-    document.body.classList.add('dark-theme');
-  }
   if (location.pathname === '/') {
     return (<Redirect to={'/sample'}/>);
   }

@@ -8,7 +8,7 @@ import "styles/wieldy.less";
 import configureStore, { history } from './appRedux/store';
 import App from "./containers/App/index";
 
-const store = configureStore(/ provide initial state if any /);
+const store = configureStore();
 
 const NextApp = () =>
   <Provider store={store}>

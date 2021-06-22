@@ -6,7 +6,7 @@ import {
   NAV_STYLE_FIXED,
   THEME_COLOR,
   THEME_TYPE,
-  THEME_TYPE_SEMI_DARK
+  THEME_TYPE_SEMI_DARK, UPDATE_RTL_STATUS
 } from "../../constants/ThemeSetting";
 
 const initialSettings = {
@@ -36,6 +36,12 @@ const SettingsReducer = (state = initialSettings, action) => {
       return {
         ...state,
         themeColor: action.themeColor
+      };
+
+    case UPDATE_RTL_STATUS:
+      return {
+        ...state,
+        isDirectionRTL: action.rtlStatus
       };
 
     case NAV_STYLE:

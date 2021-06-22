@@ -13,8 +13,8 @@ const routeMiddleware = routerMiddleware(history);
 const middlewares = [thunk, routeMiddleware];
 
 
-export default function configureStore(preloadedState) {
-  const store = createStore(
+export default function configureStore(preloadedState = {}) {
+  return  createStore(
     createRootReducer(history), // root reducer with router state
     preloadedState,
     compose(
@@ -24,6 +24,4 @@ export default function configureStore(preloadedState) {
       ),
     ),
   );
-
-  return store;
 }

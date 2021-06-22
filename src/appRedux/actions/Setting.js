@@ -1,5 +1,5 @@
 import {SWITCH_LANGUAGE, TOGGLE_COLLAPSED_NAV, WINDOW_WIDTH} from "constants/ActionTypes";
-import {LAYOUT_TYPE, NAV_STYLE, THEME_COLOR, THEME_TYPE} from "../../constants/ThemeSetting";
+import {LAYOUT_TYPE, NAV_STYLE, THEME_COLOR, THEME_TYPE, UPDATE_RTL_STATUS} from "../../constants/ThemeSetting";
 
 
 export function toggleCollapsedSideNav(navCollapsed) {
@@ -22,6 +22,12 @@ export function setThemeType(themeType) {
 export function setThemeColor(themeColor) {
   return (dispatch) => {
     dispatch({type: THEME_COLOR, themeColor});
+  }
+}
+
+export function setDirectionRTL(rtlStatus) {
+  return (dispatch) => {
+    dispatch({type: UPDATE_RTL_STATUS, rtlStatus});
   }
 }
 
