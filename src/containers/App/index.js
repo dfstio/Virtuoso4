@@ -87,7 +87,7 @@ const App = (props) => {
   const currentAppLocale = AppLocale[locale.locale];
 
   return (
-    <ConfigProvider locale={currentAppLocale.antd}>
+    <ConfigProvider locale={currentAppLocale.antd} direction={isDirectionRTL ? 'rtl' : 'ltr'}>
       <IntlProvider
         locale={currentAppLocale.locale}
         messages={currentAppLocale.messages}>
