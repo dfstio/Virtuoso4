@@ -80,9 +80,10 @@ const App = (props) => {
     return (<Redirect to={'/sample'}/>);
   }
 
-  setLayoutType(layoutType);
-
-  setNavStyle(navStyle);
+  useEffect(() => {
+    setLayoutType(layoutType);
+    setNavStyle(navStyle);
+  }, [layoutType, navStyle]);
 
   const currentAppLocale = AppLocale[locale.locale];
 
