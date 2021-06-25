@@ -43,6 +43,16 @@ body.dark-theme {
     }
   }
 
+  &.horizontal-layout .ant-menu-submenu-popup  {
+    & a {
+      color: @dark-theme-text-color;
+
+      &:hover {
+        color: @menu-dark-highlight-color;
+      }
+    }
+  }
+
   & h1, & h2, & h3, & h4, & h5, & h6,
   & .h1, & .h2, & .h3, & .h4, & .h5, & .h6 {
     color: @dark-theme-heading-color;
@@ -158,6 +168,7 @@ body.dark-theme {
     & .ant-menu-submenu-open > .ant-menu-submenu-title {
       color: @menu-dark-highlight-color;
     }
+
   }
 
   & .ant-layout-footer {

@@ -180,6 +180,24 @@
   // Drawer
   // ---
 
+  & .framed-layout {
+    .ant-drawer-left {
+      @media screen and (max-width: @screen-md-max) {
+        right: 0;
+        left: auto;
+      }
+    }
+    .ant-drawer-right {
+      @media screen and (max-width: @screen-md-max) {
+        left: 0;
+        right: auto;
+      }
+      .ant-drawer-content-wrapper {
+        .border-radius(11px 0 0 11px);
+      }
+    }
+  }
+
   & .ant-drawer {
     &-right {
       & .ant-drawer-content-wrapper {
@@ -797,6 +815,7 @@
   & .@{class-prefix} {
     &-customizer,
     &-wall-scroll,
+    &-popover-scroll,
     &-popover-lang-scroll,
     &-module-side-scroll,
     &-module-content-scroll,
@@ -1040,6 +1059,21 @@
        left: 0;
     }
   }
+
+  & .@{class-prefix}-header-search {
+
+    & .ant-select-selection,
+    & .ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
+      .border-radius(@border-radius-sm 0 0 @border-radius-sm);
+    }
+
+    .@{class-prefix}-lt-icon-search-bar-lg {
+      & input[type="search"] {
+        .border-radius(0 @border-radius-sm  @border-radius-sm 0);
+      }
+    }
+  }
+
 
   & .ant-input-group > .ant-input:last-child,
   & .ant-input-group-addon:last-child {
@@ -1555,7 +1589,7 @@
   }
 
   & .full-scroll.framed-layout .@{class-prefix}-customizer-option {
-    right: 0;
+    right: auto;
     left: 20px;
 
     @media screen and (max-width: @screen-md-max) {
@@ -1663,14 +1697,14 @@
     }
   }
 
-  & .ant-popover-placement-bottomRight {
+ /* & .ant-popover-placement-bottomRight {
     & > .ant-popover-content {
       & > .ant-popover-arrow {
         right: auto;
         left: 10px;
       }
     }
-  }
+  }*/
 
   & .@{class-prefix}-header-horizontal-dark:before {
     right: auto;
@@ -1824,6 +1858,12 @@
   & .ant-layout-sider-collapsed .@{class-prefix}-layout-sider-header .@{class-prefix}-linebar {
     left: auto;
     right: 20px;
+  }
+
+  & .@{class-prefix}-mini-custom-sidebar.ant-layout-sider-lite .@{class-prefix}-layout-sider-header,
+  & .@{class-prefix}-custom-sidebar.ant-layout-sider-lite .@{class-prefix}-layout-sider-header {
+    border-right: 0 none;
+    border-left: @border-width-base @border-style-base @border-color-split;
   }
 
   & .@{class-prefix}-sidebar-content {

@@ -4,7 +4,7 @@ import {Redirect, Route} from "react-router-dom";
 import {ConfigProvider} from 'antd';
 import {IntlProvider} from "react-intl";
 
-import AppLocale from "lngProvider";
+import AppLocale from "../../lngProvider";
 import MainApp from "./MainApp";
 
 import {
@@ -18,6 +18,36 @@ import {
   NAV_STYLE_INSIDE_HEADER_HORIZONTAL,
   THEME_TYPE_DARK
 } from "../../constants/ThemeSetting";
+
+const setLayoutType = (layoutType) => {
+  if (layoutType === LAYOUT_TYPE_FULL) {
+    document.body.classList.remove('boxed-layout');
+    document.body.classList.remove('framed-layout');
+    document.body.classList.add('full-layout');
+  } else if (layoutType === LAYOUT_TYPE_BOXED) {
+    document.body.classList.remove('full-layout');
+    document.body.classList.remove('framed-layout');
+    document.body.classList.add('boxed-layout');
+  } else if (layoutType === LAYOUT_TYPE_FRAMED) {
+    document.body.classList.remove('boxed-layout');
+    document.body.classList.remove('full-layout');
+    document.body.classList.add('framed-layout');
+  }
+};
+
+const setNavStyle = (navStyle) => {
+  if (navStyle === NAV_STYLE_DEFAULT_HORIZONTAL ||
+    navStyle === NAV_STYLE_DARK_HORIZONTAL ||
+    navStyle === NAV_STYLE_INSIDE_HEADER_HORIZONTAL ||
+    navStyle === NAV_STYLE_ABOVE_HEADER ||
+    navStyle === NAV_STYLE_BELOW_HEADER) {
+    document.body.classList.add('full-scroll');
+    document.body.classList.add('horizontal-layout');
+  } else {
+    document.body.classList.remove('full-scroll');
+    document.body.classList.remove('horizontal-layout');
+  }
+};
 
 const App = (props) => {
   const {match, location} = props;
@@ -45,36 +75,6 @@ const App = (props) => {
       document.body.classList.remove('dark-theme');
     }
   }, [themeType]);
-
-  const setLayoutType = (layoutType) => {
-    if (layoutType === LAYOUT_TYPE_FULL) {
-      document.body.classList.remove('boxed-layout');
-      document.body.classList.remove('framed-layout');
-      document.body.classList.add('full-layout');
-    } else if (layoutType === LAYOUT_TYPE_BOXED) {
-      document.body.classList.remove('full-layout');
-      document.body.classList.remove('framed-layout');
-      document.body.classList.add('boxed-layout');
-    } else if (layoutType === LAYOUT_TYPE_FRAMED) {
-      document.body.classList.remove('boxed-layout');
-      document.body.classList.remove('full-layout');
-      document.body.classList.add('framed-layout');
-    }
-  };
-
-  const setNavStyle = (navStyle) => {
-    if (navStyle === NAV_STYLE_DEFAULT_HORIZONTAL ||
-      navStyle === NAV_STYLE_DARK_HORIZONTAL ||
-      navStyle === NAV_STYLE_INSIDE_HEADER_HORIZONTAL ||
-      navStyle === NAV_STYLE_ABOVE_HEADER ||
-      navStyle === NAV_STYLE_BELOW_HEADER) {
-      document.body.classList.add('full-scroll');
-      document.body.classList.add('horizontal-layout');
-    } else {
-      document.body.classList.remove('full-scroll');
-      document.body.classList.remove('horizontal-layout');
-    }
-  };
 
   if (location.pathname === '/') {
     return (<Redirect to={'/sample'}/>);
