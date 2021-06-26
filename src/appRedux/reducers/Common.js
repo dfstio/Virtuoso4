@@ -1,4 +1,4 @@
-import {FETCH_ERROR, FETCH_START, FETCH_SUCCESS, HIDE_MESSAGE, SHOW_MESSAGE} from 'constants/ActionTypes'
+import {FETCH_ERROR, FETCH_START, FETCH_SUCCESS, HIDE_MESSAGE, SHOW_MESSAGE} from '../../constants/ActionTypes'
 import {TOGGLE_COLLAPSED_NAV, WINDOW_WIDTH} from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -10,7 +10,7 @@ const INIT_STATE = {
   pathname: '/',
 };
 
-export default (state = INIT_STATE, action) => {
+const CommonReducer = (state = INIT_STATE, action) => {
   switch (action.type) {
     case '@@router/LOCATION_CHANGE': {
       return {
@@ -49,3 +49,5 @@ export default (state = INIT_STATE, action) => {
       return state;
   }
 }
+
+export default CommonReducer;

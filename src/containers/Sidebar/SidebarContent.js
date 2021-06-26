@@ -14,9 +14,7 @@ import {
 import IntlMessages from "../../util/IntlMessages";
 import {useSelector} from "react-redux";
 
-
 const SidebarContent = ({sidebarCollapsed, setSidebarCollapsed}) => {
-
   let {navStyle, themeType} = useSelector(({settings}) => settings);
   let {pathname} = useSelector(({common}) => common);
 

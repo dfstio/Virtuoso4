@@ -12,7 +12,6 @@ const PostList = (props) => {
   }, [props.user]);
 
   const addPost = (commentText, imageList) => {
-    console.log("click ho gya");
     const post = {
       id: Math.random() * 1343300,
       text: commentText,

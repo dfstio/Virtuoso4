@@ -10,12 +10,10 @@ import {
   NAV_STYLE_INSIDE_HEADER_HORIZONTAL
 } from "../../constants/ThemeSetting";
 
-
 const SubMenu = Menu.SubMenu;
 const MenuItemGroup = Menu.ItemGroup;
 
 const HorizontalNav = () => {
-
   const navStyle = useSelector(({settings}) => settings.navStyle);
   const {pathname} = useSelector(({common}) => common);
 
@@ -31,25 +29,23 @@ const HorizontalNav = () => {
         return "gx-menu-horizontal gx-submenu-popup-curve gx-above-submenu-popup-curve";
       default:
         return "gx-menu-horizontal";
-
     }
   };
 
   const selectedKeys = pathname.substr(1);
   const defaultOpenKeys = selectedKeys.split('/')[1];
   return (
-
     <Menu
       defaultOpenKeys={[defaultOpenKeys]}
       selectedKeys={[selectedKeys]}
       mode="horizontal">
-
-      <SubMenu className={getNavStyleSubMenuClass(navStyle)} key="main"
-               title={<IntlMessages id="sidebar.main"/>}>
-
-        <SubMenu className="gx-menu-horizontal" key="dashboard"
-                 title={<span> <i className="icon icon-dasbhoard"/>
-                         <IntlMessages id="sidebar.dashboard"/></span>}>
+      <SubMenu popupClassName={getNavStyleSubMenuClass(navStyle)} key="main" title={<IntlMessages id="sidebar.main"/>}>
+        <SubMenu popupClassName="gx-menu-horizontal" key="dashboard" title={
+          <span>
+            <i className="icon icon-dasbhoard"/>
+            <IntlMessages id="sidebar.dashboard"/>
+          </span>
+        }>
           <Menu.Item key="main/dashboard/crypto">
             <Link to="/main/dashboard/crypto">
               <i className="icon icon-crypto"/>
@@ -87,7 +83,7 @@ const HorizontalNav = () => {
 
       </SubMenu>
 
-      <SubMenu className={getNavStyleSubMenuClass(navStyle)} key="in-built-apps"
+      <SubMenu popupClassName={getNavStyleSubMenuClass(navStyle)} key="in-built-apps"
                title={<IntlMessages id="sidebar.inBuiltApp"/>}>
 
         <Menu.Item key="in-built-apps/mail">
@@ -142,10 +138,10 @@ const HorizontalNav = () => {
 
       </SubMenu>
 
-      <SubMenu className={getNavStyleSubMenuClass(navStyle)} key="components"
+      <SubMenu popupClassName={getNavStyleSubMenuClass(navStyle)} key="components"
                title={<IntlMessages id="sidebar.components"/>}>
 
-        <SubMenu className="gx-menu-horizontal" key="general" title={
+        <SubMenu popupClassName="gx-menu-horizontal" key="general" title={
           <span>
                   <i className="icon icon-all-contacts"/>
                    <IntlMessages id="sidebar.components.general"/>
@@ -161,7 +157,7 @@ const HorizontalNav = () => {
           </Menu.Item>
         </SubMenu>
 
-        <SubMenu className="gx-menu-horizontal" key="navigation" title={
+        <SubMenu popupClassName="gx-menu-horizontal" key="navigation" title={
           <span>
                   <i className="icon icon-navigation"/>
                   <IntlMessages id="sidebar.components.navigation"/>
@@ -198,7 +194,7 @@ const HorizontalNav = () => {
           </Menu.Item>
         </SubMenu>
 
-        <SubMenu className="gx-menu-horizontal" key="dataEntry" title={
+        <SubMenu popupClassName="gx-menu-horizontal" key="dataEntry" title={
           <span>
                   <i className="icon icon-data-entry"/>
                   <IntlMessages id="sidebar.components.dataEntry"/>
@@ -290,7 +286,7 @@ const HorizontalNav = () => {
           </Menu.Item>
         </SubMenu>
 
-        <SubMenu className="gx-menu-horizontal" key="dataDisplay" title={
+        <SubMenu popupClassName="gx-menu-horizontal" key="dataDisplay" title={
           <span>
                   <i className="icon icon-data-display"/>
 
@@ -327,11 +323,11 @@ const HorizontalNav = () => {
               <IntlMessages
                 id="sidebar.dataDisplay.calender"/></Link>
           </Menu.Item>
-          <Menu.Item key="components/dataDisplay/list">
-            <Link to="/components/dataDisplay/list">
-              <IntlMessages
-                id="sidebar.dataDisplay.list"/></Link>
-          </Menu.Item>
+          {/*<Menu.Item key="components/dataDisplay/list">*/}
+          {/*  <Link to="/components/dataDisplay/list">*/}
+          {/*    <IntlMessages*/}
+          {/*      id="sidebar.dataDisplay.list"/></Link>*/}
+          {/*</Menu.Item>*/}
           <Menu.Item key="components/dataDisplay/popover">
             <Link to="/components/dataDisplay/popover">
               <IntlMessages
@@ -364,7 +360,7 @@ const HorizontalNav = () => {
           </Menu.Item>
         </SubMenu>
 
-        <SubMenu className="gx-menu-horizontal" key="feedBack" title={
+        <SubMenu popupClassName="gx-menu-horizontal" key="feedBack" title={
           <span>
                   <i className="icon icon-feedback"/>
                     <IntlMessages id="sidebar.components.feedBack"/>
@@ -407,7 +403,7 @@ const HorizontalNav = () => {
           </Menu.Item>
         </SubMenu>
 
-        <SubMenu className="gx-menu-horizontal" key="others" title={
+        <SubMenu popupClassName="gx-menu-horizontal" key="others" title={
           <span>
                   <i className="icon icon-inbox"/>
                     <IntlMessages id="sidebar.components.other"/>
@@ -430,7 +426,7 @@ const HorizontalNav = () => {
           </Menu.Item>
         </SubMenu>
 
-        <SubMenu className="gx-menu-horizontal" key="table"
+        <SubMenu popupClassName="gx-menu-horizontal" key="table"
                  title={
                    <span>
                            <i className="icon icon-table"/>
@@ -452,10 +448,10 @@ const HorizontalNav = () => {
 
       </SubMenu>
 
-      <SubMenu className={getNavStyleSubMenuClass(navStyle)} key="extraComponents"
+      <SubMenu popupClassName={getNavStyleSubMenuClass(navStyle)} key="extraComponents"
                title={<IntlMessages id="sidebar.extraComponents"/>}>
 
-        <SubMenu className="gx-menu-horizontal" key="editor"
+        <SubMenu popupClassName="gx-menu-horizontal" key="editor"
                  title={<span>
                          <i className="icon icon-editor"/>
                         <IntlMessages id="sidebar.editors"/>
@@ -503,7 +499,7 @@ const HorizontalNav = () => {
               id="sidebar.extensions.notification"/></Link>
         </Menu.Item>
 
-        <SubMenu className="gx-menu-horizontal" key="time-line"
+        <SubMenu popupClassName="gx-menu-horizontal" key="time-line"
                  title={<span><i className="icon icon-timeline"/><IntlMessages
                    id="sidebar.timeLine"/></span>}>
           <Menu.Item key="extra-components/time-line/default">
@@ -531,13 +527,13 @@ const HorizontalNav = () => {
 
       </SubMenu>
 
-      <SubMenu className={getNavStyleSubMenuClass(navStyle)} key="extensions"
+      <SubMenu popupClassName={getNavStyleSubMenuClass(navStyle)} key="extensions"
                title={<IntlMessages id="sidebar.extensions"/>}>
 
         <MenuItemGroup key="map"
                        title={<IntlMessages id="sidebar.map"/>}>
 
-          <SubMenu className="gx-menu-horizontal" key="google"
+          <SubMenu popupClassName="gx-menu-horizontal" key="google"
                    title={
                      <span>
                            <i className="icon icon-map-google"/>
@@ -605,7 +601,7 @@ const HorizontalNav = () => {
             </Menu.Item>
           </SubMenu>
 
-          <SubMenu className="gx-menu-horizontal" key="ammap"
+          <SubMenu popupClassName="gx-menu-horizontal" key="ammap"
                    title={
                      <span><i className="icon icon-amchart"/>
                            <IntlMessages id="sidebar.ammap"/></span>}>
@@ -683,7 +679,7 @@ const HorizontalNav = () => {
         <MenuItemGroup key="chart"
                        title={<span>
                                <IntlMessages id="sidebar.chart"/></span>}>
-          <SubMenu className="gx-menu-horizontal" key="rechart" title={
+          <SubMenu popupClassName="gx-menu-horizontal" key="rechart" title={
             <span><i className="icon icon-chart-area-new"/>
                     <IntlMessages id="sidebar.components.rechart"/>
               </span>}>
@@ -735,7 +731,7 @@ const HorizontalNav = () => {
             </Menu.Item>
           </SubMenu>
 
-          <SubMenu className="gx-menu-horizontal" key="amchart" title={
+          <SubMenu popupClassName="gx-menu-horizontal" key="amchart" title={
             <span><i className="icon icon-amchart"/>
                 <IntlMessages id="sidebar.components.amchart"/>
               </span>}>
@@ -768,7 +764,7 @@ const HorizontalNav = () => {
 
         </MenuItemGroup>
 
-        <SubMenu className="gx-menu-horizontal" key="calendar"
+        <SubMenu popupClassName="gx-menu-horizontal" key="calendar"
                  title={<span><i className="icon icon-calendar"/><IntlMessages
                    id="sidebar.calendar"/></span>}>
           <Menu.Item key="extensions/calendar/basic">
@@ -804,10 +800,10 @@ const HorizontalNav = () => {
 
       </SubMenu>
 
-      <SubMenu className={getNavStyleSubMenuClass(navStyle)} key="custom-views"
+      <SubMenu popupClassName={getNavStyleSubMenuClass(navStyle)} key="custom-views"
                title={<IntlMessages id="sidebar.customViews"/>}>
 
-        <SubMenu className="gx-menu-horizontal" key="user-auth"
+        <SubMenu popupClassName="gx-menu-horizontal" key="user-auth"
                  title={<span><i className="icon icon-auth-screen"/><IntlMessages
                    id="app.userAuth"/></span>}>
           <Menu.Item key="custom-views/user-auth/sign-in">
@@ -837,7 +833,7 @@ const HorizontalNav = () => {
           </Menu.Item>
         </SubMenu>
 
-        <SubMenu className="gx-menu-horizontal" key="list-type"
+        <SubMenu popupClassName="gx-menu-horizontal" key="list-type"
                  title={<span><i className="icon icon-all-contacts"/><IntlMessages
                    id="sidebar.listType"/></span>}>
           <Menu.Item key="custom-views/list-type/simple-list">
@@ -857,7 +853,7 @@ const HorizontalNav = () => {
           </Menu.Item>
         </SubMenu>
 
-        <SubMenu className="gx-menu-horizontal" key="eCommerce"
+        <SubMenu popupClassName="gx-menu-horizontal" key="eCommerce"
                  title={<span><i className="icon icon-shopping-cart"/><IntlMessages
                    id="sidebar.eCommerce"/></span>}>
           <Menu.Item key="custom-views/eCommerce/product-grid">
@@ -872,7 +868,7 @@ const HorizontalNav = () => {
           </Menu.Item>
         </SubMenu>
 
-        <SubMenu className="gx-menu-horizontal" key="errorPages"
+        <SubMenu popupClassName="gx-menu-horizontal" key="errorPages"
                  title={<span><i className="icon icon-error"/><IntlMessages
                    id="sidebar.extraPages"/></span>}>
 
@@ -888,7 +884,7 @@ const HorizontalNav = () => {
           </Menu.Item>
         </SubMenu>
 
-        <SubMenu className="gx-menu-horizontal" key="extra-elements"
+        <SubMenu popupClassName="gx-menu-horizontal" key="extra-elements"
                  title={<span><i className="icon icon-ellipse-h"/><IntlMessages
                    id="sidebar.listType.extras"/></span>}>
           <Menu.Item key="custom-views/extras/pricing-table">

@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {Button, Dropdown, Layout, Menu, message, Popover} from 'antd';
-import {connect, useDispatch, useSelector} from "react-redux";
+import Icon from '@ant-design/icons';
+import {useDispatch, useSelector} from "react-redux";
 import CustomScrollbars from "util/CustomScrollbars";
 import languageData from "../languageData";
 import SearchBox from "components/SearchBox";
@@ -11,7 +12,7 @@ import HorizontalNav from "../HorizontalNav";
 import {Link} from "react-router-dom";
 import {switchLanguage, toggleCollapsedSideNav} from "../../../appRedux/actions/Setting";
 import IntlMessages from "../../../util/IntlMessages";
-import DownOutlined from "@ant-design/icons/lib/icons/DownOutlined";
+import {TAB_SIZE} from "../../../constants/ThemeSetting";
 
 const {Header} = Layout;
 
@@ -28,12 +29,10 @@ function handleMenuClick(e) {
 }
 
 const InsideHeader = () => {
-
-  const dispatch = useDispatch();
-
   const [searchText, setSearchText] = useState('');
-  const locale = useSelector(({settings}) => settings.locale);
-  const { navCollapsed} = useSelector(({common}) => common);
+  const {locale} = useSelector(({settings}) => settings);
+  const {navCollapsed, width} = useSelector(({common}) => common);
+  const dispatch = useDispatch();
 
   const languageMenu = () => (
     <CustomScrollbars className="gx-popover-lang-scroll">
@@ -70,7 +69,6 @@ const InsideHeader = () => {
         </div>
       </div>
 
-
       <Header
         className="gx-header-horizontal-main">
         <div className="gx-container">
@@ -83,20 +81,23 @@ const InsideHeader = () => {
               />
             </div>
             <Link to="/" className="gx-d-block gx-d-lg-none gx-pointer gx-mr-xs-3 gx-pt-xs-1 gx-w-logo">
-              <img alt="" src="assets/images/w-logo.png"/></Link>
+              <img alt="" src="/assets/images/w-logo.png"/></Link>
             <Link to="/" className="gx-d-none gx-d-lg-block gx-pointer gx-mr-xs-5 gx-logo">
-              <img alt="" src="assets/images/logo.png"/></Link>
+              <img alt="" src="/assets/images/logo.png"/></Link>
 
-            <div className="gx-header-horizontal-nav gx-header-horizontal-nav-curve gx-d-none gx-d-lg-block">
-              <HorizontalNav/>
-            </div>
+            {width >= TAB_SIZE && (
+              <div className="gx-header-horizontal-nav gx-header-horizontal-nav-curve">
+                <HorizontalNav/>
+              </div>
+            )}
+
             <ul className="gx-header-notifications gx-ml-auto">
               <li className="gx-notify gx-notify-search">
                 <Popover overlayClassName="gx-popover-horizantal"
                          placement="bottomRight" content={
                   <div className="gx-d-flex"><Dropdown overlay={menu}>
                     <Button>
-                      Category <DownOutlined />
+                      Category <Icon type="down"/>
                     </Button>
                   </Dropdown>
                     <SearchBox styleName="gx-popover-search-bar"
@@ -143,9 +144,4 @@ const InsideHeader = () => {
   );
 };
 
-const mapStateToProps = ({settings,common }) => {
-  const {navCollapsed} = common;
-  const {locale} = settings;
-  return {locale, navCollapsed}
-};
-export default connect(mapStateToProps, {toggleCollapsedSideNav, switchLanguage})(InsideHeader);
+export default InsideHeader;

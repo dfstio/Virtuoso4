@@ -1,4 +1,4 @@
-import {SWITCH_LANGUAGE} from "constants/ActionTypes";
+import {SWITCH_LANGUAGE} from "../../constants/ActionTypes";
 import {
   LAYOUT_TYPE,
   LAYOUT_TYPE_FULL,
@@ -6,14 +6,14 @@ import {
   NAV_STYLE_FIXED,
   THEME_COLOR,
   THEME_TYPE,
-  THEME_TYPE_SEMI_DARK
+  THEME_TYPE_SEMI_DARK, UPDATE_RTL_STATUS
 } from "../../constants/ThemeSetting";
 
 const initialSettings = {
   navStyle: NAV_STYLE_FIXED,
   layoutType: LAYOUT_TYPE_FULL,
   themeType: THEME_TYPE_SEMI_DARK,
-  themeColor: THEME_COLOR,
+  themeColor: '',
 
   isDirectionRTL: false,
   locale: {
@@ -24,7 +24,7 @@ const initialSettings = {
   }
 };
 
-const settings = (state = initialSettings, action) => {
+const SettingsReducer = (state = initialSettings, action) => {
   switch (action.type) {
 
     case THEME_TYPE:
@@ -33,10 +33,15 @@ const settings = (state = initialSettings, action) => {
         themeType: action.themeType
       };
     case THEME_COLOR:
-      console.log("yes",action.themeColor);
       return {
         ...state,
         themeColor: action.themeColor
+      };
+
+    case UPDATE_RTL_STATUS:
+      return {
+        ...state,
+        isDirectionRTL: action.rtlStatus
       };
 
     case NAV_STYLE:
@@ -61,4 +66,4 @@ const settings = (state = initialSettings, action) => {
   }
 };
 
-export default settings;
+export default SettingsReducer;

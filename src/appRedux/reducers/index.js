@@ -3,8 +3,10 @@ import Settings from "./Settings";
 import Common from "./Common";
 import {connectRouter} from 'connected-react-router'
 
-export default (history) => combineReducers({
+const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
   settings: Settings,
   common: Common,
 });
+
+export default createRootReducer;

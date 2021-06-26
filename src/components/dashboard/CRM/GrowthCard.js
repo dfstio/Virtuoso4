@@ -10,7 +10,7 @@ const GrowthCard = ({trafficData}) => {
       <Row>
         <Col lg={9} md={24} sm={9} xs={9}>
           <div className="gx-pb-4 gx-pl-4 gx-pt-4">
-            <h2 className="gx-fs-xxxl gx-font-weight-medium gx-mb-1 gx-chart-up">37%
+            <h2 className="gx-fs-xxxl gx-font-weight-medium gx-mb-1 gx-chart-up gx-text-nowrap">37%
               <i className="icon icon-menu-up gx-fs-xxl"/>
             </h2>
             <p className="gx-mb-0 gx-text-grey">This year</p>

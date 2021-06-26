@@ -1,5 +1,6 @@
 import React, {useState} from "react";
-import {Button, Dropdown,Layout, Menu, message, Popover, Select} from 'antd';
+import {Button, Dropdown, Layout, Menu, message, Popover, Select} from 'antd';
+import Icon from '@ant-design/icons';
 import {useDispatch, useSelector} from "react-redux";
 import CustomScrollbars from "util/CustomScrollbars";
 
@@ -14,7 +15,6 @@ import {TAB_SIZE} from "../../../constants/ThemeSetting";
 import HorizontalNav from "../HorizontalNav";
 import {Link} from "react-router-dom";
 import IntlMessages from "../../../util/IntlMessages";
-import DownOutlined from "@ant-design/icons/lib/icons/DownOutlined";
 
 const {Header} = Layout;
 
@@ -32,17 +32,14 @@ function handleMenuClick() {
 }
 
 function handleChange(value) {
-  console.log(`selected ${value}`);
 }
 
 
 const AboveHeader = () => {
-
-  const dispatch = useDispatch();
-
-  const [searchText, setSearchText] = useState('');
   const locale = useSelector(({settings}) => settings.locale);
-  const { navCollapsed, width} = useSelector(({common}) => common);
+  const {navCollapsed, width} = useSelector(({common}) => common);
+  const [searchText, setSearchText] = useState('');
+  const dispatch = useDispatch();
 
   const languageMenu = () => (
     <CustomScrollbars className="gx-popover-lang-scroll">
@@ -65,18 +62,20 @@ const AboveHeader = () => {
   return (
     <div className="gx-header-horizontal gx-header-horizontal-dark gx-above-header-horizontal">
 
-      <div className="gx-header-horizontal-nav gx-header-horizontal-nav-curve gx-d-none gx-d-lg-block">
-        <div className="gx-container">
-          <div className="gx-header-horizontal-nav-flex">
-            <HorizontalNav/>
-            <ul className="gx-header-notifications gx-ml-auto">
-              <li><span className="gx-pointer gx-d-block"><i className="icon icon-menu-lines"/></span></li>
-              <li><span className="gx-pointer gx-d-block"><i className="icon icon-setting"/></span></li>
-              <li><span className="gx-pointer gx-d-block"><i className="icon icon-apps-new"/></span></li>
-            </ul>
+      {width >= TAB_SIZE && (
+        <div className="gx-header-horizontal-nav gx-header-horizontal-nav-curve">
+          <div className="gx-container">
+            <div className="gx-header-horizontal-nav-flex">
+              <HorizontalNav/>
+              <ul className="gx-header-notifications gx-ml-auto">
+                <li><span className="gx-pointer gx-d-block"><i className="icon icon-menu-lines"/></span></li>
+                <li><span className="gx-pointer gx-d-block"><i className="icon icon-setting"/></span></li>
+                <li><span className="gx-pointer gx-d-block"><i className="icon icon-apps-new"/></span></li>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="gx-header-horizontal-top">
         <div className="gx-container">
@@ -108,9 +107,9 @@ const AboveHeader = () => {
               />
             </div>
             <Link to="/" className="gx-d-block gx-d-lg-none gx-pointer gx-mr-xs-3 gx-pt-xs-1 gx-w-logo">
-              <img alt="" src="assets/images/w-logo.png"/></Link>
+              <img alt="" src="/assets/images/w-logo.png"/></Link>
             <Link to="/" className="gx-d-none gx-d-lg-block gx-pointer gx-mr-xs-5 gx-logo">
-              <img alt="" src="assets/images/logo.png"/></Link>
+              <img alt="" src="/assets/images/logo.png"/></Link>
             <div className="gx-header-search gx-d-none gx-d-lg-flex">
               <SearchBox styleName="gx-lt-icon-search-bar-lg"
                          placeholder="Search in app..."
@@ -129,7 +128,7 @@ const AboveHeader = () => {
                 <Popover overlayClassName="gx-popover-horizantal" placement="bottomRight" content={
                   <div className="gx-d-flex"><Dropdown overlay={menu}>
                     <Button>
-                      Category <DownOutlined />
+                      Category <Icon type="down"/>
                     </Button>
                   </Dropdown>
                     <SearchBox styleName="gx-popover-search-bar"
