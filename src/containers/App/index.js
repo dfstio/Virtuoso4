@@ -76,14 +76,14 @@ const App = (props) => {
     }
   }, [themeType]);
 
-  if (location.pathname === '/') {
-    return (<Redirect to={'/sample'}/>);
-  }
-
   useEffect(() => {
     setLayoutType(layoutType);
     setNavStyle(navStyle);
   }, [layoutType, navStyle]);
+
+  if (location.pathname === '/') {
+    return (<Redirect to={'/sample'}/>);
+  }
 
   const currentAppLocale = AppLocale[locale.locale];
 
