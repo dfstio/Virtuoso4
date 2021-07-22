@@ -10,7 +10,7 @@ import AppNotification from "components/AppNotification";
 import MailNotification from "components/MailNotification";
 import HorizontalNav from "../HorizontalNav";
 import {Link} from "react-router-dom";
-import {switchLanguage, toggleCollapsedSideNav} from "../../../appRedux/actions/Setting";
+import {switchLanguage, toggleCollapsedSideNav} from "../../../appRedux/actions";
 import IntlMessages from "../../../util/IntlMessages";
 import {TAB_SIZE} from "../../../constants/ThemeSetting";
 
@@ -31,7 +31,8 @@ function handleMenuClick(e) {
 const InsideHeader = () => {
   const [searchText, setSearchText] = useState('');
   const {locale} = useSelector(({settings}) => settings);
-  const {navCollapsed, width} = useSelector(({common}) => common);
+  const navCollapsed = useSelector(({common}) => common.navCollapsed);
+  const width = useSelector(({common}) => common.width);
   const dispatch = useDispatch();
 
   const languageMenu = () => (

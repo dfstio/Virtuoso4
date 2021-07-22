@@ -2,23 +2,20 @@ import React, {useEffect} from "react";
 import {Button, Checkbox, Form, Input} from "antd";
 import {Link} from "react-router-dom";
 
-import {useDispatch, useSelector} from "react-redux";
-import {userSignUp} from "../appRedux/actions/Auth";
-
+import {useSelector} from "react-redux";
 import IntlMessages from "util/IntlMessages";
-import InfoView from "components/InfoView";
+import InfoView from "../components/InfoView";
 
 const FormItem = Form.Item;
 
 const SignUp = (props) => {
-  const dispatch = useDispatch();
   const token = useSelector(({auth}) => auth.token);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     props.form.validateFields((err, values) => {
       if (!err) {
-        dispatch(userSignUp(values));
+        // call your signup action here
       }
     });
   };
@@ -44,7 +41,7 @@ const SignUp = (props) => {
               <p><IntlMessages id="app.userAuth.getAccount"/></p>
             </div>
             <div className="gx-app-logo">
-              <img alt="example" src="assets/images/logo.png"/>
+              <img alt="example" src="/assets/images/logo.png"/>
             </div>
           </div>
 

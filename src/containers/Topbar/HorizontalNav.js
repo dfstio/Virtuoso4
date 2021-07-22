@@ -15,7 +15,7 @@ const MenuItemGroup = Menu.ItemGroup;
 
 const HorizontalNav = () => {
   const navStyle = useSelector(({settings}) => settings.navStyle);
-  const {pathname} = useSelector(({common}) => common);
+  const pathname = useSelector(({common}) => common.pathname);
 
   const getNavStyleSubMenuClass = (navStyle) => {
     switch (navStyle) {

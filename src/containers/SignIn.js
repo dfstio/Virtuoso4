@@ -1,23 +1,21 @@
 import React, {useEffect} from "react";
 import {Button, Checkbox, Form, Input} from "antd";
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import {Link} from "react-router-dom";
 
-import {userSignIn} from "../appRedux/actions/Auth";
 import IntlMessages from "util/IntlMessages";
-import InfoView from "components/InfoView";
+import InfoView from "../components/InfoView";
 
 const FormItem = Form.Item;
 
 const SignIn = (props) => {
-  const dispatch = useDispatch();
   const token = useSelector(({auth}) => auth.token);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     props.form.validateFields((err, values) => {
       if (!err) {
-        dispatch(userSignIn(values));
+        // call your sign-in action here
       }
     });
   };
@@ -44,7 +42,7 @@ const SignIn = (props) => {
               <p><IntlMessages id="app.userAuth.getAccount"/></p>
             </div>
             <div className="gx-app-logo">
-              <img alt="example" src="assets/images/logo.png"/>
+              <img alt="example" src="/assets/images/logo.png"/>
             </div>
           </div>
           <div className="gx-app-login-content">
