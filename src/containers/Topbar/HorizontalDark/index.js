@@ -34,7 +34,8 @@ function handleChange(value) {
 
 const HorizontalDark = () => {
   const [searchText, setSearchText] = useState('');
-  const {navCollapsed, width} = useSelector(({common}) => common);
+  const navCollapsed = useSelector(({common}) => common.navCollapsed);
+  const width = useSelector(({common}) => common.width);
   const {locale} = useSelector(({settings}) => settings);
   const dispatch = useDispatch();
 

@@ -51,7 +51,11 @@ const setNavStyle = (navStyle) => {
 
 const App = (props) => {
   const {match, location} = props;
-  const {locale, navStyle, layoutType, themeType, isDirectionRTL} = useSelector(({settings}) => settings);
+  const locale = useSelector(({settings}) => settings.locale);
+  const navStyle = useSelector(({settings}) => settings.navStyle);
+  const layoutType = useSelector(({settings}) => settings.layoutType);
+  const themeType = useSelector(({settings}) => settings.themeType);
+  const isDirectionRTL = useSelector(({settings}) => settings.isDirectionRTL);
 
   useEffect(() => {
     if (isDirectionRTL) {
@@ -76,14 +80,14 @@ const App = (props) => {
     }
   }, [themeType]);
 
-  if (location.pathname === '/') {
-    return (<Redirect to={'/sample'}/>);
-  }
-
   useEffect(() => {
     setLayoutType(layoutType);
     setNavStyle(navStyle);
   }, [layoutType, navStyle]);
+
+  if (location.pathname === '/') {
+    return (<Redirect to={'/sample'}/>);
+  }
 
   const currentAppLocale = AppLocale[locale.locale];
 

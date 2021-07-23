@@ -9,7 +9,7 @@ import SearchBox from "components/SearchBox";
 import UserInfo from "components/UserInfo";
 import AppNotification from "components/AppNotification";
 import MailNotification from "components/MailNotification";
-import {switchLanguage, toggleCollapsedSideNav} from "../../../appRedux/actions/Setting";
+import {switchLanguage, toggleCollapsedSideNav} from "../../../appRedux/actions";
 
 import {TAB_SIZE} from "../../../constants/ThemeSetting";
 import HorizontalNav from "../HorizontalNav";
@@ -34,10 +34,10 @@ function handleMenuClick() {
 function handleChange(value) {
 }
 
-
 const AboveHeader = () => {
   const locale = useSelector(({settings}) => settings.locale);
-  const {navCollapsed, width} = useSelector(({common}) => common);
+  const navCollapsed = useSelector(({common}) => common.navCollapsed);
+  const width = useSelector(({common}) => common.width);
   const [searchText, setSearchText] = useState('');
   const dispatch = useDispatch();
 

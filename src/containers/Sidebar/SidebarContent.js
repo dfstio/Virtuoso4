@@ -15,8 +15,8 @@ import IntlMessages from "../../util/IntlMessages";
 import {useSelector} from "react-redux";
 
 const SidebarContent = ({sidebarCollapsed, setSidebarCollapsed}) => {
-  let {navStyle, themeType} = useSelector(({settings}) => settings);
-  let {pathname} = useSelector(({common}) => common);
+  const {navStyle, themeType} = useSelector(({settings}) => settings);
+  const pathname = useSelector(({common}) => common.pathname);
 
   const getNoHeaderClass = (navStyle) => {
     if (navStyle === NAV_STYLE_NO_HEADER_MINI_SIDEBAR || navStyle === NAV_STYLE_NO_HEADER_EXPANDED_SIDEBAR) {
@@ -24,14 +24,10 @@ const SidebarContent = ({sidebarCollapsed, setSidebarCollapsed}) => {
     }
     return "";
   };
-  // const getNavStyleSubMenuClass = (navStyle) => {
-  //   if (navStyle === NAV_STYLE_NO_HEADER_MINI_SIDEBAR) {
-  //     return "gx-no-header-submenu-popup";
-  //   }
-  //   return "";
-  // };
+
   const selectedKeys = pathname.substr(1);
   const defaultOpenKeys = selectedKeys.split('/')[1];
+
   return (
     <>
       <SidebarLogo sidebarCollapsed={sidebarCollapsed} setSidebarCollapsed={setSidebarCollapsed}/>
@@ -60,6 +56,5 @@ const SidebarContent = ({sidebarCollapsed, setSidebarCollapsed}) => {
   );
 };
 
-SidebarContent.propTypes = {};
-export default SidebarContent;
+export default React.memo(SidebarContent);
 

@@ -20,7 +20,8 @@ const {Header} = Layout;
 const Topbar = () => {
 
   const {locale, navStyle} = useSelector(({settings}) => settings);
-  const { navCollapsed, width} = useSelector(({common}) => common);
+  const navCollapsed = useSelector(({common}) => common.navCollapsed);
+  const width = useSelector(({common}) => common.width);
   const [searchText, setSearchText] = useState('');
   const dispatch = useDispatch();
 
@@ -41,6 +42,7 @@ const Topbar = () => {
   const updateSearchChatUser = (evt) => {
     setSearchText(evt.target.value);
   };
+
   return (
     <Header>
       {navStyle === NAV_STYLE_DRAWER || ((navStyle === NAV_STYLE_FIXED || navStyle === NAV_STYLE_MINI_SIDEBAR) && width < TAB_SIZE) ?
@@ -52,7 +54,7 @@ const Topbar = () => {
           />
         </div> : null}
       <Link to="/" className="gx-d-block gx-d-lg-none gx-pointer">
-        <img alt="" src="assets/images/w-logo.png"/></Link>
+        <img alt="" src={("/assets/images/w-logo.png")}/></Link>
 
       <SearchBox styleName="gx-d-none gx-d-lg-block gx-lt-icon-search-bar-lg"
                  placeholder="Search in app..."

@@ -19,7 +19,8 @@ const {Sider} = Layout;
 const Sidebar = () => {
   let [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const {themeType, navStyle} = useSelector(({settings}) => settings);
-  const {navCollapsed, width} = useSelector(({common}) => common);
+  const navCollapsed = useSelector(({common}) => common.navCollapsed);
+  const width = useSelector(({common}) => common.width);
   const dispatch = useDispatch();
 
   const onToggleCollapsedNav = () => {
