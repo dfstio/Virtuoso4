@@ -12,7 +12,7 @@ import MailNotification from "../../components/MailNotification";
 import Auxiliary from "util/Auxiliary";
 
 
-import {NAV_STYLE_DRAWER, NAV_STYLE_FIXED, NAV_STYLE_MINI_SIDEBAR, TAB_SIZE} from "../../constants/ThemeSetting";
+import {NAV_STYLE_DRAWER, NAV_STYLE_FIXED, NAV_STYLE_MINI_SIDEBAR, NAV_STYLE_DEFAULT_HORIZONTAL, TAB_SIZE} from "../../constants/ThemeSetting";
 import {useDispatch, useSelector} from "react-redux";
 
 const {Header} = Layout;

@@ -4,9 +4,11 @@ import {Highlight,} from 'react-instantsearch-dom';
 
 const ProductItem = ({item}) => {
   const icons = [];
+  console.log("Item: ", item);
   for (let i = 0; i < 5; i++) {
     const suffixClassName = i >= item.rating ? '--empty' : '';
     const suffixXlink = i >= item.rating ? 'Empty' : '';
+
 
     icons.push(
       <svg

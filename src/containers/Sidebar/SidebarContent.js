@@ -43,11 +43,17 @@ const SidebarContent = ({sidebarCollapsed, setSidebarCollapsed}) => {
             theme={themeType === THEME_TYPE_LITE ? 'lite' : 'dark'}
             mode="inline">
 
+            <Menu.Item key="algolia">
+                  <Link to="/algolia"><i className="icon icon-shopping-cart "/>
+                  <IntlMessages id="sidebar.algolia"/></Link>
+            </Menu.Item>
             <Menu.Item key="sample">
-              <Link to="/sample"><i className="icon icon-widgets"/>
-                <span><IntlMessages id="sidebar.samplePage"/></span>
+              <Link to="/sample">
+                <i className="icon icon-widgets"/>
+                <IntlMessages id="sidebar.samplePage"/>
               </Link>
             </Menu.Item>
+
 
           </Menu>
         </CustomScrollbars>
