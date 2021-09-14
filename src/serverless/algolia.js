@@ -4,10 +4,11 @@ const index = client.initIndex('virtuoso');
 
 async function alWriteToken(tokenId, token, contract, chainId)
 {
+        const objectID = chainId.toString()+"."+contract.toString()+"."+tokenId.toString();
 
         // create item to insert
         const params = {
-                objectID: Number(tokenId),
+                objectID: objectID,
                 contract: contract,
                 chainId: chainId
                 tokenId: Number(tokenId),
