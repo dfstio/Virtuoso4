@@ -269,7 +269,7 @@ async function loadToken(tokenId, contract)
     			  console.error("loadToken loading token ", tokenId.toString(), " error ", error.code, error.config.url);
     			  return false;
   			};
-};
+}
 
 async function loadAlgoliaToken(tokenId, contract, chainId)
 {
@@ -324,7 +324,7 @@ async function loadAlgoliaToken(tokenId, contract, chainId)
     			  console.error("loadAlgoliaToken loading token ", tokenId.toString(), " error ", error.code, error.config.url);
     			  return false;
   			};
-};
+}
 
 
 

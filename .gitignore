@@ -36,3 +36,6 @@ yarn-error.log*
 
 mvp04.zip
 
+
+# Local Netlify folder
+.netlify
