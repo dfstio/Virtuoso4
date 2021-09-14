@@ -40,6 +40,13 @@ const HorizontalNav = () => {
       selectedKeys={[selectedKeys]}
       mode="horizontal">
       <SubMenu className={getNavStyleSubMenuClass(navStyle)} key="main" title={<IntlMessages id="sidebar.main"/>}>
+        <Menu.Item key="marketplace">
+          <Link to="/marketplace">
+            <i className="icon icon-shopping-cart"/>
+            <IntlMessages id="sidebar.algolia"/>
+          </Link>
+        </Menu.Item>
+
         <Menu.Item key="sample">
           <Link to="/sample">
             <i className="icon icon-widgets"/>

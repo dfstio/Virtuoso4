@@ -3,14 +3,14 @@ import {
   LAYOUT_TYPE,
   LAYOUT_TYPE_FULL,
   NAV_STYLE,
-  NAV_STYLE_FIXED,
+  NAV_STYLE_DEFAULT_HORIZONTAL,
   THEME_COLOR,
   THEME_TYPE,
   THEME_TYPE_SEMI_DARK, UPDATE_RTL_STATUS
 } from "../../constants/ThemeSetting";
 
 const initialSettings = {
-  navStyle: NAV_STYLE_FIXED,
+  navStyle: NAV_STYLE_DEFAULT_HORIZONTAL,
   layoutType: LAYOUT_TYPE_FULL,
   themeType: THEME_TYPE_SEMI_DARK,
   themeColor: '',
