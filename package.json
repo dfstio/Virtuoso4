@@ -68,7 +68,13 @@
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired --env=jsdom",
-    "less": "lessc --js src/styles/wieldy.less public/css/style.css && lessc --js src/styles/wieldy.less public/css/style.min.css --compress -x"
+    "less": "lessc --js src/styles/wieldy.less public/css/style.css && lessc --js src/styles/wieldy.less public/css/style.min.css --compress -x",
+    "balance": "cd ../paymaster && npx  hardhat run scripts/balance.js --network mumbai",
+    "chrome":"open -a \"Google Chrome\" --args --user-data-dir=\"/Users/mike/Library/Application Support/Google/ChromeB\" https://nftvirtuoso.io",
+    "commit": "git commit -a -S -m",
+    "archive": "git archive -o mvp04.zip HEAD",
+    "push": "git push -u origin main",
+    "dev": "netlify dev"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -90,4 +96,7 @@
     "customize-cra": "^0.9.1",
     "react-app-rewired": "^2.1.5"
   }
+
+
+
 }
