@@ -14,7 +14,7 @@ const {Content} = Layout;
 
 const searchClient = algoliasearch(
   'latency',
-  '6be0576ff61c053d5f9a3225e2a90f76'
+  'e5df9ff3c346eacace48ca6a18fab2c3'
 );
 
 const App = props => (
