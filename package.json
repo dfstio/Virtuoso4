@@ -73,7 +73,7 @@
     "chrome":"open -a \"Google Chrome\" --args --user-data-dir=\"/Users/mike/Library/Application Support/Google/ChromeB\" https://nftvirtuoso.io",
     "commit": "git commit -a -S -m",
     "archive": "git archive -o mvp04.zip HEAD",
-    "push": "git push -u origin main",
+    "push": "git push -u Virtuoso4",
     "dev": "netlify dev"
   },
   "eslintConfig": {
