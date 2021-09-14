@@ -64,6 +64,7 @@
     "redux-thunk": "^2.3.0",
     "rheostat": "^4.1.1",
     "slick-carousel": "^1.8.1",
+    "stripe": "^8.174.0",
     "url-search-params": "^1.1.0",
     "victory": "^35.4.6",
     "yarn": "^1.22.11"
