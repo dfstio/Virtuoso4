@@ -12,7 +12,7 @@ const signer = wallet.connect(provider);
 const virtuoso = new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
 const inter = new ethers.utils.Interface(VirtuosoNFTJSON);
 
-const fetch = require('node-fetch');
+//const fetch = require('node-fetch');
 const axios = require("axios");
 //const {  dbWriteToken, dbReadToken } = require("./dynamodb");
 const {  alWriteToken } = require("./algolia");
@@ -43,7 +43,7 @@ function getTokenIndex(tokenId)
 };
 */
 
-
+/*
 async function apiGetToken(tokenId)
 {
        const data = {"tokenId": tokenId.toString()};
@@ -67,6 +67,7 @@ async function apiInitBackground(force)
        });
 
 }
+*/
 
 async function initAlgoliaTokens(force)
 {
@@ -76,6 +77,7 @@ async function initAlgoliaTokens(force)
 
 	  if(DEBUG) console.log("initAlgoliaTokens totalSupply: ", totalSupply.toString(), "contract:", contract);
 
+/*
     let i;
 	  for( i = totalSupply - 1; i >= 0; i--)
 	  {
@@ -94,8 +96,12 @@ async function initAlgoliaTokens(force)
         {
           console.error("initAlgoliaTokens Error: token No ", tokenId, " is not loaded: ");
         };
+      };
 
 	  }
+
+*/
+    let result = await loadAlgoliaToken(16, contract, chainId);
 	  if(DEBUG) console.log("initAlgoliaTokens finished, totalSupply: ", totalSupply.toString());
 	  return totalSupply;
 }

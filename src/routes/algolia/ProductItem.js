@@ -1,6 +1,7 @@
 import React from "react";
 import {Highlight,} from 'react-instantsearch-dom';
-
+import {Button} from "antd";
+import IntlMessages from "util/IntlMessages";
 
 const ProductItem = ({item}) => {
   const icons = [];
@@ -37,11 +38,26 @@ const ProductItem = ({item}) => {
           <Highlight attribute="name" hit={item}/>
         </div>
         <div className="gx-mb-3">
-          <Highlight attribute="type" hit={item}/>
+          <Highlight attribute="category" hit={item}/>
         </div>
-        <div className="ais-RatingMenu-link">{icons}</div>
-        <div className="gx-product-price">${item.price}</div>
+        <div className="gx-mb-3">
+          <Highlight attribute="description" hit={item}/>
+        </div>
 
+        {item.onSale?(
+        <div className="gx-product-price">
+          {item.token.sale.currency.toUpperCase()} {item.price} {"      "}
+          <Button
+          type="primary"
+          style={{ float: "right"}}
+
+          >
+            Buy
+            </Button>
+          </div>
+
+        ):("")
+        }
       </div>
     </div>
   );

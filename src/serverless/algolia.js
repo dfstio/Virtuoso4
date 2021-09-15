@@ -10,15 +10,15 @@ async function alWriteToken(tokenId, token, contract, chainId)
         const params = {
                 objectID: objectID,
                 contract: contract,
-                chainId: chainId
-                tokenId: Number(tokenId),
+                chainId: chainId,
+                tokenId: tokenId.toString(),
                 owner: token.owner,
                 name: token.name,
-                description: token.description,
+                description: token.uri.description,
                 onSale: token.onSale,
                 price: token.sale.price,
                 category: "music",
-                image: token.image,
+                image: token.uri.image,
                 token: token,
                 updated: Date.now()
         };
@@ -26,7 +26,8 @@ async function alWriteToken(tokenId, token, contract, chainId)
 
    try {
 
-        let result = await index.saveObjects(params, { autoGenerateObjectIDIfNotExist: false });
+        const result = await index.saveObject(params);
+        console.log("Algolia write result",  result);
 
 
     } catch (error) {

@@ -22,38 +22,40 @@ const Sidebar = () => (
       <div className="gx-algolia-category-item">
         <div className="gx-algolia-category-title">Show results for</div>
         <HierarchicalMenu
-          attributes={['category', 'sub_category', 'sub_sub_category']}
+          attributes={['name']}
         />
       </div>
 
       <div className="gx-algolia-category-item">
         <div className="gx-algolia-category-title">Refine By</div>
-
+{/*
         <Panel header={<span>Type</span>}>
-          <RefinementList className="gx-algolia-refinementList" attribute="type" operator="or" limit={5} searchable/>
+          <RefinementList className="gx-algolia-refinementList" attribute="name" operator="or" limit={5} searchable/>
         </Panel>
-
-        <Panel header={<span>Materials</span>}>
+*/}
+        <Panel header={<span>Name</span>}>
           <RefinementList className="gx-algolia-refinementList"
-                          attribute="materials"
+                          attribute="name"
                           operator="or"
                           limit={5}
                           searchable
           />
         </Panel>
+{/*
 
-
-        <Panel header={<span>Rating</span>}>
-          <RatingMenu className="gx-algolia-refinementList" attribute="rating" max={5}/>
+        <Panel header={<span>Owner</span>}>
+          <RatingMenu className="gx-algolia-refinementList" attribute="owner" max={5}/>
         </Panel>
 
         <Panel header={<span>Price</span>}>
           <RangeInput className="gx-algolia-refinementList" attribute="price"/>
         </Panel>
+ */}
+
       </div>
 
       <div className="thank-you">
-        Data courtesy of <a href="http://www.ikea.com/">ikea.com</a>
+        Data courtesy of <a href="https://nftvirtuoso.io/">NFT Virtuoso</a>
       </div>
     </div>
   </Sider>

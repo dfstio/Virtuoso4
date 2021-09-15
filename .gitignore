@@ -35,6 +35,8 @@ yarn-error.log*
 .eslintcache
 
 mvp04.zip
+example
+example/*
 
 
 # Local Netlify folder

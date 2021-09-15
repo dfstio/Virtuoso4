@@ -4,6 +4,7 @@ import {Col, Row} from 'antd';
 import ProductItem from './ProductItem';
 
 const ProductList = ({hits}) => {
+  console.log("ProductList", hits);
   return (
     <div id="product">
       <Row>

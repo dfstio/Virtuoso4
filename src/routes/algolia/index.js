@@ -8,18 +8,18 @@ import Header from "./Header";
 import Sidebar from "./SideBar";
 import Footer from "./Footer";
 import ProductList from "./ProductList";
-import algoliasearch from 'algoliasearch/lite';
+import algoliasearch from 'algoliasearch';
 
 const {Content} = Layout;
 
-const searchClient = algoliasearch(
-  'latency',
-  'e5df9ff3c346eacace48ca6a18fab2c3'
-);
+const searchClient = algoliasearch('KJYWN9CKS8', 'e362c0f63b9afb700db75abfafecb1aa');
+//  'KJYWN9CKS8',
+//  'e5df9ff3c346eacace48ca6a18fab2c3'
+//);
 
 const App = props => (
   <InstantSearch className="gx-main-content"
-                 indexName="ikea"
+                 indexName="virtuoso"
                  searchState={props.searchState}
                  createURL={props.createURL}
                  searchClient={searchClient}
@@ -45,6 +45,7 @@ const App = props => (
 
 const CustomResults = connectStateResults(({searchState, searchResult}) => {
   if (searchResult && searchResult.nbHits === 0) {
+  console.log("CustomResults1", searchState, searchResult );
     return (
       <div className="gx-algolia-content-inner">
         <div className="gx-algolia-no-results">
@@ -54,6 +55,7 @@ const CustomResults = connectStateResults(({searchState, searchResult}) => {
       </div>
     );
   } else {
+    console.log("CustomResults2", searchState, searchResult );
     return (
       <div className="gx-algolia-content-inner">
         <Stats/>

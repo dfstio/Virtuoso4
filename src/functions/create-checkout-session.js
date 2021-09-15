@@ -1,10 +1,10 @@
 const { createCheckoutSession } = require("../serverless/stripe");
-                  
+
 exports.handler = async(event, context) => {
     //const { name = "Anonymous" } = event.queryStringParameters;
 
-         
-    
+
+
         // check for POST
     if (event.httpMethod !== "POST") {
         return {
@@ -21,7 +21,7 @@ exports.handler = async(event, context) => {
         const body = event.queryStringParameters;
         console.log("createCheckoutSession called 2: ", body);
         //console.log("getToken: ", body);
-        
+
         let result = await createCheckoutSession(body);
         //let result  = { isLoading: false, isTokenLoaded: false, isPriceLoaded: false, owner: "" };
         console.log("createCheckoutSession redirect: ", result);

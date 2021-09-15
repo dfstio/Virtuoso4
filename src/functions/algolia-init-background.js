@@ -1,4 +1,4 @@
-const { initAlgoliaTokens} = require("../serverless/contract");
+const { initAlgoliaTokens } = require("../serverless/contract");
 
 
 exports.handler = async(event, context) => {
@@ -19,6 +19,7 @@ exports.handler = async(event, context) => {
 
         // parse form data
         const body = JSON.parse(event.body);
+        console.log("algolia-init-background body:", body)
         let force = true;
         if( body.force != undefined && body.force == false) force = false;
 
