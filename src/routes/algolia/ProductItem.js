@@ -57,7 +57,7 @@ const ProductItem = ({item}) => {
 
         {item.onSale?(
         <div className="gx-product-price">
-          {item.token.sale.currency.toUpperCase()} {item.price} {"      "}
+          {item.currency} {item.price}
           <form action={buyTokenPath} method="POST">
           <Button
           type="primary"
@@ -65,7 +65,7 @@ const ProductItem = ({item}) => {
           style={{ float: "right"}}
 
           >
-            Buy
+            <IntlMessages id="sidebar.algolia.buy"/>
             </Button>
             </form>
           </div>

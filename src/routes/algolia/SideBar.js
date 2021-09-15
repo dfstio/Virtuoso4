@@ -8,6 +8,7 @@ import {
   RatingMenu,
   RefinementList,
 } from "react-instantsearch-dom";
+import IntlMessages from "../../util/IntlMessages";
 
 const {Sider} = Layout;
 const Sidebar = () => (
@@ -27,7 +28,7 @@ const Sidebar = () => (
       </div>
 */}
 
-         <Panel header={<span>OnSale</span>}>
+         <Panel header=<span><IntlMessages id="sidebar.algolia.onsale"/></span>>
           <RefinementList className="gx-algolia-refinementList"
                           attribute="onSale"
 
@@ -38,7 +39,7 @@ const Sidebar = () => (
       <div className="gx-algolia-category-item">
         <div className="gx-algolia-category-title">Refine By</div>
 
-        <Panel header={<span>Category</span>}>
+        <Panel header=<span><IntlMessages id="sidebar.algolia.category"/></span>>
           <RefinementList className="gx-algolia-refinementList"
                   attribute="category"
                   operator="or"
@@ -50,7 +51,7 @@ const Sidebar = () => (
 
 
 
-        <Panel header={<span>Owner</span>}>
+        <Panel header=<span><IntlMessages id="sidebar.algolia.owner"/></span>>
           <RefinementList className="gx-algolia-refinementList"
                           attribute="owner"
                           operator="or"
@@ -64,11 +65,11 @@ const Sidebar = () => (
           <RatingMenu className="gx-algolia-refinementList" attribute="owner" max={5}/>
         </Panel>
 */}
-        <Panel header={<span>Price</span>}>
+        <Panel header=<span><IntlMessages id="sidebar.algolia.price"/></span>>
           <RangeInput className="gx-algolia-refinementList" attribute="price"/>
         </Panel>
 
-          <Panel header={<span>Currency</span>}>
+          <Panel header=<span><IntlMessages id="sidebar.algolia.currency"/></span>>
           <RefinementList className="gx-algolia-refinementList"
                           attribute="currency"
                           operator="or"
@@ -79,9 +80,7 @@ const Sidebar = () => (
 
       </div>
 
-      <div className="thank-you">
-        Data courtesy of <a href="https://nftvirtuoso.io/">NFT Virtuoso</a>
-      </div>
+
     </div>
   </Sider>
 );

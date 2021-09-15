@@ -2,9 +2,13 @@ import {SWITCH_LANGUAGE} from "../../constants/ActionTypes";
 import {
   LAYOUT_TYPE,
   LAYOUT_TYPE_FULL,
+  LAYOUT_TYPE_FRAMED,
   NAV_STYLE,
   NAV_STYLE_FIXED,
   NAV_STYLE_DEFAULT_HORIZONTAL,
+  NAV_STYLE_BELOW_HEADER,
+  NAV_STYLE_INSIDE_HEADER_HORIZONTAL,
+  NAV_STYLE_DARK_HORIZONTAL,
   THEME_COLOR,
   THEME_TYPE,
   THEME_TYPE_SEMI_DARK, UPDATE_RTL_STATUS
@@ -13,8 +17,8 @@ import {
 const initialSettings = {
   navStyle: NAV_STYLE_DEFAULT_HORIZONTAL,
   layoutType: LAYOUT_TYPE_FULL,
-  themeType: THEME_TYPE_SEMI_DARK,
-  themeColor: '',
+  themeType: THEME_COLOR,
+  themeColor: 'orange',
 
   isDirectionRTL: false,
   locale: {

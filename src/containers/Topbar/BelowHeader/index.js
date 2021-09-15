@@ -87,9 +87,9 @@ const BelowHeader = () => {
               />
             </div>
             <Link to="/" className="gx-d-block gx-d-lg-none gx-pointer gx-mr-xs-3 gx-pt-xs-1 gx-w-logo">
-              <img alt="" src="/assets/images/w-logo.png"/></Link>
+              <img alt="" src="/assets/images/virtuoso.png"/></Link>
             <Link to="/" className="gx-d-none gx-d-lg-block gx-pointer gx-mr-xs-5 gx-logo">
-              <img alt="" src="/assets/images/logo.png"/></Link>
+              <img alt="" src="/assets/images/virtuoso.png"/></Link>
             <div className="gx-header-search gx-d-none gx-d-lg-flex">
               <SearchBox styleName="gx-lt-icon-search-bar-lg"
                          placeholder="Search in app..."
@@ -155,11 +155,13 @@ const BelowHeader = () => {
           <div className="gx-container">
             <div className="gx-header-horizontal-nav-flex">
               <HorizontalNav/>
+
               <ul className="gx-header-notifications gx-ml-auto">
                 <li><span className="gx-pointer gx-d-block"><i className="icon icon-menu-lines"/></span></li>
                 <li><span className="gx-pointer gx-d-block"><i className="icon icon-setting"/></span></li>
                 <li><span className="gx-pointer gx-d-block"><i className="icon icon-apps-new"/></span></li>
               </ul>
+
             </div>
           </div>
         </div>
