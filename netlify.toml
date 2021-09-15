@@ -6,21 +6,26 @@
   from = '/api/*'
   to = '/.netlify/functions/:splat'
   status = 200
-  
-[context.main] 
+
+ [[redirects]]
+  from = '/*'
+  to = '/index.html'
+  status = 200
+
+
+[context.main]
 	NETWORK_NAME="mumbai network main"
 	environment = { NETWORK_NAME_1 = "super secret main"  }
-	
+
 [dev]
-	NETWORK_NAME="mumbai network dev"	
+	NETWORK_NAME="mumbai network dev"
 	environment = { NETWORK_NAME_1 = "super secret dev" }
-	
+
 [context.dev]
-	NETWORK_NAME="mumbai network dev1"	
+	NETWORK_NAME="mumbai network dev1"
 	environment = { NETWORK_NAME_1 = "super secret dev1" }
-	
+
 [context.production]
-	NETWORK_NAME="mumbai network production"	
+	NETWORK_NAME="mumbai network production"
 	environment = { NETWORK_NAME_1 = "super secret production" }
-	
-	
+
