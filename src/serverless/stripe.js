@@ -3,15 +3,15 @@ const STRIPE_ENDPOINT_SECRET =  process.env.STRIPE_ENDPOINT_SECRET;
 const stripe = require('stripe')(STRIPE_KEY);
 const URL = process.env.URL;
 const delayMS = 1000;
- 
 
-const { addBalance, transferToken, getToken } = require("./contract");
-const DEBUG = true; 
 
- 
- 
+const { addBalance, transferToken, getTokenPrice } = require("./contract");
+const DEBUG = true;
+
+
+
 async function checkoutCompleted(body, headers)
-{     
+{
         //if(DEBUG) console.log("checkoutCompleted ", body, headers, STRIPE_ENDPOINT_SECRET, STRIPE_KEY);
         const sig = headers['stripe-signature'];
         let endpointSecret = STRIPE_ENDPOINT_SECRET;
@@ -41,7 +41,7 @@ async function checkoutCompleted(body, headers)
              await handleCheckoutCompleted(checkout1);
              // Then define and call a method to handle the successful payment intent.
              // handlePaymentIntentSucceeded(paymentIntent);
-             break; 
+             break;
            case 'charge.succeeded':
              const charge = event.data.object;
              //console.log(`Webhook: charge.succeeded`, charge);
@@ -51,9 +51,9 @@ async function checkoutCompleted(body, headers)
              //console.log(`Webhook: payment intent `, paymentIntent);
              // Then define and call a method to handle the successful payment intent.
              // handlePaymentIntentSucceeded(paymentIntent);
-             break;  
+             break;
 
-      
+
            case 'checkout.session.async_payment_failed':
              console.log(`Webhook: checkout.session.async_payment_failed`);
              // Then define and call a method to handle the successful attachment of a PaymentMethod.
@@ -69,18 +69,18 @@ async function checkoutCompleted(body, headers)
          //response.json({received: true});
 
 
-} 
-      
+}
+
 async function handleCheckoutCompleted(checkout )
 {
 
-    
+
     	 const paymentIntent = await stripe.paymentIntents.retrieve( checkout. payment_intent );
-	
+
        if(DEBUG) console.log("handleCheckoutCompleted: ", checkout.metadata.type, checkout.payment_status, paymentIntent.status);
        if( checkout.payment_status == 'paid')
        {
-  
+
          switch (checkout.metadata.type) {
             case 'mint':
             console.log("Mint: adding balance");
@@ -90,7 +90,7 @@ async function handleCheckoutCompleted(checkout )
             console.log(`Buy`, checkout.metadata);
             const id = parseInt(checkout.metadata.tokenID);
             await transferToken(id, checkout.metadata.address, checkout.metadata.credit);
-            break; 
+            break;
             default:
             // Unexpected event type
             console.log(`handleCheckoutCompleted: Unhandled event type ${checkout.metadata.type}.`);
@@ -101,7 +101,7 @@ async function handleCheckoutCompleted(checkout )
          console.log("Checkout require capture");
          const id = parseInt(checkout.metadata.tokenID);
          const status = await transferToken(id, checkout.metadata.address, checkout.metadata.credit);
-         if( status) 
+         if( status)
          {
            const intent = await stripe.paymentIntents.capture(paymentIntent.id);
            console.log("Payment captured: ", intent.status);
@@ -117,14 +117,13 @@ async function createCheckoutSession(queryObject)
 {
   if(DEBUG) console.log("createCheckoutSession type: ", queryObject.type, " tokenID: ", queryObject.tokenID, " address: ", queryObject.address);
 
-  const success_url = URL + "/#/checkout/success";
-	const cancel_url = URL + "/#/checkout/cancel";
-  
+  const success_url = URL + "/checkout/success";
+	const cancel_url = URL + "/checkout/cancel";
+
   if( queryObject.type == "buy")
   {
 
-		const dbToken =  await getToken(queryObject.tokenID);
-		const token = dbToken.token;
+		const token =  await getTokenPrice(queryObject.tokenID);
 		if(DEBUG) console.log("createCheckoutSession token:", token);
 
 
@@ -134,7 +133,7 @@ async function createCheckoutSession(queryObject)
 			  const amount = token.sale.price * 100;
 			  const image = token.uri.image;
 
-		
+
 			  // CHANGE THIS CALCULATION !!!
 			  const creditAmount = (currency=='rub')?((amount / 75) * 70 /100):(amount * 70 / 100);
 
@@ -166,7 +165,7 @@ async function createCheckoutSession(queryObject)
 			 });
 			 return  session.url;
 		}
-		else console.error("Token No ", queryObject.tokenID, " is not on sale" );	   
+		else console.error("Token No ", queryObject.tokenID, " is not on sale" );
 	}
 	else if(queryObject.type == "mint" )
 	{
@@ -175,7 +174,7 @@ async function createCheckoutSession(queryObject)
 		 payment_method_types: [
 		   'card',
 		 ],
-		 line_items: 
+		 line_items:
 		 [
 		 	{
 			 	price: process.env.MINT_PRICE,
@@ -191,9 +190,9 @@ async function createCheckoutSession(queryObject)
 
 	   return  session.url;
 	};
-	
-	
-	
+
+
+
 }
 
 

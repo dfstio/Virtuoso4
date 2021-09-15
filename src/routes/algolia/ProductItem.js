@@ -9,6 +9,12 @@ const ProductItem = ({item}) => {
   for (let i = 0; i < 5; i++) {
     const suffixClassName = i >= item.rating ? '--empty' : '';
     const suffixXlink = i >= item.rating ? 'Empty' : '';
+    var buyTokenPath = "";
+    if( item.onSale == true)
+    {
+          buyTokenPath = "/api/create-checkout-session?type=buy&address=" + "generate" +
+                     "&tokenID=" + item.tokenId.toString();
+    };
 
 
     icons.push(
@@ -35,25 +41,33 @@ const ProductItem = ({item}) => {
       <div className="gx-product-body">
 
         <div className="gx-product-name">
+        <span>
           <Highlight attribute="name" hit={item}/>
+        </span>
+        <span style={{ float: "right"}}>
+          {item.tokenId}
+        </span>
         </div>
         <div className="gx-mb-3">
           <Highlight attribute="category" hit={item}/>
         </div>
         <div className="gx-mb-3">
-          <Highlight attribute="description" hit={item}/>
+          <Highlight attribute="shortdescription" hit={item}/>
         </div>
 
         {item.onSale?(
         <div className="gx-product-price">
           {item.token.sale.currency.toUpperCase()} {item.price} {"      "}
+          <form action={buyTokenPath} method="POST">
           <Button
           type="primary"
+          htmlType="submit"
           style={{ float: "right"}}
 
           >
             Buy
             </Button>
+            </form>
           </div>
 
         ):("")

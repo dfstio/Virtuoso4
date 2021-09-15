@@ -77,9 +77,9 @@ async function initAlgoliaTokens(force)
 
 	  if(DEBUG) console.log("initAlgoliaTokens totalSupply: ", totalSupply.toString(), "contract:", contract);
 
-/*
+
     let i;
-	  for( i = totalSupply - 1; i >= 0; i--)
+	  for( i = 0; i <  totalSupply; i++)
 	  {
 	    const tokenId = await virtuoso.tokenByIndex(i);
       if(DEBUG) console.log("initTokens Loading token ", tokenId.toString(), " i = ", i);
@@ -100,8 +100,8 @@ async function initAlgoliaTokens(force)
 
 	  }
 
-*/
-    let result = await loadAlgoliaToken(16, contract, chainId);
+
+//    let result = await loadAlgoliaToken(16, contract, chainId);
 	  if(DEBUG) console.log("initAlgoliaTokens finished, totalSupply: ", totalSupply.toString());
 	  return totalSupply;
 }
@@ -200,6 +200,57 @@ async function getToken(tokenId)
 
 }
 
+async function getTokenPrice(tokenId)
+{
+    let token  = TOKEN_JSON;
+    try {
+             const uri = await virtuoso.tokenURI(tokenId);
+             const tokenuri= await axios.get(uri);;
+             const owner = await virtuoso.ownerOf(tokenId);
+             if(DEBUG) console.log("loadToken", tokenId.toString(), "uri", tokenuri.data);
+             token.uri=tokenuri.data;
+             token.owner = owner;
+
+
+             const saleID = await virtuoso.salesIndex(tokenId);
+             if(DEBUG) console.log("loadToken", tokenId.toString(), "saleID", saleID);
+             if( saleID == 0 )
+             {
+               token.onSale = false;
+             }
+             else
+             {
+                    const sale = await virtuoso.sales(saleID);
+
+                    if(DEBUG) console.log("loadToken", tokenId.toString(), "sale", sale);
+
+                    if( sale[1] != 1 )
+                    {
+                      token.onSale = false;
+                      token.isPriceLoaded = true;
+                    }
+                    else
+                    {
+                      token.onSale = true;
+                      const saleConditionsURL = "https://ipfs.io/ipfs/" + sale[2];
+                      const saleConditions = await axios.get(saleConditionsURL);
+                      if(DEBUG) console.log("loadToken", tokenId.toString(), "saleConditions", saleConditions.data);
+                      token.sale = saleConditions.data;
+                      token.isPriceLoaded = true;
+                     };
+              };
+ 		          return token;
+
+
+		    } catch (error) {
+    			  console.error("loadToken loading token ", tokenId.toString(), " error ", error.code, error.config.url);
+    			  return false;
+  			};
+
+
+    return token;
+
+}
 async function getTokenDataBackground(tokenId)
 {
     const chainId = await signer.getChainId();
@@ -317,6 +368,7 @@ async function loadAlgoliaToken(tokenId, contract, chainId)
                       //if(DEBUG) console.log("loadToken", tokenId.toString(), "saleConditions", saleConditions.data);
                       token.sale = saleConditions.data;
                       token.isPriceLoaded = true;
+
                      };
               };
               token.isLoading = false;
@@ -515,6 +567,7 @@ module.exports = {
     getBalance,
     setBalance,
     getTokenData,
+    getTokenPrice,
     getTokenDataBackground,
     txBackground,
     forwardTransaction,
