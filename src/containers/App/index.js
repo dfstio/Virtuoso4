@@ -86,7 +86,7 @@ const App = (props) => {
   }, [layoutType, navStyle]);
 
   if (location.pathname === '/') {
-    return (<Redirect to={'/sample'}/>);
+    return (<Redirect to={'/algolia'}/>);
   }
 
   const currentAppLocale = AppLocale[locale.locale];

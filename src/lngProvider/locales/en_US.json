@@ -1,7 +1,7 @@
 {
   "app.announced": "A new version will be released on December 25th. Stay tuned!",
   "sidebar.main": "Main",
-  "sidebar.samplePage": "Sample Page",
+  "sidebar.samplePage": "Create NFT",
   "sidebar.dashboard": "Dashboard",
   "sidebar.dashboard.crm": "Crm",
   "sidebar.components": "Components",
@@ -283,7 +283,7 @@
   "sidebar.dashboard.listing": "Listing",
   "sidebar.dashboard.crypto": "Crypto",
   "sidebar.map": "Map",
-  "sidebar.algolia": "Algolia",
+  "sidebar.algolia": "NFT Marketplace",
   "sidebar.components.rechart": "ReChart",
   "sidebar.components.amchart": "AmChart",
   "sidebar.google.map": "Google Map",

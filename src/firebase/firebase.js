@@ -2,7 +2,7 @@ import firebase from "firebase";
 
 // Initialize Firebase
 const config = {
-/* my config
+/* my config */
   apiKey: "AIzaSyD2HxRtdOMcxwa7ltdO9WuyuYAEjSH91a4",
   authDomain: "nft-virtuoso.firebaseapp.com",
   projectId: "nft-virtuoso",
@@ -13,7 +13,7 @@ const config = {
   measurementId: "G-XCXVREP0W6"
 
 
-*/
+/*
 
 
   apiKey: "AIzaSyAz-GPfA-hN74oFh3XvXsF9vQrlE5xpU10",
@@ -22,7 +22,7 @@ const config = {
   projectId: "wieldy-4f59c",
   storageBucket: "wieldy-4f59c.appspot.com",
   messagingSenderId: "81949884261"
-
+*/
 };
 
 firebase.initializeApp(config);
