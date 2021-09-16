@@ -5,7 +5,7 @@ import IntlMessages from "util/IntlMessages";
 
 const ProductItem = ({item}) => {
   const icons = [];
-  console.log("Item: ", item);
+  //console.log("Item: ", item);
   for (let i = 0; i < 5; i++) {
     const suffixClassName = i >= item.rating ? '--empty' : '';
     const suffixXlink = i >= item.rating ? 'Empty' : '';
@@ -30,7 +30,7 @@ const ProductItem = ({item}) => {
     );
   }
   return (
-    <div className="gx-product-item gx-product-vertical">
+    <div className="gx-product-item gx-product-vertical" >
       <div className="gx-product-image">
         <img
           src={`https://res.cloudinary.com/hilnmyskv/image/fetch/h_300,q_100,f_auto/${
@@ -38,7 +38,7 @@ const ProductItem = ({item}) => {
             }`} alt=''
         />
       </div>
-      <div className="gx-product-body">
+      <div className="gx-product-body" >
 
         <div className="gx-product-name">
         <span>
@@ -56,7 +56,7 @@ const ProductItem = ({item}) => {
         </div>
 
         {item.onSale?(
-        <div className="gx-product-price">
+        <div className="gx-product-price" >
           {item.currency} {item.price}
           <form action={buyTokenPath} method="POST">
           <Button

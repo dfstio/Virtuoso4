@@ -159,15 +159,20 @@
 .@{class-prefix}-product-vertical {
   .flex-display(flex, column, nowrap);
   height: calc(100% ~"-" @gx-card-margin-base);
+  justify-content: flex-end;
+
+
+
 
   @media screen and (max-width: @screen-xs-max) {
     height: calc(100% ~"-" @gx-card-margin-base-res);
   }
 
   & .@{class-prefix}-product-body {
-    .flex-only(1);
+
   }
 }
+
 
 .@{class-prefix}-product-title {
   font-size: @h3-font-size;
