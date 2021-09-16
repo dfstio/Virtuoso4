@@ -20,7 +20,7 @@ const HorizontalNav = () => {
   const getNavStyleSubMenuClass = (navStyle) => {
     switch (navStyle) {
       case NAV_STYLE_DEFAULT_HORIZONTAL:
-        return "gx-menu-horizontal";
+        return "gx-menu-horizontal gx-submenu-popup-curve";
       case NAV_STYLE_INSIDE_HEADER_HORIZONTAL:
         return "gx-menu-horizontal gx-submenu-popup-curve gx-inside-submenu-popup-curve";
       case NAV_STYLE_BELOW_HEADER:

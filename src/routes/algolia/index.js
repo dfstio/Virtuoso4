@@ -55,7 +55,7 @@ const CustomResults = connectStateResults(({searchState, searchResult}) => {
       </div>
     );
   } else {
-    console.log("CustomResults2", searchState, searchResult );
+    //console.log("CustomResults2", searchState, searchResult );
     return (
       <div className="gx-algolia-content-inner">
         <Stats/>

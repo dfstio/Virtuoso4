@@ -1,44 +1,77 @@
-const ethers = require("ethers");
-const MetaMaskOnboarding = require('@metamask/onboarding');
-const VirtuosoNFTJSON = require("../contract/mumbai_VirtuosoNFT.json");
-const network = require("./constants.js");
-const contractAddress = process.env.CONTRACT_ADDRESS;
-const URL = process.env.URL;
+import React, {useState} from "react";
+
+// SET TARGET NETWORK
+
+
+const NETWORKS = require("./constants.js");
+const network = NETWORKS.mumbai; // IMPORTANT
+
+
+
+//const ethers = require("ethers");
+//const MetaMaskOnboarding = require('@metamask/onboarding');
+//const VirtuosoNFTJSON = require("../contract/mumbai_VirtuosoNFT.json");
+
+//const contractAddress = process.env.CONTRACT_ADDRESS;
+//const URL = process.env.URL;
 const rpcUrlMetaMask = process.env.RPCURL_METAMASK;
 
 
-const provider = new ethers.providers.Web3Provider(window.ethereum);
-const signer = provider.getSigner();
-const virtuoso = new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
+//const provider = new ethers.providers.Web3Provider(window.ethereum);
+//const signer = provider.getSigner();
+//const virtuoso = new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
 const DEBUG = true;
 
+var address = '';
 
-async function metamaskLogin()
+
+export function getMetaMaskAddress()
+{
+    return address;
+};
+
+function handleChainChanged(_chainId) {
+  if(DEBUG) console.log("handleChainChanged ", _chainId );
+  address = "";
+  // We recommend reloading the page, unless you must do otherwise
+
+}
+
+function handleAccountsChanged(accounts) {
+  if (accounts.length === 0) {
+    // MetaMask is locked or the user has not connected any accounts
+    console.log('handleAccountsChanged: Please connect to MetaMask.');
+  } else if (accounts[0] !== address) {
+    address = accounts[0];
+    console.log('handleAccountsChanged: new address', address);
+
+    // Do any other work!
+  }
+}
+
+export async function metamaskLogin()
 {
 
-    if( !MetaMaskOnboarding.isMetaMaskInstalled())
-    {
-        // Install MetaMask
-        MetaMaskOnboarding.startOnboarding();
-    }
-    else // check for chainId
-    {
-          const chainId = await signer.getChainId();
+     if(DEBUG) console.log("metamaskLogin called: ", window.ethereum); //, " with virtuosoBalance", virtuosoBalance);
+     if( (window.ethereum !== undefined) && (window.ethereum.isMetaMask == true))
+     {
+        const account =  await window.ethereum.request({method: 'eth_requestAccounts'});
+        window.ethereum.on('chainChanged', handleChainChanged);
+        window.ethereum.on('accountsChanged', handleAccountsChanged);
+        //const address =  await window.ethereum.request({method: 'eth_accounts'});
 
-          if((provider !== undefined) && (network.chainId !== chainId) )
-          {
-              switchChain();
-          };
+         if(account.length > 0)
+         {
+           address = account[0];
+         }
+         else address = "";
 
-         const account =  await provider.send("eth_accounts");
-         const virtuosoBalance = await virtuoso.virtuosoBalances(address);
-         if(DEBUG) console.log("metamaskLogin: connected to account ", account, " with virtuosoBalance", virtuosoBalance);
+     } else address = "";
 
-    };
+     if(DEBUG) console.log("metamaskLogin: connected with address: ", address );
 
-
-
-};
+     return address;
+ };
 
 
 async function switchChain()
@@ -48,15 +81,16 @@ async function switchChain()
 
 
      try {
-     await provider.send("wallet_switchEthereumChain", [{chainId: chainHex}] );
+     await window.ethereum.request("wallet_switchEthereumChain", [{chainId: chainHex}] );
 
      } catch (error) {
            // This error code indicates that the chain has not been added to MetaMask.
-           if (error.code === 4902) {
-           console.error("switchChain: Switching chain failed with code 4902, trying to add chain", network.name);
+           if (error.code === 4902)
+           {
+                console.error("switchChain: Switching chain failed with code 4902, trying to add chain", network.name);
 
-             try {
-               await provider.send("wallet_addEthereumChain",
+                try {
+                await window.ethereum.request("wallet_addEthereumChain",
                       [{
                           chainId: chainHex,// A 0x-prefixed hexadecimal string
                           chainName: network.name,
@@ -69,21 +103,17 @@ async function switchChain()
                            blockExplorerUrls: [network.blockExplorer]
                         }] );
 
-              } catch (addError) {
-               console.erroe("switchChain: Adding chain failed:", addError);
-             } else
+                } catch (addError)
+                {
+                    console.erroe("switchChain: Adding chain failed:", addError);
+                }
+             }
+             else
              {
                 console.erroe("switchChain: Switching chain failed:", error);
              }
-
-           }
-           // handle other "switch" errors
 
       }
 };
 
 
-
-export default {
-  metamaskLogin: metamaskLogin
-}

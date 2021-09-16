@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {Button, Dropdown, Layout, Menu, message, Popover, Select} from 'antd';
 import Icon from '@ant-design/icons';
 import {useDispatch, useSelector} from "react-redux";
@@ -13,7 +13,7 @@ import {Link} from "react-router-dom";
 import {switchLanguage, toggleCollapsedSideNav} from "../../../appRedux/actions";
 import IntlMessages from "../../../util/IntlMessages";
 import {TAB_SIZE} from "../../../constants/ThemeSetting";
-import metamaskLogin from "../../../blockchain/metamask";
+import { metamaskLogin, getMetaMaskAddress } from "../../../blockchain/metamask";
 
 const {Header} = Layout;
 const Option = Select.Option;
@@ -31,6 +31,9 @@ function handleMenuClick(e) {
 
 function handleChange(value) {
 }
+
+
+
 
 const HorizontalDefault = () => {
   const navCollapsed = useSelector(({common}) => common.navCollapsed);
@@ -57,6 +60,24 @@ const HorizontalDefault = () => {
     setSearchText(evt.target.value)
   };
 
+
+
+  let metamaskText = "CONNECT TO METAMASK";
+  let topupText = "";
+  let topup = "";
+  const [address, setAddress] = useState('');
+  const newAddress = getMetaMaskAddress();
+  if( address !== newAddress) setAddress(newAddress);
+  console.log("Address", address);
+  if(address !== "")
+  {
+    metamaskText = address.slice(0,6)+"..."+address.slice(38,42).toUpperCase();
+    topupText = "TOPUP";
+    topup = "/api/create-checkout-session?type=mint&address=" + address.toString();
+   };
+
+
+
   return (
     <div className="gx-header-horizontal">
       <div className="gx-header-horizontal-top">
@@ -68,12 +89,35 @@ const HorizontalDefault = () => {
             </div>
             <ul className="gx-login-list">
               <li
+               onClick={ async () => {
+                    console.log("Connect to MetaMask clicked");
+                    const newAddress = await metamaskLogin();
+                    setAddress(newAddress);
+                }}
+
+
+              >
+              {metamaskText}</li>
+              <li
                onClick={() => {
-                    metamaskLogin();
+                    console.log("Topup clicked", topup);
+                    if( topup !== "")
+                      fetch(topup, { method: 'POST'})
+                        .then(response => {
+                            // HTTP 301 response
+                            // HOW CAN I FOLLOW THE HTTP REDIRECT RESPONSE?
+                            if (response.redirected) {
+                                window.location.href = response.url;
+                            }
+                        })
+                        .catch(function(error) {
+                            console.info("Topup clicked error", topup, error );
+                        });
                 }}
 
               >
-              Connect to MetaMask</li>
+              {topupText}</li>
+
             </ul>
           </div>
         </div>

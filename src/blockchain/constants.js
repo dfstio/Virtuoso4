@@ -1,4 +1,4 @@
-export const network = NETWORKS.mumbai;
+
 
 export const NETWORKS = {
   mainnet: {
