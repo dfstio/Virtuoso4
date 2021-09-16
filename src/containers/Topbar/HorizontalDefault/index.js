@@ -14,6 +14,7 @@ import {switchLanguage, toggleCollapsedSideNav} from "../../../appRedux/actions"
 import IntlMessages from "../../../util/IntlMessages";
 import {TAB_SIZE} from "../../../constants/ThemeSetting";
 import { metamaskLogin, getMetaMaskAddress } from "../../../blockchain/metamask";
+const axios = require("axios");
 
 const {Header} = Layout;
 const Option = Select.Option;
@@ -102,17 +103,16 @@ const HorizontalDefault = () => {
                onClick={() => {
                     console.log("Topup clicked", topup);
                     if( topup !== "")
-                      fetch(topup, { method: 'POST', mode: 'no-cors'})
-                        .then(response => {
-                            // HTTP 301 response
-                            // HOW CAN I FOLLOW THE HTTP REDIRECT RESPONSE?
-                            if (response.redirected) {
-                                window.location.href = response.url;
-                            }
-                        })
-                        .catch(function(error) {
-                            console.info("Topup clicked error", topup, error );
-                        });
+                    {
+                         let form = document.createElement('form');
+                         form.action = topup;
+                         form.method = 'POST';
+
+                         // the form must be in the document to submit it
+                         document.body.append(form);
+
+                         form.submit();
+                    };
                 }}
 
               >
