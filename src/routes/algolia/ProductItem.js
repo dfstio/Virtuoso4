@@ -31,7 +31,14 @@ const ProductItem = ({item}) => {
   }
   return (
     <div className="gx-product-item gx-product-vertical" >
-      <div className="gx-product-body">
+      <div className="gx-product-image">
+        <img
+          src={`https://res.cloudinary.com/hilnmyskv/image/fetch/h_300,q_100,f_auto/${
+            item.image
+            }`} alt=''
+        />
+      </div>
+      <div className="gx-product-body" >
 
         <div className="gx-product-name">
         <span>
@@ -41,19 +48,16 @@ const ProductItem = ({item}) => {
           {item.tokenId}
         </span>
         </div>
-
         <div className="gx-mb-3">
           <Highlight attribute="category" hit={item}/>
         </div>
+        <div className="gx-mb-3">
+          <Highlight attribute="shortdescription" hit={item}/>
+        </div>
 
         {item.onSale?(
-        <div
-            className="gx-product-price"
-          >
-           <span>
+        <div className="gx-product-price" >
           {item.currency} {item.price}
-          </span>
-          <span style={{ float: "right"}}>
           <form action={buyTokenPath} method="POST">
           <Button
           type="primary"
@@ -64,26 +68,12 @@ const ProductItem = ({item}) => {
             <IntlMessages id="sidebar.algolia.buy"/>
             </Button>
             </form>
-            </span>
           </div>
 
         ):("")
         }
       </div>
-
-      <div className="gx-product-image">
-        <img
-          src={`https://res.cloudinary.com/hilnmyskv/image/fetch/h_300,q_100,f_auto/${
-            item.image
-            }`} alt=''
-        />
-        </div>
-
-        <div className="gx-mb-3">
-          <Highlight attribute="shortdescription" hit={item}/>
-        </div>
-     </div>
-
+    </div>
   );
 };
 
