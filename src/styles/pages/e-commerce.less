@@ -157,9 +157,10 @@
 }
 
 .@{class-prefix}-product-vertical {
-  .flex-display(flex, column, nowrap);
+  .flex-display(flex, column-reverse, nowrap);
   height: calc(100% ~"-" @gx-card-margin-base);
   justify-content: flex-end;
+
 
 
 
@@ -169,7 +170,7 @@
   }
 
   & .@{class-prefix}-product-body {
-
+  .flex-only(1);
   }
 }
 

@@ -44,34 +44,44 @@ const ProductItem = ({item}) => {
         <span>
           <Highlight attribute="name" hit={item}/>
         </span>
-        <span style={{ float: "right"}}>
-          {item.tokenId}
-        </span>
-        </div>
-        <div className="gx-mb-3">
-          <Highlight attribute="category" hit={item}/>
-        </div>
-        <div className="gx-mb-3">
-          <Highlight attribute="shortdescription" hit={item}/>
-        </div>
-
         {item.onSale?(
-        <div className="gx-product-price" >
-          {item.currency} {item.price}
-          <form action={buyTokenPath} method="POST">
+        <span style={{ float: "right"}}>
+         <form action={buyTokenPath} method="POST">
           <Button
           type="primary"
           htmlType="submit"
-          style={{ float: "right"}}
-
           >
             <IntlMessages id="sidebar.algolia.buy"/>
             </Button>
             </form>
+        </span>
+        ):("")}
+        </div>
+        <div className="gx-mb-3">
+          <Highlight attribute="category" hit={item}/>
+        </div>
+
+
+        {item.onSale?(
+        <div className="gx-product-price"  >
+           <span >
+            Token VRT1-{item.tokenId}
+             </span>
+         <span style={{ float: "right"}}>
+          {item.currency} {item.price}
+           </span>
+
           </div>
 
-        ):("")
+        ):(
+            <div className="gx-product-price">
+            Token VRT1-{item.tokenId}
+            </div>
+          )
         }
+        <div className="gx-mt-4">
+          <Highlight attribute="shortdescription" hit={item}/>
+        </div>
       </div>
     </div>
   );
