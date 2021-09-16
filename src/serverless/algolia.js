@@ -17,6 +17,7 @@ async function alWriteToken(tokenId, token, contract, chainId)
                 contract: contract,
                 chainId: chainId,
                 tokenId: Number(tokenId),
+                vrtTokenId: "VRT1-" + tokenId.toString(),
                 owner: token.owner,
                 name: token.name,
                 description: token.uri.description,

@@ -33,7 +33,7 @@ const ProductItem = ({item}) => {
     <div className="gx-product-item gx-product-vertical" >
       <div className="gx-product-image">
         <img
-          src={`https://res.cloudinary.com/hilnmyskv/image/fetch/h_300,q_100,f_auto/${
+          src={`https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/${
             item.image
             }`} alt=''
         />
