@@ -1,11 +1,11 @@
 const ethers = require("ethers");
 const VirtuosoNFTJSON = require("../contract/mumbai_VirtuosoNFT.json");
-const rpcURL = process.env.RPC_URL; // "https://polygon-mumbai.g.alchemy.com/v2/G_pWY1kSPgCKL3HtsiGxdW9C58QrDZGL";
-const contractAddress = "0x49368C4ED51BE6484705F07B63eBD92270923081" ;
+const rpcURL = process.env.RPC_URL;
+const contractAddress = process.env.CONTRACT_ADDRESS;
 const address= "0xbc356b91e24e0f3809fd1E455fc974995eF124dF";
 
 const provider = new ethers.providers.StaticJsonRpcProvider(rpcURL);
-const moderatorKey = process.env.MODERATOR_KEY; // "0e942d656a909515342e407f54a11961ca78e771157f292c7d507686ad402b6c";
+const moderatorKey = process.env.MODERATOR_KEY;
 const REFRESH_INTERVAL_SEC = process.env.REFRESH_INTERVAL_SEC;
 const wallet = new ethers.Wallet(moderatorKey);
 const signer = wallet.connect(provider);

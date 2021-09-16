@@ -13,6 +13,7 @@ import {Link} from "react-router-dom";
 import {switchLanguage, toggleCollapsedSideNav} from "../../../appRedux/actions";
 import IntlMessages from "../../../util/IntlMessages";
 import {TAB_SIZE} from "../../../constants/ThemeSetting";
+import metamaskLogin from "../../../blockchain/metamask";
 
 const {Header} = Layout;
 const Option = Select.Option;
@@ -66,8 +67,13 @@ const HorizontalDefault = () => {
               <p className="gx-mb-0 gx-text-truncate"><IntlMessages id="app.announced"/></p>
             </div>
             <ul className="gx-login-list">
-              <li>Login</li>
-              <li>Signup</li>
+              <li
+               onClick={() => {
+                    metamaskLogin();
+                }}
+
+              >
+              Connect to MetaMask</li>
             </ul>
           </div>
         </div>
