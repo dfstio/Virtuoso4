@@ -102,7 +102,7 @@ const HorizontalDefault = () => {
                onClick={() => {
                     console.log("Topup clicked", topup);
                     if( topup !== "")
-                      fetch(topup, { method: 'POST'})
+                      fetch(topup, { method: 'POST', mode: 'no-cors'})
                         .then(response => {
                             // HTTP 301 response
                             // HOW CAN I FOLLOW THE HTTP REDIRECT RESPONSE?
