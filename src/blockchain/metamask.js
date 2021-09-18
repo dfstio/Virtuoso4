@@ -23,7 +23,7 @@ export async function initAccount(handleEvents, handleChainChanged, handleAccoun
 {
 
      let address = "";
-     if( (window.ethereum !== undefined) && (window.ethereum.isMetaMask == true))
+     if( (window.ethereum !== undefined) && (window.ethereum.isMetaMask === true))
      {
         if( readVirtuoso ) readVirtuoso.on({}, handleEvents);
         window.ethereum.on('chainChanged', handleChainChanged);
@@ -62,7 +62,7 @@ export async function metamaskLogin()
 {
      let address = "";
      if(DEBUG) console.log("metamaskLogin called: ", window.ethereum); //, " with virtuosoBalance", virtuosoBalance);
-     if( (window.ethereum !== undefined) && (window.ethereum.isMetaMask == true))
+     if( (window.ethereum !== undefined) && (window.ethereum.isMetaMask === true))
      {
         const account =  await window.ethereum.request({method: 'eth_requestAccounts'});
         //window.ethereum.on('chainChanged', handleChainChanged);
