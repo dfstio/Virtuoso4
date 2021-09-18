@@ -1,8 +1,6 @@
 // SET TARGET NETWORK
-const NETWORKS = require("../constants/Blockchain.js");
-const network = NETWORKS.mumbai; // IMPORTANT
-
-
+const {NETWORKS} = require("../constants/Blockchain.js");
+export const network = NETWORKS.mumbai; // IMPORTANT
 
 const ethers = require("ethers");
 //const MetaMaskOnboarding = require('@metamask/onboarding');
@@ -15,82 +13,54 @@ const rpcUrlMetaMask = process.env.REACT_APP_RPCURL_METAMASK;
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
+const readVirtuoso = new ethers.Contract(contractAddress, VirtuosoNFTJSON, provider);
 const DEBUG = true;
 
-var address = '';
-
-initListeners();
-initAccount();
-
-async function initListeners()
-{
-    //if(DEBUG) console.log("initListeners", contractAddress,  rpcUrlMetaMask, URL, provider, signer);
-    const readVirtuoso = new ethers.Contract(contractAddress, VirtuosoNFTJSON, provider);
-    //if(DEBUG) console.log("initListeners readVirtuoso", readVirtuoso);
-    if( readVirtuoso ) readVirtuoso.on({}, handleEvents);
-
-};
 
 
-async function initAccount()
+
+export async function initAccount(handleEvents, handleChainChanged, handleAccountsChanged )
 {
 
+     let address = "";
      if( (window.ethereum !== undefined) && (window.ethereum.isMetaMask == true))
      {
-        const account =  await window.ethereum.request({method: 'eth_accounts'});
+        if( readVirtuoso ) readVirtuoso.on({}, handleEvents);
         window.ethereum.on('chainChanged', handleChainChanged);
         window.ethereum.on('accountsChanged', handleAccountsChanged);
-        //const address =  await window.ethereum.request({method: 'eth_accounts'});
+        const account =  await window.ethereum.request({method: 'eth_accounts'});
 
          if(account.length > 0)
          {
-           address = account[0];
+           address = ethers.utils.getAddress(account[0]);
+
          }
-         else address = "";
+     };
 
-     } else address = "";
-
-     if(DEBUG) console.log("metamask initAccount: connected with address: ", address );
+     if(DEBUG) console.log("metamask initAccount address: ", address );
 
      return address;
-
 };
 
-export function getMetaMaskAddress()
+
+export async function getVirtuosoBalance(address)
 {
-    return address;
+    let virtuosoBalance = 0;
+    if( readVirtuoso  && (address !== "")) virtuosoBalance = await readVirtuoso.virtuosoBalances( address);
+    return virtuosoBalance;
+
 };
 
+export function convertAddress(address)
+{
+    if( address !== "") return ethers.utils.getAddress(address);
+    else return address;
 
-function handleEvents(params) {
-  if(DEBUG) console.log("handleEvents ", params.event, params.eventSignature, params.args);
-  // We recommend reloading the page, unless you must do otherwise
-
-}
-
-function handleChainChanged(_chainId) {
-  if(DEBUG) console.log("handleChainChanged ", _chainId );
-  address = "";
-  // We recommend reloading the page, unless you must do otherwise
-
-}
-
-function handleAccountsChanged(accounts) {
-  if (accounts.length === 0) {
-    // MetaMask is locked or the user has not connected any accounts
-    console.log('handleAccountsChanged: Please connect to MetaMask.');
-    address = "";
-  } else if (accounts[0] !== address) {
-    address = accounts[0];
-    console.log('handleAccountsChanged: new address', address);
-
-    // Do any other work!
-  }
-}
+};
 
 export async function metamaskLogin()
 {
-
+     let address = "";
      if(DEBUG) console.log("metamaskLogin called: ", window.ethereum); //, " with virtuosoBalance", virtuosoBalance);
      if( (window.ethereum !== undefined) && (window.ethereum.isMetaMask == true))
      {
@@ -101,11 +71,10 @@ export async function metamaskLogin()
 
          if(account.length > 0)
          {
-           address = account[0];
-         }
-         else address = "";
+           address = ethers.utils.getAddress(account[0]);
+         };
 
-     } else address = "";
+     };
 
      if(DEBUG) console.log("metamaskLogin: connected with address: ", address );
 

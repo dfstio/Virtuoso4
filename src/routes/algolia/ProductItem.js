@@ -6,9 +6,7 @@ import IntlMessages from "util/IntlMessages";
 const ProductItem = ({item}) => {
   const icons = [];
   //console.log("Item: ", item);
-  for (let i = 0; i < 5; i++) {
-    const suffixClassName = i >= item.rating ? '--empty' : '';
-    const suffixXlink = i >= item.rating ? 'Empty' : '';
+
     var buyTokenPath = "";
     if( item.onSale == true)
     {
@@ -16,19 +14,6 @@ const ProductItem = ({item}) => {
                      "&tokenID=" + item.tokenId.toString();
     };
 
-
-    icons.push(
-      <svg
-        key={i}
-        className={`ais-RatingMenu-starIcon ais-RatingMenu-starIcon${suffixClassName}`}
-        aria-hidden="true"
-        width="24"
-        height="24"
-      >
-        <use xlinkHref={`#ais-RatingMenu-star${suffixXlink}Symbol`}/>
-      </svg>
-    );
-  }
   return (
     <div className="gx-product-item gx-product-vertical" >
       <div className="gx-product-image">

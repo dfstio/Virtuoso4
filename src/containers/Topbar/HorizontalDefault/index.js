@@ -14,7 +14,7 @@ import {switchLanguage, toggleCollapsedSideNav} from "../../../appRedux/actions"
 import IntlMessages from "../../../util/IntlMessages";
 import {TAB_SIZE} from "../../../constants/ThemeSetting";
 import MetaMaskAccount from "../../../blockchain/account";
-const axios = require("axios");
+
 
 const {Header} = Layout;
 const Option = Select.Option;
@@ -98,7 +98,7 @@ const HorizontalDefault = () => {
               <img alt="" src="/assets/images/virtuoso.png"/></Link>
             <div
 
-                style={{"font-size": "22px"}}
+                style={{"fontSize": "22px"}}
                 >
             NFT Virtuoso
             </div>
