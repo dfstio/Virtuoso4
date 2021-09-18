@@ -1,34 +1,72 @@
-import React, {useState} from "react";
-
 // SET TARGET NETWORK
-
-
-const NETWORKS = require("./constants.js");
+const NETWORKS = require("../constants/Blockchain.js");
 const network = NETWORKS.mumbai; // IMPORTANT
 
 
 
-//const ethers = require("ethers");
+const ethers = require("ethers");
 //const MetaMaskOnboarding = require('@metamask/onboarding');
-//const VirtuosoNFTJSON = require("../contract/mumbai_VirtuosoNFT.json");
+const VirtuosoNFTJSON = require("../contract/mumbai_VirtuosoNFT.json");
 
-//const contractAddress = process.env.CONTRACT_ADDRESS;
-//const URL = process.env.URL;
-const rpcUrlMetaMask = process.env.RPCURL_METAMASK;
+const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
+const URL = process.env.URL;
+const rpcUrlMetaMask = process.env.REACT_APP_RPCURL_METAMASK;
 
 
-//const provider = new ethers.providers.Web3Provider(window.ethereum);
-//const signer = provider.getSigner();
-//const virtuoso = new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+const signer = provider.getSigner();
 const DEBUG = true;
 
 var address = '';
 
+initListeners();
+initAccount();
+
+async function initListeners()
+{
+    //if(DEBUG) console.log("initListeners", contractAddress,  rpcUrlMetaMask, URL, provider, signer);
+    const readVirtuoso = new ethers.Contract(contractAddress, VirtuosoNFTJSON, provider);
+    //if(DEBUG) console.log("initListeners readVirtuoso", readVirtuoso);
+    if( readVirtuoso ) readVirtuoso.on({}, handleEvents);
+
+};
+
+
+async function initAccount()
+{
+
+     if( (window.ethereum !== undefined) && (window.ethereum.isMetaMask == true))
+     {
+        const account =  await window.ethereum.request({method: 'eth_accounts'});
+        window.ethereum.on('chainChanged', handleChainChanged);
+        window.ethereum.on('accountsChanged', handleAccountsChanged);
+        //const address =  await window.ethereum.request({method: 'eth_accounts'});
+
+         if(account.length > 0)
+         {
+           address = account[0];
+         }
+         else address = "";
+
+     } else address = "";
+
+     if(DEBUG) console.log("metamask initAccount: connected with address: ", address );
+
+     return address;
+
+};
 
 export function getMetaMaskAddress()
 {
     return address;
 };
+
+
+function handleEvents(params) {
+  if(DEBUG) console.log("handleEvents ", params.event, params.eventSignature, params.args);
+  // We recommend reloading the page, unless you must do otherwise
+
+}
 
 function handleChainChanged(_chainId) {
   if(DEBUG) console.log("handleChainChanged ", _chainId );
@@ -41,6 +79,7 @@ function handleAccountsChanged(accounts) {
   if (accounts.length === 0) {
     // MetaMask is locked or the user has not connected any accounts
     console.log('handleAccountsChanged: Please connect to MetaMask.');
+    address = "";
   } else if (accounts[0] !== address) {
     address = accounts[0];
     console.log('handleAccountsChanged: new address', address);
@@ -56,8 +95,8 @@ export async function metamaskLogin()
      if( (window.ethereum !== undefined) && (window.ethereum.isMetaMask == true))
      {
         const account =  await window.ethereum.request({method: 'eth_requestAccounts'});
-        window.ethereum.on('chainChanged', handleChainChanged);
-        window.ethereum.on('accountsChanged', handleAccountsChanged);
+        //window.ethereum.on('chainChanged', handleChainChanged);
+        //window.ethereum.on('accountsChanged', handleAccountsChanged);
         //const address =  await window.ethereum.request({method: 'eth_accounts'});
 
          if(account.length > 0)

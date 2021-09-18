@@ -9,16 +9,16 @@ import {
   NAV_STYLE_BELOW_HEADER,
   NAV_STYLE_INSIDE_HEADER_HORIZONTAL,
   NAV_STYLE_DARK_HORIZONTAL,
-  THEME_COLOR,
+  THEME_COLOR, ORANGE_SEC, DEEP_ORANGE,
   THEME_TYPE,
-  THEME_TYPE_SEMI_DARK, UPDATE_RTL_STATUS
+  THEME_TYPE_SEMI_DARK, THEME_TYPE_LITE, UPDATE_RTL_STATUS
 } from "../../constants/ThemeSetting";
 
 const initialSettings = {
   navStyle: NAV_STYLE_DEFAULT_HORIZONTAL,
   layoutType: LAYOUT_TYPE_FULL,
-  themeType: THEME_COLOR,
-  themeColor: 'orange',
+  themeType: THEME_TYPE_SEMI_DARK,
+  themeColor: '',
 
   isDirectionRTL: false,
   locale: {

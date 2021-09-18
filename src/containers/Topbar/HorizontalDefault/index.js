@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState} from "react";
 import {Button, Dropdown, Layout, Menu, message, Popover, Select} from 'antd';
 import Icon from '@ant-design/icons';
 import {useDispatch, useSelector} from "react-redux";
@@ -13,7 +13,7 @@ import {Link} from "react-router-dom";
 import {switchLanguage, toggleCollapsedSideNav} from "../../../appRedux/actions";
 import IntlMessages from "../../../util/IntlMessages";
 import {TAB_SIZE} from "../../../constants/ThemeSetting";
-import { metamaskLogin, getMetaMaskAddress } from "../../../blockchain/metamask";
+import MetaMaskAccount from "../../../blockchain/account";
 const axios = require("axios");
 
 const {Header} = Layout;
@@ -63,20 +63,6 @@ const HorizontalDefault = () => {
 
 
 
-  let metamaskText = "CONNECT TO METAMASK";
-  let topupText = "";
-  let topup = "";
-  const [address, setAddress] = useState('');
-  const newAddress = getMetaMaskAddress();
-  if( address !== newAddress) setAddress(newAddress);
-  console.log("Address", address);
-  if(address !== "")
-  {
-    metamaskText = address.slice(0,6)+"..."+address.slice(38,42).toUpperCase();
-    topupText = "TOPUP";
-    topup = "/api/create-checkout-session?type=mint&address=" + address.toString();
-   };
-
 
 
   return (
@@ -88,38 +74,8 @@ const HorizontalDefault = () => {
               <i className="icon icon-alert gx-mr-3"/>
               <p className="gx-mb-0 gx-text-truncate"><IntlMessages id="app.announced"/></p>
             </div>
-            <ul className="gx-login-list">
-              <li
-               onClick={ async () => {
-                    console.log("Connect to MetaMask clicked");
-                    const newAddress = await metamaskLogin();
-                    setAddress(newAddress);
-                }}
-
-
-              >
-              {metamaskText}</li>
-              <li
-               onClick={() => {
-                    console.log("Topup clicked", topup);
-                    if( topup !== "")
-                    {
-                         let form = document.createElement('form');
-                         form.action = topup;
-                         form.method = 'POST';
-
-                         // the form must be in the document to submit it
-                         document.body.append(form);
-
-                         form.submit();
-                    };
-                }}
-
-              >
-              {topupText}</li>
-
-            </ul>
-          </div>
+            <MetaMaskAccount/>
+        </div>
         </div>
       </div>
 
@@ -139,8 +95,17 @@ const HorizontalDefault = () => {
             <Link to="/" className="gx-d-block gx-d-lg-none gx-pointer gx-w-logo">
               <img alt="" src="/assets/images/w-logo.png"/></Link>
             <Link to="/" className="gx-d-none gx-d-lg-block gx-pointer gx-mr-xs-5 gx-logo">
-              <img alt="" src="/assets/images/logo-white.png"/></Link>
+              <img alt="" src="/assets/images/virtuoso.png"/></Link>
+            <div
+
+                style={{"font-size": "22px"}}
+                >
+            NFT Virtuoso
+            </div>
+{/*
             <div className="gx-header-search gx-d-none gx-d-lg-flex">
+
+
               <SearchBox styleName="gx-lt-icon-search-bar-lg"
                          placeholder="Search in app..."
                          onChange={updateSearchChatUser}
@@ -151,8 +116,9 @@ const HorizontalDefault = () => {
                 <Option value="lucy">Apps</Option>
                 <Option value="Yiminghe">Blogs</Option>
               </Select>
-            </div>
 
+            </div>
+*/}
             <ul className="gx-header-notifications gx-ml-auto">
               <li className="gx-notify gx-notify-search gx-d-inline-block gx-d-lg-none">
                 <Popover overlayClassName="gx-popover-horizantal" placement="bottomRight" content={
@@ -205,15 +171,15 @@ const HorizontalDefault = () => {
       {width >= TAB_SIZE && (
         <div className="gx-header-horizontal-nav gx-header-horizontal-nav-curve">
           <div className="gx-container">
-            <div className="gx-header-horizontal-nav-flex">
+            <div className="gx-header-horizontal-nav-flex-align-content-around">
               <HorizontalNav/>
-
+{/*}
               <ul className="gx-header-notifications gx-ml-auto">
                 <li><span className="gx-pointer gx-d-block"><i className="icon icon-menu-lines"/></span></li>
                 <li><span className="gx-pointer gx-d-block"><i className="icon icon-setting"/></span></li>
                 <li><span className="gx-pointer gx-d-block"><i className="icon icon-apps-new"/></span></li>
               </ul>
-
+*/}
             </div>
           </div>
         </div>

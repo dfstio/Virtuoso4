@@ -34,6 +34,12 @@ const SidebarLogo = ({sidebarCollapsed, setSidebarCollapsed}) => {
           themeType === THEME_TYPE_LITE ?
             <img alt="logo1" src={("/assets/images/virtuoso.png")}/> :
             <img alt="logo2" src={("/assets/images/virtuoso.png")}/>}
+            <text
+
+                style={{"font-size": "22px"}}
+                >
+            NFT Virtuoso
+            </text>
       </Link>
     </div>
   );

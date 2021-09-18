@@ -7,14 +7,15 @@ import {
   NAV_STYLE_ABOVE_HEADER,
   NAV_STYLE_BELOW_HEADER,
   NAV_STYLE_DEFAULT_HORIZONTAL,
-  NAV_STYLE_INSIDE_HEADER_HORIZONTAL
+  NAV_STYLE_INSIDE_HEADER_HORIZONTAL,
+  THEME_TYPE_LITE
 } from "../../constants/ThemeSetting";
 
 const SubMenu = Menu.SubMenu;
 const MenuItemGroup = Menu.ItemGroup;
 
 const HorizontalNav = () => {
-  const navStyle = useSelector(({settings}) => settings.navStyle);
+  const {navStyle , themeType} = useSelector(({settings}) => settings);
   const pathname = useSelector(({common}) => common.pathname);
 
   const getNavStyleSubMenuClass = (navStyle) => {
@@ -38,17 +39,19 @@ const HorizontalNav = () => {
     <Menu
       defaultOpenKeys={[defaultOpenKeys]}
       selectedKeys={[selectedKeys]}
+      theme={themeType === THEME_TYPE_LITE ? 'lite' : 'dark'}
       mode="horizontal">
-      <Menu.Item key="algolia">
+      <Menu.Item  className="gx-menu-horizontal-flex gx-submenu-popup-curve" key="algolia">
             <Link to="/algolia"><i className="icon icon-shopping-cart "/>
             <IntlMessages id="sidebar.algolia"/></Link>
       </Menu.Item>
-        <Menu.Item key="sample">
+        <Menu.Item className="gx-menu-horizontal-flex gx-submenu-popup-curve"  key="sample">
           <Link to="/sample">
             <i className="icon icon-widgets"/>
             <IntlMessages id="sidebar.samplePage"/>
           </Link>
         </Menu.Item>
+
 
     </Menu>
   );
