@@ -2,14 +2,16 @@ import React from "react";
 import {Highlight,} from 'react-instantsearch-dom';
 import {Button} from "antd";
 import IntlMessages from "util/IntlMessages";
+import { getAddress } from "../../blockchain/metamask";
 
 const ProductItem = ({item}) => {
   const icons = [];
   //console.log("Item: ", item);
 
     var buyTokenPath = "";
-    if( item.onSale == true)
+    if( item.onSale === true)
     {
+          const myaddress = await getAddress();
           buyTokenPath = "/api/create-checkout-session?type=buy&address=" + "generate" +
                      "&tokenID=" + item.tokenId.toString();
     };

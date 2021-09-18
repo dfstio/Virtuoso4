@@ -42,6 +42,25 @@ export async function initAccount(handleEvents, handleChainChanged, handleAccoun
      return address;
 };
 
+export async function getAddress()
+{
+
+     let address = "";
+     if( (window.ethereum !== undefined) && (window.ethereum.isMetaMask === true))
+     {
+        const account =  await window.ethereum.request({method: 'eth_accounts'});
+
+         if(account.length > 0)
+         {
+           address = ethers.utils.getAddress(account[0]);
+
+         }
+     };
+
+     return address;
+};
+
+
 
 export async function getVirtuosoBalance(address)
 {

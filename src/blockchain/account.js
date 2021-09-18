@@ -1,7 +1,12 @@
 import React, { useEffect, useCallback } from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {updateAddress, updateVirtuosoBalance} from "../appRedux/actions";
-import { metamaskLogin, initAccount, network, getVirtuosoBalance, convertAddress } from "./metamask";
+import { metamaskLogin,
+         initAccount,
+         network,
+         getVirtuosoBalance,
+         convertAddress,
+         getAddress } from "./metamask";
 
 
 const DEBUG = true;
@@ -21,17 +26,19 @@ const MetaMaskAccount = () => {
 
 
 
-async function handleEvents(params){
-  if(DEBUG) console.log("handleEvents ", address, params.event, params.eventSignature, params.args);
+const handleEvents = useCallback( async (params) => {
+  if(DEBUG) console.log("handleEvents ", params.event, params.eventSignature, params.args);
+
   switch( params.event )
   {
         case 'Balance':
             const adr = convertAddress(params.args[0]);
-            if(DEBUG) console.log("handleEvents Balance ", adr, "my address", address);
-           if( adr === address)
+            const myaddress = await getAddress();
+            if(DEBUG) console.log("handleEvents Balance ", adr, myaddress);
+           if( adr === myaddress)
            {
-               const newVirtuosoBalance = await getVirtuosoBalance(address);
-               if(DEBUG) console.log("handleEvents my Balance", virtuosoBalance, "changed by ", params.args[1], "to", newVirtuosoBalance, " for", params.args[2]);
+               const newVirtuosoBalance = await getVirtuosoBalance(myaddress);
+               if(DEBUG) console.log(`handleEvents: my balance ${virtuosoBalance} changed by ${params.args[1]} to ${newVirtuosoBalance} for ${params.args[2]}`);
 
                dispatch(updateVirtuosoBalance(newVirtuosoBalance));
 
@@ -45,17 +52,20 @@ async function handleEvents(params){
           break;
         default:
             if(DEBUG) console.log("handleEvents unexpected event", params.event, params.eventSignature, params.args);
-  };
-};
 
-async function  handleChainChanged(_chainId){
+  };
+
+
+}, []);
+
+const handleChainChanged = useCallback( async (_chainId) => {
   if(DEBUG) console.log("handleChainChanged ", _chainId );
   dispatch(updateAddress(""));
   // We recommend reloading the page, unless you must do otherwise
 
-};
+}, []);
 
-async function handleAccountsChanged(accounts){
+const handleAccountsChanged = useCallback( async (accounts) => {
   if (accounts.length === 0) {
     // MetaMask is locked or the user has not connected any accounts
     console.log('handleAccountsChanged: Please connect to MetaMask.');
@@ -68,21 +78,22 @@ async function handleAccountsChanged(accounts){
          dispatch(updateAddress(newAddress));
          const newVirtuosoBalance = await getVirtuosoBalance(newAddress);
          dispatch(updateVirtuosoBalance(newVirtuosoBalance));
-         console.log('handleAccountsChanged: new address and balance', newAddress, newVirtuosoBalance);
+         console.log('handleAccountsChanged: new address and balance', address, newAddress, newVirtuosoBalance);
     }
     // Do any other work!
   }
-};
+}, []);
 
-  useEffect(async() => {
-
+  useEffect(() => {
+    async function fetchAddress() {
               const newAddress = await initAccount(handleEvents, handleChainChanged, handleAccountsChanged );
               dispatch(updateAddress(newAddress));
               const newVirtuosoBalance = await getVirtuosoBalance(newAddress);
               dispatch(updateVirtuosoBalance(newVirtuosoBalance));
               if(DEBUG) console.log(`useEffect Address ${newAddress} virtuosoBalance ${newVirtuosoBalance}`);
-
-  },[])
+    }
+  fetchAddress()
+  },[dispatch, handleAccountsChanged, handleChainChanged, handleEvents])
 
 
   if(DEBUG) console.log(`Address ${address} ${virtuosoBalance/100}`);
