@@ -95,7 +95,7 @@ const ProductItem = ({item}) => {
 
         ):(
             <div className="gx-product-price">
-            Token VRT1-{item.tokenId}
+            Token {item.vrtTokenId}
             </div>
           )
         }

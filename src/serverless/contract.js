@@ -15,7 +15,7 @@ const inter = new ethers.utils.Interface(VirtuosoNFTJSON);
 //const fetch = require('node-fetch');
 const axios = require("axios");
 //const {  dbWriteToken, dbReadToken } = require("./dynamodb");
-const {  alWriteToken } = require("./algolia");
+const {  alWriteToken, alDeleteToken } = require("./algolia");
 const TOKEN_JSON = { isLoading: false, isTokenLoaded: false, isPriceLoaded: false, owner: "", name: "", onSale: false };
 const DEBUG = true;
 const URL = process.env.URL;
@@ -79,10 +79,11 @@ async function initAlgoliaTokens(force)
 
 
     let i;
-	  for( i = 0; i <  totalSupply; i++)
+	  for( i = totalSupply - 1; i >= 0; i--)
 	  {
 	    const tokenId = await virtuoso.tokenByIndex(i);
-      if(DEBUG) console.log("initTokens Loading token ", tokenId.toString(), " i = ", i);
+      //if(DEBUG) console.log("initTokens Loading token ", tokenId.toString(), " i = ", i);
+
 
       let result = await loadAlgoliaToken(tokenId, contract, chainId);
       await sleep(2000);
@@ -106,6 +107,7 @@ async function initAlgoliaTokens(force)
 	  return totalSupply;
 }
 
+/*
 async function initTokens(force)
 {
 
@@ -199,7 +201,7 @@ async function getToken(tokenId)
     return token;
 
 }
-
+*/
 async function getTokenPrice(tokenId)
 {
     let token  = TOKEN_JSON;
@@ -251,6 +253,8 @@ async function getTokenPrice(tokenId)
     return token;
 
 }
+
+/*
 async function getTokenDataBackground(tokenId)
 {
     const chainId = await signer.getChainId();
@@ -327,6 +331,7 @@ async function loadToken(tokenId, contract)
     			  return false;
   			};
 }
+*/
 
 async function loadAlgoliaToken(tokenId, contract, chainId)
 {
@@ -335,25 +340,47 @@ async function loadAlgoliaToken(tokenId, contract, chainId)
    if(DEBUG) console.log("loadToken", tokenId.toString(), "contract", contract);
 
     try {
+
+             const isBlocked = await virtuoso.isBlocked(tokenId);
+             if( isBlocked == true)
+             {
+                  if(DEBUG) console.log("loadAlgoliaToken delete token", tokenId.toString());
+                  await alDeleteToken(tokenId, token, contract, chainId);
+                  return true;
+             }
              const uri = await virtuoso.tokenURI(tokenId);
              const tokenuri= await axios.get(uri);;
              const owner = await virtuoso.ownerOf(tokenId);
+
              //if(DEBUG) console.log("loadToken", tokenId.toString(), "uri", tokenuri.data);
              token.uri=tokenuri.data;
-             token.owner = owner;
+             token.owner = ethers.utils.getAddress(owner);
              token.isTokenLoaded = true;
 
              const saleID = await virtuoso.salesIndex(tokenId);
-             if(DEBUG) console.log("loadAlgoliaToken", tokenId.toString(), "saleID", saleID);
+             //if(DEBUG) console.log("loadAlgoliaToken", tokenId.toString(), "saleID", saleID);
              if( saleID == 0 )
              {
                token.onSale = false;
                token.isPriceLoaded = true;
+               token.saleID = 0;
+               token.saleStatus = "never was on sale";
              }
              else
              {
                     const sale = await virtuoso.sales(saleID);
                     //if(DEBUG) console.log("loadToken", tokenId.toString(), "sale", sale);
+
+                    token.saleID = Number(saleID);
+                    switch(sale[1])
+                    {
+                        case 0: token.saleStatus = "on approval"; break;
+                        case 1: token.saleStatus = "on sale"; break;
+                        case 2: token.saleStatus = "sold"; break;
+                        case 3: token.saleStatus = "sale cancelled"; break;
+                        default: token.saleStatus = sale[1].toString();
+                    };
+
 
                     if( sale[1] != 1 )
                     {
@@ -372,8 +399,7 @@ async function loadAlgoliaToken(tokenId, contract, chainId)
                      };
               };
               token.isLoading = false;
-		          token.name = token.uri.name;
-		          if(DEBUG) console.log("loadAlgoliaToken", tokenId.toString(), "write with name", token.name);
+		          if(DEBUG) console.log("loadAlgoliaToken", tokenId.toString(), "write with name", token.uri.name);
 		          await alWriteToken(tokenId, token, contract, chainId);
 		          return true;
 
@@ -396,7 +422,7 @@ async function getBalance(address)
 }
 
 
-
+/*
 async function forwardTransaction(txRequest)
 {
 
@@ -439,6 +465,8 @@ async function setBalance(params)
 
 }
 
+*/
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -448,7 +476,7 @@ async function txBackground(body)
     console.log("txBackground contract background: ", body);
     const chainId = await signer.getChainId();
 
-    if( body.chainId == chainId)
+    if( body.chainId === chainId)
     {
           await loadTransaction(body.txData, body.chainId);
     }
@@ -487,7 +515,7 @@ async function loadTransaction(hash, chainId)
                {
                  const tokenId = args.tokenId;
                  if( DEBUG) console.log("txBackground loadToken ", tokenId.toString(), " on ", name); //, " with args ", args );
-                 await loadToken(tokenId, contract);
+                 await loadAlgoliaToken(tokenId, contract, chainId)
 
                };
 
@@ -495,8 +523,8 @@ async function loadTransaction(hash, chainId)
                  name == "mintChildItem"
                  )
                {
-                 if( DEBUG) console.log("txBackground initTokens on ", name); //, " with args ", args );
-                 await initTokens(false);
+                 if( DEBUG) console.log("loadTransaction initTokens on ", name); //, " with args ", args );
+                 await initAlgoliaTokens(true);
 
                };
 
@@ -551,7 +579,7 @@ async function transferToken(tokenId, address, credit)
 		await addBalance(strOwner, addBalanceAmount, description);
 		const chainId = await signer.getChainId();
 		const contract = chainId.toString() + "." + virtuoso.address.toString();
-		await loadToken(tokenId, contract);
+		await loadAlgoliaTokenToken(tokenId, contract, chainId);
 		return true;
 	};
 	console.error("Failure to transfer token ", tokenId, " to ", address, " from ", strOwner, " for ", credit, "result: ", resultwait);
@@ -565,15 +593,9 @@ module.exports = {
     provider,
     signer,
     getBalance,
-    setBalance,
-    getTokenData,
     getTokenPrice,
-    getTokenDataBackground,
     txBackground,
-    forwardTransaction,
-    initTokens,
     addBalance,
     transferToken,
-    getToken,
     initAlgoliaTokens
 }

@@ -8,8 +8,8 @@ const AlgoliaHeader = () => (
       <label>Sort by</label>
       <SortBy
         items={[
-          {value: 'tokenId', label: 'Last tokens'},
-          {value: 'virtuoso', label: 'Updated'},
+          {value: 'tokenId', label: 'Creation date'},
+          {value: 'virtuoso', label: 'Sale date'},
         ]}
         defaultRefinement="virtuoso"
       />

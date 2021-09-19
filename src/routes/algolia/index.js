@@ -25,7 +25,7 @@ const App = props => (
                  searchClient={searchClient}
                  onSearchStateChange={props.onSearchStateChange}>
 
-    <Configure hitsPerPage={16}/>
+    <Configure hitsPerPage={15}/>
 
     <Layout className="gx-algolia-layout-has-sider">
       <Sidebar/>

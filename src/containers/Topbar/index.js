@@ -105,9 +105,6 @@ const Topbar = () => {
                 </span>
           </Popover>
         </li>
-        <li className="gx-notify">
-        <MetaMaskAccount/>
-        </li>
         {width >= TAB_SIZE ? null :
           <Auxiliary>
             <li className="gx-user-nav"><UserInfo/></li>
