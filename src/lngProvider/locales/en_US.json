@@ -290,6 +290,7 @@
   "sidebar.algolia.price": "Price",
   "sidebar.algolia.currency": "Currency",
   "sidebar.algolia.buy": "Buy",
+  "sidebar.algolia.sell": "Sell",
   "sidebar.components.rechart": "ReChart",
   "sidebar.components.amchart": "AmChart",
   "sidebar.google.map": "Google Map",

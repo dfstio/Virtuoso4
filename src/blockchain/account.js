@@ -8,7 +8,7 @@ import { metamaskLogin,
          getVirtuosoBalance,
          convertAddress,
          getAddress,
-         sleep } from "./metamask";
+         initVirtuoso  } from "./metamask";
 
 
 const DEBUG = true;
@@ -74,12 +74,11 @@ const handleChainChanged = useCallback( async (_chainId) => {
   }
   else
   {
-      if(DEBUG) console.log("handleChainChanged sleeping");
-      await sleep(5000);
+      await initVirtuoso(handleEvents);
       if(DEBUG) console.log("handleChainChanged getAddress");
       const newAddress = await getAddress();
       const newAddress1 = convertAddress(newAddress);
-      await sleep(5000);
+
       if(DEBUG) console.log("handleChainChanged getVirtuosoBalance");
       const newVirtuosoBalance = await getVirtuosoBalance(newAddress);
       dispatch(updateAddress(newAddress1));

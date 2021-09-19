@@ -1,4 +1,7 @@
 import React from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {message} from 'antd';
+import {updateAddress, updateVirtuosoBalance} from "../../appRedux/actions";
 import {Highlight,} from 'react-instantsearch-dom';
 import {Button} from "antd";
 import IntlMessages from "util/IntlMessages";
@@ -8,6 +11,15 @@ const DEBUG = true;
 const ProductItem = ({item}) => {
   //const icons = [];
   //console.log("Item: ", item);
+  const address = useSelector(({blockchain}) => blockchain.address);
+  const dispatch = useDispatch();
+  let buttonId = "sidebar.algolia.buy";
+  let canSell = false;
+  if( address.toUpperCase() === item.owner.toUpperCase())
+  {
+      buttonId = "sidebar.algolia.sell";
+      canSell = true;
+  }
 
 
   return (
@@ -31,28 +43,36 @@ const ProductItem = ({item}) => {
           type="primary"
           onClick={ async () => {
                     if(DEBUG) console.log("Buy clicked");
-                    const myaddress = await metamaskLogin();
-                    let buyTokenPath = "/api/create-checkout-session?type=buy&address=" + "generate" +
-                     "&tokenID=" + item.tokenId.toString();
-                    if( myaddress !== "")
+                    if( canSell == false)
                     {
-                        buyTokenPath = "/api/create-checkout-session?type=buy&address=" + myaddress +
+                         const myaddress = await metamaskLogin();
+                         dispatch(updateAddress(myaddress));
+                         let buyTokenPath = "/api/create-checkout-session?type=buy&address=" + "generate" +
                           "&tokenID=" + item.tokenId.toString();
+                         if( myaddress !== "")
+                         {
+                             buyTokenPath = "/api/create-checkout-session?type=buy&address=" + myaddress +
+                               "&tokenID=" + item.tokenId.toString();
+                         };
+
+                         let form = document.createElement('form');
+                         form.action = buyTokenPath;
+                         form.method = 'POST';
+
+                         // the form must be in the document to submit it
+                         document.body.append(form);
+
+                         form.submit();
+                    }
+                    else
+                    {
+                          message.error("Sell is not implemented yet", 10);
                     };
-
-                    let form = document.createElement('form');
-                    form.action = buyTokenPath;
-                    form.method = 'POST';
-
-                    // the form must be in the document to submit it
-                    document.body.append(form);
-
-                    form.submit();
 
                 }}
 
           >
-            <IntlMessages id="sidebar.algolia.buy"/>
+            <IntlMessages id={buttonId}/>
             </Button>
         </span>
         ):("")}

@@ -11,13 +11,29 @@ const URL = process.env.URL;
 const rpcUrlMetaMask = process.env.REACT_APP_RPCURL_METAMASK;
 
 
-const provider = window.ethereum && new ethers.providers.Web3Provider(window.ethereum);
-const signer = provider && provider.getSigner();
-
+var provider = window.ethereum && new ethers.providers.Web3Provider(window.ethereum);
+var signer = provider && provider.getSigner();
+var readVirtuoso = provider && new ethers.Contract(contractAddress, VirtuosoNFTJSON, provider);
 const DEBUG = true;
 
+export async function initVirtuoso(handleEvents )
+{
+        const chainId =  await window.ethereum.request({method: 'eth_chainId'});
+        if(DEBUG) console.log("initVirtuoso called on chain", chainId);
 
+         if(chainId === network.hexChainId)
+         {
+           provider = window.ethereum && new ethers.providers.Web3Provider(window.ethereum);
+           readVirtuoso = provider && new ethers.Contract(contractAddress, VirtuosoNFTJSON, provider);
+           if( readVirtuoso )
+           {
+              readVirtuoso.removeAllListeners();
+              readVirtuoso.on({}, handleEvents);
+              if(DEBUG) console.log("initVirtuoso success on chain", chainId);
+           };
+         } else console.log("Cannot init virtuoso - wrong chain", chainId, ",needs to be", network.name, network.hexChainId );
 
+};
 
 export async function initAccount(handleEvents, handleChainChanged, handleAccountsChanged )
 {
@@ -25,17 +41,20 @@ export async function initAccount(handleEvents, handleChainChanged, handleAccoun
      let address = "";
      if( (window.ethereum !== undefined) && (window.ethereum.isMetaMask === true))
      {
-        if( readVirtuoso ) readVirtuoso.on({}, handleEvents);
+
         window.ethereum.on('chainChanged', handleChainChanged);
         window.ethereum.on('accountsChanged', handleAccountsChanged);
+        await initVirtuoso();
         const account =  await window.ethereum.request({method: 'eth_accounts'});
         const chainId =  await window.ethereum.request({method: 'eth_chainId'});
+
         if(DEBUG) console.log("initAccount account", account, chainId);
 
 
          if((account.length > 0) && (chainId === network.hexChainId))
          {
            address = ethers.utils.getAddress(account[0]);
+
          }
      };
 
@@ -72,8 +91,17 @@ export async function getAddress()
 export async function getVirtuosoBalance(address)
 {
     let virtuosoBalance = 0;
-    const readVirtuoso = provider && new ethers.Contract(contractAddress, VirtuosoNFTJSON, provider);
-    if( readVirtuoso  && (address !== "")) virtuosoBalance = await readVirtuoso.virtuosoBalances( address);
+    if( readVirtuoso  && (address !== ""))
+    {
+           const chainId =  await window.ethereum.request({method: 'eth_chainId'});
+           if(DEBUG) console.log("getVirtuosoBalance called on chain", chainId, "and address", address);
+
+           if(chainId === network.hexChainId)
+           {
+                virtuosoBalance = await readVirtuoso.virtuosoBalances( address);
+           };
+    };
+
     return virtuosoBalance;
 
 };
@@ -91,6 +119,7 @@ export async function metamaskLogin()
      if(DEBUG) console.log("metamaskLogin called: ", window.ethereum); //, " with virtuosoBalance", virtuosoBalance);
      if( (window.ethereum !== undefined) && (window.ethereum.isMetaMask === true))
      {
+        await initVirtuoso();
         const account =  await window.ethereum.request({method: 'eth_requestAccounts'});
         const chainId =  await window.ethereum.request({method: 'eth_chainId'});
         if(DEBUG) console.log("metamaskLogin account", account, chainId);
@@ -109,15 +138,15 @@ export async function metamaskLogin()
                 await switchChain();
                 const chainIdNew =  await window.ethereum.request({method: 'eth_chainId'});
 
-                if(DEBUG) console.log("metamaskLogin chain swithed ", chainIdNew );
+                if(DEBUG) console.log("metamaskLogin chain switched ", chainIdNew );
                 if( chainIdNew === network.hexChainId)
                 {
-
+                    initVirtuoso();
                     const account1 =  await window.ethereum.request({method: 'eth_requestAccounts'});
                     if(account1.length > 0)
                     {
                       address = ethers.utils.getAddress(account1[0]);
-                      if(DEBUG) console.log("metamaskLogin address after chain swithed ", address);
+                      if(DEBUG) console.log("metamaskLogin address after chain switched ", address);
                     };
                 };
            };
