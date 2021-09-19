@@ -70,10 +70,12 @@ const HorizontalDefault = () => {
       <div className="gx-header-horizontal-top">
         <div className="gx-container">
           <div className="gx-header-horizontal-top-flex">
+          {/*}
             <div className="gx-header-horizontal-top-left">
               <i className="icon icon-alert gx-mr-3"/>
               <p className="gx-mb-0 gx-text-truncate"><IntlMessages id="app.announced"/></p>
             </div>
+            */}
             <MetaMaskAccount/>
         </div>
         </div>
@@ -120,6 +122,8 @@ const HorizontalDefault = () => {
             </div>
 */}
             <ul className="gx-header-notifications gx-ml-auto">
+
+{/*}
               <li className="gx-notify gx-notify-search gx-d-inline-block gx-d-lg-none">
                 <Popover overlayClassName="gx-popover-horizantal" placement="bottomRight" content={
                   <div className="gx-d-flex">
@@ -154,6 +158,7 @@ const HorizontalDefault = () => {
                 </span>
                 </Popover>
               </li>
+*/}
               <li className="gx-language">
                 <Popover overlayClassName="gx-popover-horizantal" placement="bottomRight"
                          content={languageMenu()} trigger="click">

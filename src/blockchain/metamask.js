@@ -14,7 +14,7 @@ const rpcUrlMetaMask = process.env.REACT_APP_RPCURL_METAMASK;
 const provider = window.ethereum && new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider && provider.getSigner();
 const readVirtuoso = provider && new ethers.Contract(contractAddress, VirtuosoNFTJSON, provider);
-const DEBUG = false;
+const DEBUG = true;
 
 
 
@@ -29,13 +29,16 @@ export async function initAccount(handleEvents, handleChainChanged, handleAccoun
         window.ethereum.on('chainChanged', handleChainChanged);
         window.ethereum.on('accountsChanged', handleAccountsChanged);
         const account =  await window.ethereum.request({method: 'eth_accounts'});
+        const chainId =  await window.ethereum.request({method: 'eth_chainId'});
+        if(DEBUG) console.log("initAccount account", account, chainId);
 
-         if(account.length > 0)
+
+         if((account.length > 0) && (chainId === network.hexChainId))
          {
            address = ethers.utils.getAddress(account[0]);
-
          }
      };
+
 
      if(DEBUG) console.log("metamask initAccount address: ", address );
 
@@ -49,8 +52,11 @@ export async function getAddress()
      if( (window.ethereum !== undefined) && (window.ethereum.isMetaMask === true))
      {
         const account =  await window.ethereum.request({method: 'eth_accounts'});
+        const chainId =  await window.ethereum.request({method: 'eth_chainId'});
+        if(DEBUG) console.log("getAddress account", account, chainId);
 
-         if(account.length > 0)
+
+         if((account.length > 0 ) && (chainId === network.hexChainId))
          {
            address = ethers.utils.getAddress(account[0]);
 
@@ -84,16 +90,34 @@ export async function metamaskLogin()
      if( (window.ethereum !== undefined) && (window.ethereum.isMetaMask === true))
      {
         const account =  await window.ethereum.request({method: 'eth_requestAccounts'});
+        const chainId =  await window.ethereum.request({method: 'eth_chainId'});
+        if(DEBUG) console.log("metamaskLogin account", account, chainId);
+
         //window.ethereum.on('chainChanged', handleChainChanged);
         //window.ethereum.on('accountsChanged', handleAccountsChanged);
         //const address =  await window.ethereum.request({method: 'eth_accounts'});
 
          if(account.length > 0)
          {
-           address = ethers.utils.getAddress(account[0]);
+           if( chainId === network.hexChainId)
+           {
+              address = ethers.utils.getAddress(account[0]);
+           } else
+           {
+                await switchChain();
+                const chainIdNew =  await window.ethereum.request({method: 'eth_chainId'});
+                if( chainIdNew === network.hexChainId)
+                {
+                    address = ethers.utils.getAddress(account[0]);
+                };
+           };
          };
 
-     };
+     }
+     else
+     {
+        window.open("https://metamask.app.link/dapp/nftvirtuoso.io");
+     }
 
      if(DEBUG) console.log("metamaskLogin: connected with address: ", address );
 
@@ -103,12 +127,12 @@ export async function metamaskLogin()
 
 async function switchChain()
 {
-  const chainHex = "0x" + network.chainId.toString(16);
+  const chainHex = network.hexChainId.toString();
   if(DEBUG) console.log("switchChain: Switching chain to ", chainHex);
 
 
      try {
-     await window.ethereum.request("wallet_switchEthereumChain", [{chainId: chainHex}] );
+     await window.ethereum.request("wallet_switchEthereumChain", [chainHex] );
 
      } catch (error) {
            // This error code indicates that the chain has not been added to MetaMask.
@@ -132,12 +156,12 @@ async function switchChain()
 
                 } catch (addError)
                 {
-                    console.erroe("switchChain: Adding chain failed:", addError);
+                    console.error("switchChain: Adding chain failed:", addError);
                 }
              }
              else
              {
-                console.erroe("switchChain: Switching chain failed:", error);
+                console.error("switchChain: Switching chain failed:", error);
              }
 
       }

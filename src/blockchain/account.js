@@ -64,7 +64,23 @@ const handleEvents = useCallback( async (params) => {
 
 const handleChainChanged = useCallback( async (_chainId) => {
   if(DEBUG) console.log("handleChainChanged ", _chainId );
-  dispatch(updateAddress(""));
+  if( _chainId !== network.hexChainId)
+  {
+      dispatch(updateAddress(""));
+      if(DEBUG) console.log("handleChainChanged wrong chain", _chainId, "needs to be", network.hexChainId );
+      message.info(`You're on the wrong chain ${_chainId}, needs to be on ${network.name} ${network.hexChainId}`, 10);
+  }
+  else
+  {
+      const newAddress = await getAddress();
+      const newAddress1 = convertAddress(newAddress);
+      const newVirtuosoBalance = await getVirtuosoBalance(newAddress1);
+      dispatch(updateAddress(newAddress1));
+      dispatch(updateVirtuosoBalance(newVirtuosoBalance));
+      message.info(`You've switched to the right chain ${network.name} ${_chainId} with address ${newAddress1}`, 10);
+
+
+  };
   // We recommend reloading the page, unless you must do otherwise
 
 }, []);

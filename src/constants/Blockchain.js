@@ -30,6 +30,7 @@ export const NETWORKS = {
     name: "Polygon Testnet Mumbai",
     color: "#92D9FA",
     chainId: 80001,
+    hexChainId: "0x13881",
     faucet: "https://faucet.polygon.technology/",
     blockExplorer: "https://mumbai.polygonscan.com/",
     token: "tMATIC",

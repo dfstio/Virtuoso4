@@ -71,8 +71,10 @@ const Topbar = () => {
             <span className="gx-pointer gx-d-block"><i className="icon icon-search-new"/></span>
           </Popover>
         </li>
+        {/*}
         {width >= TAB_SIZE ? null :
           <Auxiliary>
+
             <li className="gx-notify">
               <Popover overlayClassName="gx-popover-horizantal" placement="bottomRight" content={<AppNotification/>}
                        trigger="click">
@@ -91,6 +93,7 @@ const Topbar = () => {
             </li>
           </Auxiliary>
         }
+        */}
         <li className="gx-language">
           <Popover overlayClassName="gx-popover-horizantal" placement="bottomRight" content={languageMenu()}
                    trigger="click">
