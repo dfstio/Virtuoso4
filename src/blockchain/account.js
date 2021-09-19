@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback } from "react";
 import {useDispatch, useSelector} from "react-redux";
+import {message} from 'antd';
 import {updateAddress, updateVirtuosoBalance} from "../appRedux/actions";
 import { metamaskLogin,
          initAccount,
@@ -9,7 +10,7 @@ import { metamaskLogin,
          getAddress } from "./metamask";
 
 
-const DEBUG = true;
+const DEBUG = false;
 
 
 const MetaMaskAccount = () => {
@@ -38,9 +39,12 @@ const handleEvents = useCallback( async (params) => {
            if( adr === myaddress)
            {
                const newVirtuosoBalance = await getVirtuosoBalance(myaddress);
+               const vb100 = newVirtuosoBalance/100;
+               const vb = "$" + vb100.toFixed(2);
                if(DEBUG) console.log(`handleEvents: my balance ${virtuosoBalance} changed by ${params.args[1]} to ${newVirtuosoBalance} for ${params.args[2]}`);
 
                dispatch(updateVirtuosoBalance(newVirtuosoBalance));
+               message.info(`Your virtuoso balance changed to ${vb} for ${params.args[2]}`, 10);
 
            };
            break;
@@ -78,7 +82,8 @@ const handleAccountsChanged = useCallback( async (accounts) => {
          dispatch(updateAddress(newAddress));
          const newVirtuosoBalance = await getVirtuosoBalance(newAddress);
          dispatch(updateVirtuosoBalance(newVirtuosoBalance));
-         console.log('handleAccountsChanged: new address and balance', address, newAddress, newVirtuosoBalance);
+         if(DEBUG) console.log('handleAccountsChanged: new address and balance', address, newAddress, newVirtuosoBalance);
+         message.info(`Account changed to ${newAddress}`, 10);
     }
     // Do any other work!
   }

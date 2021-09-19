@@ -2,19 +2,13 @@ import React from "react";
 import {Highlight,} from 'react-instantsearch-dom';
 import {Button} from "antd";
 import IntlMessages from "util/IntlMessages";
-import { getAddress } from "../../blockchain/metamask";
+import { metamaskLogin } from "../../blockchain/metamask";
+const DEBUG = true;
 
 const ProductItem = ({item}) => {
-  const icons = [];
+  //const icons = [];
   //console.log("Item: ", item);
 
-    var buyTokenPath = "";
-    if( item.onSale === true)
-    {
-          const myaddress = await getAddress();
-          buyTokenPath = "/api/create-checkout-session?type=buy&address=" + "generate" +
-                     "&tokenID=" + item.tokenId.toString();
-    };
 
   return (
     <div className="gx-product-item gx-product-vertical" >
@@ -33,14 +27,33 @@ const ProductItem = ({item}) => {
         </span>
         {item.onSale?(
         <span style={{ float: "right"}}>
-         <form action={buyTokenPath} method="POST">
           <Button
           type="primary"
-          htmlType="submit"
+          onClick={ async () => {
+                    if(DEBUG) console.log("Buy clicked");
+                    const myaddress = await metamaskLogin();
+                    let buyTokenPath = "/api/create-checkout-session?type=buy&address=" + "generate" +
+                     "&tokenID=" + item.tokenId.toString();
+                    if( myaddress !== "")
+                    {
+                        buyTokenPath = "/api/create-checkout-session?type=buy&address=" + myaddress +
+                          "&tokenID=" + item.tokenId.toString();
+                    };
+
+                    let form = document.createElement('form');
+                    form.action = buyTokenPath;
+                    form.method = 'POST';
+
+                    // the form must be in the document to submit it
+                    document.body.append(form);
+
+                    form.submit();
+
+                }}
+
           >
             <IntlMessages id="sidebar.algolia.buy"/>
             </Button>
-            </form>
         </span>
         ):("")}
         </div>

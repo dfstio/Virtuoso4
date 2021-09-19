@@ -11,10 +11,10 @@ const URL = process.env.URL;
 const rpcUrlMetaMask = process.env.REACT_APP_RPCURL_METAMASK;
 
 
-const provider = new ethers.providers.Web3Provider(window.ethereum);
-const signer = provider.getSigner();
-const readVirtuoso = new ethers.Contract(contractAddress, VirtuosoNFTJSON, provider);
-const DEBUG = true;
+const provider = window.ethereum && new ethers.providers.Web3Provider(window.ethereum);
+const signer = provider && provider.getSigner();
+const readVirtuoso = provider && new ethers.Contract(contractAddress, VirtuosoNFTJSON, provider);
+const DEBUG = false;
 
 
 
