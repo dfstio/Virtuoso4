@@ -7,10 +7,12 @@ import { metamaskLogin,
          network,
          getVirtuosoBalance,
          convertAddress,
-         getAddress } from "./metamask";
+         getAddress,
+         sleep } from "./metamask";
 
 
-const DEBUG = false;
+const DEBUG = true;
+
 
 
 const MetaMaskAccount = () => {
@@ -72,9 +74,14 @@ const handleChainChanged = useCallback( async (_chainId) => {
   }
   else
   {
+      if(DEBUG) console.log("handleChainChanged sleeping");
+      await sleep(5000);
+      if(DEBUG) console.log("handleChainChanged getAddress");
       const newAddress = await getAddress();
       const newAddress1 = convertAddress(newAddress);
-      const newVirtuosoBalance = await getVirtuosoBalance(newAddress1);
+      await sleep(5000);
+      if(DEBUG) console.log("handleChainChanged getVirtuosoBalance");
+      const newVirtuosoBalance = await getVirtuosoBalance(newAddress);
       dispatch(updateAddress(newAddress1));
       dispatch(updateVirtuosoBalance(newVirtuosoBalance));
       message.info(`You've switched to the right chain ${network.name} ${_chainId} with address ${newAddress1}`, 10);
