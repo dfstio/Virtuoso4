@@ -67,18 +67,25 @@ const HorizontalDefault = () => {
 
   return (
     <div className="gx-header-horizontal">
+
       <div className="gx-header-horizontal-top">
+
         <div className="gx-container">
           <div className="gx-header-horizontal-top-flex">
-          {/*}
+
             <div className="gx-header-horizontal-top-left">
+
               <i className="icon icon-alert gx-mr-3"/>
               <p className="gx-mb-0 gx-text-truncate"><IntlMessages id="app.announced"/></p>
+
+
             </div>
-            */}
-            <MetaMaskAccount/>
+          <MetaMaskAccount/>
+
         </div>
+
         </div>
+
       </div>
 
       <Header
@@ -95,7 +102,7 @@ const HorizontalDefault = () => {
 
             </div>
             <Link to="/" className="gx-d-block gx-d-lg-none gx-pointer gx-w-logo">
-              <img alt="" src="/assets/images/w-logo.png"/></Link>
+              <img alt="" src="/assets/images/virtuoso.png"/></Link>
             <Link to="/" className="gx-d-none gx-d-lg-block gx-pointer gx-mr-xs-5 gx-logo">
               <img alt="" src="/assets/images/virtuoso.png"/></Link>
             <div

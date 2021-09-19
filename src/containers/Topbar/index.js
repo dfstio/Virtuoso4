@@ -10,7 +10,7 @@ import UserInfo from "../../components/UserInfo";
 import AppNotification from "../../components/AppNotification";
 import MailNotification from "../../components/MailNotification";
 import Auxiliary from "util/Auxiliary";
-
+import MetaMaskAccount from "../../blockchain/account";
 
 import {NAV_STYLE_DRAWER, NAV_STYLE_FIXED, NAV_STYLE_MINI_SIDEBAR, NAV_STYLE_DEFAULT_HORIZONTAL, TAB_SIZE} from "../../constants/ThemeSetting";
 import {useDispatch, useSelector} from "react-redux";
@@ -54,7 +54,7 @@ const Topbar = () => {
           />
         </div> : null}
       <Link to="/" className="gx-d-block gx-d-lg-none gx-pointer">
-        <img alt="" src={("/assets/images/w-logo.png")}/></Link>
+        <img alt="" src={("/assets/images/virtuoso.png")}/></Link>
 
       <SearchBox styleName="gx-d-none gx-d-lg-block gx-lt-icon-search-bar-lg"
                  placeholder="Search in app..."
@@ -94,6 +94,7 @@ const Topbar = () => {
           </Auxiliary>
         }
         */}
+
         <li className="gx-language">
           <Popover overlayClassName="gx-popover-horizantal" placement="bottomRight" content={languageMenu()}
                    trigger="click">
@@ -103,6 +104,9 @@ const Topbar = () => {
                   <i className="icon icon-chevron-down gx-pl-2"/>
                 </span>
           </Popover>
+        </li>
+        <li className="gx-notify">
+        <MetaMaskAccount/>
         </li>
         {width >= TAB_SIZE ? null :
           <Auxiliary>
