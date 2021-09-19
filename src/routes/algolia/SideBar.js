@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {Layout, Checkbox} from "antd";
 import {useDispatch, useSelector} from "react-redux";
 import {
@@ -18,19 +18,36 @@ const Sidebar = () => {
     const address = useSelector(({blockchain}) => blockchain.address);
 
     const [filter, setFilter] = useState('');
+    const [disabled, setDisabled] = useState(true);
 
 
     function onChange(e) {
 
-        if( e.target.checked === true )
-        {
-          const filterStr = "owner:" + address;
-          setFilter(filterStr);
-          //console.log("On change", e.target.checked, filterStr);
-        }
-        else
-          setFilter("");
-      }
+         if( address !== "")
+         {
+             setDisabled(false);
+             if( e.target.checked === true )
+             {
+
+               const filterStr = "owner:" + address;
+               setFilter(filterStr);
+               //console.log("On change", e.target.checked, filterStr);
+             }
+             else
+               setFilter("");
+         }
+         else
+         {
+               setDisabled(true);
+               setFilter("");
+         };
+
+    };
+
+    useEffect(() => {
+      if (address == "") setDisabled(true);
+        else setDisabled(false);
+  }, [address]);
 
 return (
   <Sider className="gx-algolia-sidebar">
@@ -55,6 +72,7 @@ return (
           <div className="gx-algolia-refinementList">
         <Checkbox
           onChange={onChange}
+          disabled={disabled}
           style={{marginBottom:"20px"}}
 
           >My NFTs
