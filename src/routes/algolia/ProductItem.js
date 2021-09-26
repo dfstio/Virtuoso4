@@ -6,6 +6,7 @@ import {Highlight,} from 'react-instantsearch-dom';
 import {Button} from "antd";
 import IntlMessages from "util/IntlMessages";
 import { metamaskLogin } from "../../blockchain/metamask";
+import { Sell } from "./Sell";
 const DEBUG = true;
 
 const ProductItem = ({item}) => {
@@ -37,6 +38,12 @@ const ProductItem = ({item}) => {
         <span>
           <Highlight attribute="name" hit={item}/>
         </span>
+        {canSell?(
+        <Sell/>
+        )
+        :
+        (
+        <span>
         {item.onSale?(
         <span style={{ float: "right"}}>
           <Button
@@ -76,6 +83,8 @@ const ProductItem = ({item}) => {
             </Button>
         </span>
         ):("")}
+         </span>
+        )}
         </div>
         <div className="gx-mb-3">
           <Highlight attribute="category" hit={item}/>
