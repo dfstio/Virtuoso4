@@ -61,7 +61,7 @@ const getCollection = (set, address = 0, search = "", limit = 100, contract = "8
   }).then(response => {
     return response.json();
   })
-}
+};
 
 export default {
   getToken: getToken,

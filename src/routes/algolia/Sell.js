@@ -37,7 +37,7 @@ class SellButton extends React.Component {
 
     };
     const operatorData = await sell.operator(sellData);
-    console.log("Sell 2", saleData);
+    console.log("Sell 2", operatorData);
     this.setState({
       ModalText: 'Writing sale information to IPFS...',
       confirmLoading: true,
