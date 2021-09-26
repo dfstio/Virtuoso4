@@ -67,5 +67,6 @@ export default {
   getToken: getToken,
   txSent: txSent,
   getCollection: getCollection,
-  hello: hello
+  hello: hello,
+  sell: sell
 }

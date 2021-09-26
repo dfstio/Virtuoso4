@@ -17,7 +17,7 @@ const sellToken = async (values) => {
          sellJSON.price = values.price;
          sellJSON.currency = values.currency;
          sellJSON.comment = values.comment;
-         if( values.uri.contains_unlockable_content !== undefined ) sellJSON.contains_unlockable_content = values.uri.contains_unlockable_content;
+         if( values.item.uri.contains_unlockable_content !== undefined ) sellJSON.contains_unlockable_content = values.item.uri.contains_unlockable_content;
 
 		 const operator = await api.sell(values.tokenId, sellJSON);
 		 if (DEBUG) console.log('sellToken - operator: ', operator);

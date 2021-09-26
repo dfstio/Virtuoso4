@@ -1,12 +1,10 @@
-import { network } from "../blockchain/metamask";
-
 const AWS = require("aws-sdk");
 const crypto = require('crypto');
 
 const DEBUG = true;
 
 // destructure env variables
-const { MY_AWS_ACCESS_KEY_ID, MY_AWS_SECRET_ACCESS_KEY, MY_AWS_REGION, LAMBDA_KEY, KEY_CONTEXT } = process.env;
+const { MY_AWS_ACCESS_KEY_ID, MY_AWS_SECRET_ACCESS_KEY, MY_AWS_REGION, LAMBDA_KEY, KEY_CONTEXT, REACT_APP_CONTRACT_ADDRESS, CHAIN_ID } = process.env;
 
 // gets credentials from ~/.aws/config
 AWS.config.update({
@@ -19,21 +17,53 @@ AWS.config.update({
 
 var lambda = new AWS.Lambda();
 
-async function lambdaHub(action, chainId, contract, tokenId, text)
+async function lambdaSell(tokenId, data)
 {
-             const payload = {
-                key: LAMBDA_KEY,
-                action: action,
-                chainId: chainId,
-                contract: contract,
-                tokenId: Number(tokenId),
-                context: KEY_CONTEXT,
-
-        };
+    let result = lambdaHub("sell", tokenId, data);
+    if(DEBUG)  console.log("lambdaSell result",  result );
+    return result;
+};
 
 
+async function lambdaHub(action, tokenId, data)
+{
 
-}
+        const contractAddress = REACT_APP_CONTRACT_ADDRESS.toString();
+        const lowerContractAddress = contractAddress.toLowerCase();
+
+        const payload = {
+           key: LAMBDA_KEY,
+           action: action,
+           chainId: CHAIN_ID.toString(),
+           contract: lowerContractAddress,
+           tokenId: Number(tokenId),
+           context: KEY_CONTEXT,
+           data: data
+
+         };
+
+
+        const params = {
+          FunctionName: 'getOperator', /* required */
+          //ClientContext: 'STRING_VALUE',
+          InvocationType: 'RequestResponse',
+          LogType: 'None', //None Tail
+          Payload: JSON.stringify(payload) /* Strings will be Base-64 encoded on your behalf */,
+      };
+
+
+        if(DEBUG) console.log("lambdaHub params",  params );
+
+   try {
+        let result = await lambda.invoke(params).promise();
+        const resultJSON = JSON.parse(result.Payload.toString());
+        return resultJSON;
+    } catch (error) {
+       console.error("lambdaHub error: ", error);
+       return error;
+    }
+
+};
 
 
 async function lambdaGetOperator(action, chainId, contract, tokenId, text)
@@ -131,5 +161,6 @@ function decrypt(toDecrypt, privateKey)
 
 
 module.exports = {
-    lambdaGetOperator
+    lambdaGetOperator,
+    lambdaSell
 }
