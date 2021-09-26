@@ -2,6 +2,20 @@
 
 const DEBUG = true;
 
+const sell = (tokenId, sellData) => {
+  const data = {"tokenId": tokenId, "data": sellData };
+  if(DEBUG) console.log("sell api: ", data);
+  return fetch('/api/sell', {
+    body: JSON.stringify(data),
+    method: 'POST'
+  }).then(response => {
+    return response.json()
+  })
+}
+
+
+
+
 const getToken = (tokenId, force = false, contract = "80001.0x49368C4ED51BE6484705F07B63eBD92270923081") => {
   if(DEBUG) console.log("getToken api: tokenId: ", tokenId, "force: ", force);
   //const strForce = (force)?"true":"false";

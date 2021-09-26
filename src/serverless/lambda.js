@@ -1,5 +1,8 @@
+import { network } from "../blockchain/metamask";
+
 const AWS = require("aws-sdk");
 const crypto = require('crypto');
+
 const DEBUG = true;
 
 // destructure env variables
@@ -15,6 +18,22 @@ AWS.config.update({
 });
 
 var lambda = new AWS.Lambda();
+
+async function lambdaHub(action, chainId, contract, tokenId, text)
+{
+             const payload = {
+                key: LAMBDA_KEY,
+                action: action,
+                chainId: chainId,
+                contract: contract,
+                tokenId: Number(tokenId),
+                context: KEY_CONTEXT,
+
+        };
+
+
+
+}
 
 
 async function lambdaGetOperator(action, chainId, contract, tokenId, text)

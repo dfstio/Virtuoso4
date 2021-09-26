@@ -41,8 +41,7 @@ const ProductItem = ({item}) => {
         {canSell?(
         <span style={{ float: "right"}}>
         <SellButton
-        tokenId = {item.tokenId}
-        vrtTokenId = {item.vrtTokenId}
+        item = {item}
         />
         </span>
         )

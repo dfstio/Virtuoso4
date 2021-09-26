@@ -1,14 +1,18 @@
 import React from "react";
 import {Button, Card, Modal, Form, InputNumber, Input, Radio} from "antd";
-import { useParams } from "react-router-dom";
+import sellToken from "../../serverless/sell"
+
+
 
 class SellButton extends React.Component {
-  const {tokenId, vrtTokenId} = useParams();
   state = {
     ModalText: 'Sell text',
     visible: false,
     confirmLoading: false,
-    title: "Sell NFT token " + props.vrtTokenId
+    title: "Sell NFT token " + this.props.item.vrtTokenId,
+    price: 0,
+    currency: 'usd',
+    comment: ""
   };
   showModal = () => {
     this.setState({
@@ -16,12 +20,22 @@ class SellButton extends React.Component {
       ModalText: 'Please specify the price of the NFT token',
     });
   };
-  handleOk = () => {
+  handleOk = async () => {
     this.setState({
       ModalText: 'Writing sell price information to blockchain...',
       confirmLoading: true,
     });
-    console.log("Sell");
+    console.log("Sell", this.props.item.tokenId, this.state);
+    const sellData =
+    {
+        tokenId: this.props.item.tokenId,
+        price: this.state.price,
+        currency: this.state.currency,
+        comment: this.state.comment,
+        item: this.props.item
+
+    };
+    await sellToken(sellData);
     setTimeout(() => {
       this.setState({
         visible: false,
@@ -36,10 +50,17 @@ class SellButton extends React.Component {
     });
   };
 
+  handleChange = (values) => {
+  console.log("Sell values changed", values);
+      if( values.price !== undefined) this.setState({price: values.price});
+      if( values.comment !== undefined) this.setState({comment: values.comment});
+      if( values.currency !== undefined) this.setState({currency: values.currency});
+  };
+
 
 
   render() {
-    const {visible, confirmLoading, ModalText} = this.state;
+    const {visible, confirmLoading, ModalText, title} = this.state;
 
     return (
         <span>
@@ -51,8 +72,8 @@ class SellButton extends React.Component {
                onCancel={this.handleCancel}
         >
           <p>{ModalText}</p>
-                <Form
-
+        <Form
+        onValuesChange = {this.handleChange}
         layout="vertical"
         name="form_in_modal"
         initialValues={{
