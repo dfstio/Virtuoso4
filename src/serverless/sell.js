@@ -2,8 +2,8 @@ import api from "./api";
 const DEBUG = true;
 
 
-const sellToken = async (values) => {
-         if (DEBUG) console.log('sellToken - received values of form: ', values);
+const operator = async (values) => {
+         //if (DEBUG) console.log('sellToken - received values of form: ', values);
 
          let sellJSON = {
                price: "10",
@@ -20,7 +20,20 @@ const sellToken = async (values) => {
          if( values.item.uri.contains_unlockable_content !== undefined ) sellJSON.contains_unlockable_content = values.item.uri.contains_unlockable_content;
 
 		 const operator = await api.sell(values.tokenId, sellJSON);
-		 if (DEBUG) console.log('sellToken - operator: ', operator);
+		 sellJSON.operator = operator.data.operator;
+		 //if (DEBUG) console.log('sellToken - operator: ', operator);
+		 return { key: operator.data.key, sale: sellJSON };
+};
+
+const ipfs = async (data) => {
+
+
+
+
+		 return data;
+};
+
+
 /*
 
 
@@ -97,8 +110,16 @@ const sellToken = async (values) => {
                   }
 
          }
-         */
+
 
       };
 
-export default sellToken;
+               */
+
+
+
+export default {
+  operator: operator,
+  ipfs: ipfs
+}
+

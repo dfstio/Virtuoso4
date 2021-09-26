@@ -1,6 +1,7 @@
 import React from "react";
 import {Button, Card, Modal, Form, InputNumber, Input, Radio} from "antd";
-import sellToken from "../../serverless/sell"
+import sell from "../../serverless/sell"
+
 
 
 
@@ -22,7 +23,7 @@ class SellButton extends React.Component {
   };
   handleOk = async () => {
     this.setState({
-      ModalText: 'Writing sell price information to blockchain...',
+      ModalText: 'Preparing sale information...',
       confirmLoading: true,
     });
     console.log("Sell", this.props.item.tokenId, this.state);
@@ -35,13 +36,18 @@ class SellButton extends React.Component {
         item: this.props.item
 
     };
-    await sellToken(sellData);
+    const saleData = await sell.operator(sellData);
+    console.log("Sell 2", saleData);
+    this.setState({
+      ModalText: 'Writing sale information to IPFS...',
+      confirmLoading: true,
+    });
     setTimeout(() => {
       this.setState({
         visible: false,
         confirmLoading: false,
       });
-    }, 2000);
+    }, 10000);
     console.log("Sold");
   };
   handleCancel = () => {

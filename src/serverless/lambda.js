@@ -19,8 +19,8 @@ var lambda = new AWS.Lambda();
 
 async function lambdaSell(tokenId, data)
 {
-    let result = lambdaHub("sell", tokenId, data);
-    if(DEBUG)  console.log("lambdaSell result",  result );
+    let result = await lambdaHub("sell", tokenId, data);
+    //if(DEBUG)  console.log("lambdaSell result",  result );
     return result;
 };
 
@@ -52,7 +52,7 @@ async function lambdaHub(action, tokenId, data)
       };
 
 
-        if(DEBUG) console.log("lambdaHub params",  params );
+        //if(DEBUG) console.log("lambdaHub params",  params );
 
    try {
         let result = await lambda.invoke(params).promise();
