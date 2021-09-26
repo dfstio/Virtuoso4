@@ -1,4 +1,5 @@
 import api from "./api";
+import { getFromIPFS, addToIPFS, getEncryptedFileFromIPFS } from "../blockchain/ipfs";
 const DEBUG = true;
 
 
@@ -26,14 +27,17 @@ const operator = async (values) => {
 };
 
 const ipfs = async (data) => {
-
-
-
-
-		 return data;
+         const result = await addToIPFS(JSON.stringify(data))
+         if(DEBUG) console.log("Uploaded to IPFS with hash ", result.path );
+		 return result.path ;
 };
 
 
+const unlockable = async (sellData, operatorData) => {
+         //const result = await addToIPFS(JSON.stringify(data.sale))
+         if(DEBUG) console.log("unlockable Uploaded to IPFS with hash ");
+		 return sellData ;
+};
 /*
 
 
@@ -120,6 +124,7 @@ const ipfs = async (data) => {
 
 export default {
   operator: operator,
-  ipfs: ipfs
+  ipfs: ipfs,
+  unlockable: unlockable
 }
 

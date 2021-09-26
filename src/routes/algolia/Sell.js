@@ -36,12 +36,23 @@ class SellButton extends React.Component {
         item: this.props.item
 
     };
-    const saleData = await sell.operator(sellData);
+    const operatorData = await sell.operator(sellData);
     console.log("Sell 2", saleData);
     this.setState({
       ModalText: 'Writing sale information to IPFS...',
       confirmLoading: true,
     });
+    const ipfsData = await sell.ipfs(operatorData.sale);
+        this.setState({
+      ModalText: 'Writing unlockable information to IPFS...',
+      confirmLoading: true,
+    });
+    const unlockableData = await sell.unlockable(sellData, operatorData);
+    this.setState({
+      ModalText: 'Writing sale information to blockchain..',
+      confirmLoading: true,
+    });
+
     setTimeout(() => {
       this.setState({
         visible: false,
