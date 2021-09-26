@@ -1,20 +1,24 @@
 import React from "react";
-import {Button, Card, Modal} from "antd";
+import {Button, Card, Modal, Form, InputNumber, Input, Radio} from "antd";
+import { useParams } from "react-router-dom";
 
-class Sell extends React.Component {
+class SellButton extends React.Component {
+  const {tokenId, vrtTokenId} = useParams();
   state = {
     ModalText: 'Sell text',
     visible: false,
     confirmLoading: false,
+    title: "Sell NFT token " + props.vrtTokenId
   };
   showModal = () => {
     this.setState({
       visible: true,
+      ModalText: 'Please specify the price of the NFT token',
     });
   };
   handleOk = () => {
     this.setState({
-      ModalText: 'The modal will be closed after two seconds',
+      ModalText: 'Writing sell price information to blockchain...',
       confirmLoading: true,
     });
     console.log("Sell");
@@ -32,12 +36,15 @@ class Sell extends React.Component {
     });
   };
 
+
+
   render() {
     const {visible, confirmLoading, ModalText} = this.state;
+
     return (
-      <Card title="Sell Card" className="gx-card">
+        <span>
         <Button type="primary" onClick={this.showModal}>Sell</Button>
-        <Modal title="Sell NFT token"
+        <Modal title={title}
                visible={visible}
                onOk={this.handleOk}
                confirmLoading={confirmLoading}
@@ -45,7 +52,7 @@ class Sell extends React.Component {
         >
           <p>{ModalText}</p>
                 <Form
-        form={form}
+
         layout="vertical"
         name="form_in_modal"
         initialValues={{
@@ -79,9 +86,9 @@ class Sell extends React.Component {
       </Form>
 
         </Modal>
-      </Card>
+       </span>
     );
   }
 };
 
-export default Sell;
+export default SellButton;

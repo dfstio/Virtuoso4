@@ -6,7 +6,7 @@ import {Highlight,} from 'react-instantsearch-dom';
 import {Button} from "antd";
 import IntlMessages from "util/IntlMessages";
 import { metamaskLogin } from "../../blockchain/metamask";
-import { Sell } from "./Sell";
+import  SellButton  from "./Sell";
 const DEBUG = true;
 
 const ProductItem = ({item}) => {
@@ -39,7 +39,12 @@ const ProductItem = ({item}) => {
           <Highlight attribute="name" hit={item}/>
         </span>
         {canSell?(
-        <Sell/>
+        <span style={{ float: "right"}}>
+        <SellButton
+        tokenId = {item.tokenId}
+        vrtTokenId = {item.vrtTokenId}
+        />
+        </span>
         )
         :
         (
@@ -94,7 +99,7 @@ const ProductItem = ({item}) => {
         {item.onSale?(
         <div className="gx-product-price"  >
            <span >
-            Token VRT1-{item.tokenId}
+            Token {item.vrtTokenId}
              </span>
          <span style={{ float: "right"}}>
           {item.currency} {item.price}
