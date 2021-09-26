@@ -42,6 +42,7 @@ const ProductItem = ({item}) => {
         <span style={{ float: "right"}}>
         <SellButton
         item = {item}
+        address = {address}
         />
         </span>
         )

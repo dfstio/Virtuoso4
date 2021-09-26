@@ -86,6 +86,27 @@ export async function getAddress()
      return address;
 };
 
+export async function metamaskDecrypt(key, address)
+{
+
+     let result = "";
+     if( (window.ethereum !== undefined) && (window.ethereum.isMetaMask === true))
+     {
+
+            try {
+                   result =  await window.ethereum.request(
+                        { method: 'eth_decrypt',
+                          params: [ key, address],
+                        });
+
+                  } catch (error) {
+                      console.error( "metamaskDecrypt error", error);
+                  };
+
+     };
+     if(DEBUG) console.log("metamaskDecrypt called", key, address, result);
+     return result;
+};
 
 
 export async function getVirtuosoBalance(address)
@@ -105,6 +126,26 @@ export async function getVirtuosoBalance(address)
     return virtuosoBalance;
 
 };
+
+export async function getVirtuosoUnlockableContentKey(tokenId, address)
+{
+    let key = "";
+    if( readVirtuoso  && (address !== ""))
+    {
+           const chainId =  await window.ethereum.request({method: 'eth_chainId'});
+           if(DEBUG) console.log("getVirtuosoUnlockableContentKey called on chain", chainId, "and address", address);
+
+           if(chainId === network.hexChainId)
+           {
+                key = await readVirtuoso.getUnlockableContentKey(tokenId, address);
+           };
+    };
+
+    return key
+
+};
+
+
 
 export function convertAddress(address)
 {

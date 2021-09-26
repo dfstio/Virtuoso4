@@ -1,11 +1,29 @@
 const { REACT_APP_INFURA_IPFS_PROJECT_ID, REACT_APP_INFURA_IPFS_PROJECT_SECRET } = process.env;
 
-const ipfsAPI = require("ipfs-http-client");
+//const ipfsAPI = require("ipfs-http-client");
 const { BufferList } = require("bl");
-const fs = require('fs');
+//const fs = require('fs');
 const CryptoJS = require('crypto-js');
 
 const DEBUG = true;
+
+const ipfsClient = require('ipfs-http-client');
+
+const auth =
+  'Basic ' + Buffer.from(REACT_APP_INFURA_IPFS_PROJECT_ID + ':' + REACT_APP_INFURA_IPFS_PROJECT_SECRET).toString('base64');
+
+
+const ipfs = ipfsClient.create({
+  host: 'ipfs.infura.io',
+  port: 5001,
+  protocol: 'https',
+  headers: {
+    authorization: auth
+  }
+});
+
+
+
 
 /*
 const  ipfsAuth = 'Basic ' + Buffer.from(INFURA_IPFS_PROJECT_ID + ':' + INFURA_IPFS_PROJECT_SECRET).toString('base64');
@@ -66,14 +84,15 @@ const ipfs = ipfsAPI("/ip4/127.0.0.1/tcp/5001",
         value: '*'
         }]}
         );
-*/
 
+
+console.log("ipfsAPI", ipfsAPI);
 const ipfs = ipfsAPI({
         host: "ipfs.infura.io",
         port: "5001",
         protocol: "https",
         });
-
+*/
 
 export async function addEncryptedFileToIPFS(file)
 {

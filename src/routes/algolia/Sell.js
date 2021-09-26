@@ -47,7 +47,7 @@ class SellButton extends React.Component {
       ModalText: 'Writing unlockable information to IPFS...',
       confirmLoading: true,
     });
-    const unlockableData = await sell.unlockable(sellData, operatorData);
+    const unlockableData = await sell.unlockable(sellData, operatorData, this.props.address);
     this.setState({
       ModalText: 'Writing sale information to blockchain..',
       confirmLoading: true,

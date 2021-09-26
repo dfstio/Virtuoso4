@@ -1,5 +1,7 @@
 import api from "./api";
 import { getFromIPFS, addToIPFS, getEncryptedFileFromIPFS } from "../blockchain/ipfs";
+import { getVirtuosoUnlockableContentKey } from "../blockchain/metamask";
+
 const DEBUG = true;
 
 
@@ -33,8 +35,41 @@ const ipfs = async (data) => {
 };
 
 
-const unlockable = async (sellData, operatorData) => {
-         //const result = await addToIPFS(JSON.stringify(data.sale))
+const unlockable = async (sellData, operatorData, address) => {
+         let newSellKey = "";
+         const encryptedKey = await getVirtuosoUnlockableContentKey(sellData.tokenId, address);
+         if(DEBUG)  console.log("Sell - key: ", encryptedKey);
+
+         if( encryptedKey !== "")
+         {
+             const unlockableIPFS = await getFromIPFS(encryptedKey);
+             const unlockableJSON = JSON.parse(unlockableIPFS.toString());
+
+             const password = await props.injectedProvider.send("eth_decrypt", [ unlockableJSON.key, props.address ]);
+             if(DEBUG)  console.log("Sale - Decrypted password: ", password);
+             const buf = Buffer.from(
+                JSON.stringify(
+                  sigUtil.encrypt(
+                  operatorPublicKey,
+                  {data: password},
+                  "x25519-xsalsa20-poly1305"
+                  )
+              ),
+              "utf8"
+             );
+
+             const newUnlockableKey =  "0x" + buf.toString("hex");
+             const newUnlockableJSON = {
+                    "data": unlockableJSON.data,
+                    "key": newUnlockableKey
+                    };
+             const newKeyResult = await addToIPFS(JSON.stringify(newUnlockableJSON));
+             newSellKey = newKeyResult.path;
+         };
+
+
+
+
          if(DEBUG) console.log("unlockable Uploaded to IPFS with hash ");
 		 return sellData ;
 };
