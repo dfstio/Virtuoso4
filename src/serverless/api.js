@@ -13,6 +13,17 @@ const sell = (tokenId, sellData) => {
   })
 }
 
+const encrypt = (toEncrypt, key) => {
+  const data = {"data": toEncrypt, "key": key };
+  if(DEBUG) console.log("encrypt api: ", data);
+  return fetch('/api/encrypt', {
+    body: JSON.stringify(data),
+    method: 'POST'
+  }).then(response => {
+    return response.json()
+  })
+}
+
 
 
 

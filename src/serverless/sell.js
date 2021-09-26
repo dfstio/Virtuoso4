@@ -1,9 +1,8 @@
 import api from "./api";
 import { getFromIPFS, addToIPFS, getEncryptedFileFromIPFS } from "../blockchain/ipfs";
 import { getVirtuosoUnlockableContentKey, metamaskDecrypt, virtuosoSell } from "../blockchain/metamask";
+
 const crypto = require('crypto');
-
-
 const DEBUG = true;
 
 
@@ -36,32 +35,26 @@ const ipfs = async (data) => {
 		 return result.path ;
 };
 
-function encrypt(toEncrypt, publicKey)
-{
-       const buffer = Buffer.from(toEncrypt, 'utf8')
-       const publicKeyInput = {
-            key: Buffer.from(publicKey),
-            format: 'der',
-            type: 'spki'
-        };
-       const publicKeyObject = crypto.createPublicKey(publicKeyInput)
-       const encrypted = crypto.publicEncrypt(publicKeyObject, buffer)
-       return encrypted.toString('base64')
-};
+
 
 const unlockable = async (sellData, operatorData, address) => {
          let newSellKey = "";
          const encryptedKey = await getVirtuosoUnlockableContentKey(sellData.tokenId, address);
-         if(DEBUG)  console.log("sell.unlockable- key: ", encryptedKey);
+         if(DEBUG)  console.log("sell.unlockable key: ", encryptedKey);
 
          if( encryptedKey !== "")
          {
+             if(DEBUG)  console.log("sell.unlockable encryptedKey: ", encryptedKey);
              const unlockableIPFS = await getFromIPFS(encryptedKey);
+             if(DEBUG)  console.log("sell.unlockable unlockableIPFS: ", unlockableIPFS );
              const unlockableJSON = JSON.parse(unlockableIPFS.toString());
 
              const password = await metamaskDecrypt( unlockableJSON.key, address );
              if(DEBUG)  console.log("Sale - Decrypted password: ", password);
-             const newUnlockableKey = encrypt( password, operatorData.key);
+             const encryptedData = api.encrypt(password, operatorData.key);
+             if(DEBUG)  console.log("Sale - Encrypted password: ", encryptedData);
+             const newUnlockableKey = encryptedData.data;
+
              const newUnlockableJSON = {
                     "data": unlockableJSON.data,
                     "key": newUnlockableKey

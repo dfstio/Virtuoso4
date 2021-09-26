@@ -186,11 +186,13 @@ export async function getEncryptedFileFromIPFS(hash, key, filetype)
 
 // helper function to "Get" from IPFS
 // you usually go content.toString() after this...
+/*
 export async function getFromIPFS( hashToGet)
 {
+  if (DEBUG) console.log("getFromIPFS hash:", hashToGet);
   for await (const file of ipfs.get(hashToGet))
   {
-    if (DEBUG) console.log(file.path);
+    if (DEBUG) console.log("getFromIPFS file:", file);
     if (!file.content) continue;
     const content = new BufferList();
     for await (const chunk of file.content) {
@@ -199,6 +201,18 @@ export async function getFromIPFS( hashToGet)
     if (DEBUG) console.log("getFromIPFS Content: ", content);
     return content;
   }
+};
+*/
+export async function getFromIPFS( hashToGet)
+{
+    if (DEBUG) console.log("getFromIPFS hash:", hashToGet);
+    const content = new BufferList();
+    for await (const chunk of ipfs.cat(hashToGet)) {
+      content.append(chunk);
+    };
+    if (DEBUG) console.log("getFromIPFS Content: ", content);
+    if( DEBUG && content !== undefined ) console.log("getFromIPFS Content as string: ", content.toString());
+    return content;
 };
 
 

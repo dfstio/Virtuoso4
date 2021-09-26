@@ -162,5 +162,7 @@ function decrypt(toDecrypt, privateKey)
 
 module.exports = {
     lambdaGetOperator,
-    lambdaSell
+    lambdaSell,
+    encrypt,
+    decrypt
 }
