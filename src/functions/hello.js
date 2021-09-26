@@ -33,7 +33,7 @@ exports.handler = async(event, context) => {
 
 	      let result = { body: body };
 	      //console.log("Hello 1: ", result);
-	      let lambda = await lambdaGetOperator(body.action, "80001", "0x49368C4ED51BE6484705F07B63eBD92270923081", body.tokenId);
+	      let lambda = await lambdaGetOperator(body.action, "80001", "0x49368C4ED51BE6484705F07B63eBD92270923081", body.tokenId, body.text);
 	      //console.log("Hello 2: ", lambda);
 	      result.lambda = lambda;
 	      result.CONTEXT = process.env.CONTEXT ;
@@ -45,6 +45,7 @@ exports.handler = async(event, context) => {
 	      result.NETWORK_NAME_1 = process.env.NETWORK_NAME_1 ;
 
         console.log("Hello: ", lambda);
+
 
         //let result = await forwardTransaction(body);
 
