@@ -19,6 +19,7 @@ class SellButton extends React.Component {
     this.setState({
       visible: true,
       ModalText: 'Please specify the price of the NFT token',
+      confirmLoading: false,
     });
   };
   handleOk = async () => {
@@ -61,7 +62,6 @@ class SellButton extends React.Component {
     console.log("Sell txresult", txresult);
     this.setState({
         visible: false,
-        confirmLoading: false
       });
   };
   handleCancel = () => {

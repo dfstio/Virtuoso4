@@ -51,7 +51,7 @@ const unlockable = async (sellData, operatorData, address) => {
 
              const password = await metamaskDecrypt( unlockableJSON.key, address );
              if(DEBUG)  console.log("Sale - Decrypted password: ", password);
-             const encryptedData = api.encrypt(password, operatorData.key);
+             const encryptedData = await api.encrypt(password, operatorData.key);
              if(DEBUG)  console.log("Sale - Encrypted password: ", encryptedData);
              const newUnlockableKey = encryptedData.data;
 
@@ -70,6 +70,7 @@ const unlockable = async (sellData, operatorData, address) => {
 const blockchain = async (tokenId, ipfsHash, operatorAddress, unlockableIPFSHash, address) => {
 	     const txresult = await virtuosoSell(tokenId, ipfsHash, operatorAddress, unlockableIPFSHash, address);
          if(DEBUG) console.log("sell.blockchain tx: ", txresult );
+         return txresult.hash;
 
 };
 /*
@@ -159,6 +160,7 @@ const blockchain = async (tokenId, ipfsHash, operatorAddress, unlockableIPFSHash
 export default {
   operator: operator,
   ipfs: ipfs,
-  unlockable: unlockable
+  unlockable: unlockable,
+  blockchain: blockchain
 }
 

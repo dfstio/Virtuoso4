@@ -79,5 +79,6 @@ export default {
   txSent: txSent,
   getCollection: getCollection,
   hello: hello,
-  sell: sell
+  sell: sell,
+  encrypt: encrypt
 }

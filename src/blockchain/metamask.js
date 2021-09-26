@@ -30,7 +30,7 @@ export async function initVirtuoso(handleEvents )
            if( readVirtuoso )
            {
               readVirtuoso.removeAllListeners();
-              readVirtuoso.on({}, handleEvents);
+              //readVirtuoso.on({}, handleEvents);
               if(DEBUG) console.log("initVirtuoso success on chain", chainId);
            };
          } else console.log("Cannot init virtuoso - wrong chain", chainId, ",needs to be", network.name, network.hexChainId );
@@ -163,7 +163,7 @@ export async function virtuosoSell(tokenId, ipfsHash, operatorAddress, unlockabl
                 const writeVirtuoso = signer && new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
                 txresult = await writeVirtuoso.sell(tokenId, ipfsHash, operatorAddress, unlockableIPFSHash);
                 // Send tx to server
-                api.txSent(txresult, network.hexChainId);
+                await api.txSent(txresult.hash, network.chainId);
 
            } else console.error("virtuosoSell error - wrong chain or address");
     };

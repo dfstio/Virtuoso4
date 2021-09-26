@@ -4,6 +4,7 @@ const index = client.initIndex('virtuoso');
 
 async function alWriteToken(tokenId, token, contract, chainId)
 {
+        console.log("alWriteToken ",  tokenId, token, contract, chainId);
         const contractAddress = contract.toString();
         const lowerContractAddress = contractAddress.toLowerCase();
         const objectID = chainId.toString()+"."+lowerContractAddress+"."+tokenId.toString();
@@ -29,15 +30,15 @@ async function alWriteToken(tokenId, token, contract, chainId)
                 saleID: token.saleID,
                 onSale: token.onSale,
                 saleStatus: token.saleStatus,
-                price: token.sale.price,
-                currency: token.sale.currency.toUpperCase(),
+                price: token.saleID? token.sale.price: 0,
+                currency: token.saleID? token.sale.currency.toUpperCase(): "",
                 category: "Music",
                 image: token.uri.image,
                 uri: token.uri,
-                sale: token.sale
+                sale: token.saleID? token.sale : ""
 
         };
-        //console.log("Algolia write ",  params);
+        console.log("Algolia write ",  params);
 
    try {
 

@@ -75,9 +75,9 @@ async function handleCheckoutCompleted(checkout )
 {
 
 
-    	 const paymentIntent = await stripe.paymentIntents.retrieve( checkout. payment_intent );
+    	 const paymentIntent = await stripe.paymentIntents.retrieve( checkout.payment_intent );
 
-       if(DEBUG) console.log("handleCheckoutCompleted: ", checkout.metadata.type, checkout.payment_status, paymentIntent.status);
+       if(DEBUG) console.log("handleCheckoutCompleted: ", checkout.metadata.type, checkout.payment_status, paymentIntent.status, checkout);
        if( checkout.payment_status == 'paid')
        {
 

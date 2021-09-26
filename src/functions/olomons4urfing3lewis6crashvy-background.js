@@ -1,10 +1,10 @@
 const { checkoutCompleted } = require("../serverless/stripe");
-          
+
 exports.handler = async(event, context) => {
     //const { name = "Anonymous" } = event.queryStringParameters;
 
-          
-    
+
+
         // check for POST
     if (event.httpMethod !== "POST") {
         return {
@@ -15,8 +15,8 @@ exports.handler = async(event, context) => {
     }
 
     try {
-        //const body = JSON.parse(event.body); 
-        //console.log("olomons4urfing3lewis6crashvy", body, event, context);       
+        //const body = JSON.parse(event.body);
+        //console.log("olomons4urfing3lewis6crashvy", body, event, context);
         await checkoutCompleted (event.body, event.headers);
 
     } catch (error) {
@@ -24,4 +24,4 @@ exports.handler = async(event, context) => {
        console.error("olomons4urfing3lewis6crashvy error: ", error);
     }
 
-}; 
+};

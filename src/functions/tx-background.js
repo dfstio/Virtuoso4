@@ -1,10 +1,10 @@
 const { txBackground } = require("../serverless/contract");
-          
+
 exports.handler = async(event, context) => {
     //const { name = "Anonymous" } = event.queryStringParameters;
 
-    
-    
+
+
         // check for POST
     if (event.httpMethod !== "POST") {
         return {
@@ -15,7 +15,7 @@ exports.handler = async(event, context) => {
     }
 
     try {
-        const body = JSON.parse(event.body);        
+        const body = JSON.parse(event.body);
         await txBackground(body);
 
     } catch (error) {

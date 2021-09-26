@@ -372,31 +372,23 @@ async function loadAlgoliaToken(tokenId, contract, chainId)
                     //if(DEBUG) console.log("loadToken", tokenId.toString(), "sale", sale);
 
                     token.saleID = Number(saleID);
+                    token.onSale = false;
+
                     switch(sale[1])
                     {
                         case 0: token.saleStatus = "on approval"; break;
-                        case 1: token.saleStatus = "on sale"; break;
+                        case 1: token.saleStatus = "on sale"; token.onSale = true; break;
                         case 2: token.saleStatus = "sold"; break;
                         case 3: token.saleStatus = "sale cancelled"; break;
                         default: token.saleStatus = sale[1].toString();
                     };
 
-
-                    if( sale[1] != 1 )
-                    {
-                      token.onSale = false;
-                      token.isPriceLoaded = true;
-                    }
-                    else
-                    {
-                      token.onSale = true;
                       const saleConditionsURL = "https://ipfs.io/ipfs/" + sale[2];
                       const saleConditions = await axios.get(saleConditionsURL);
                       //if(DEBUG) console.log("loadToken", tokenId.toString(), "saleConditions", saleConditions.data);
                       token.sale = saleConditions.data;
                       token.isPriceLoaded = true;
 
-                     };
               };
               token.isLoading = false;
 		          if(DEBUG) console.log("loadAlgoliaToken", tokenId.toString(), "write with name", token.uri.name);
@@ -405,7 +397,7 @@ async function loadAlgoliaToken(tokenId, contract, chainId)
 
 
 		    } catch (error) {
-    			  console.error("loadAlgoliaToken loading token ", tokenId.toString(), " error ", error.code, error.config.url);
+    			  console.error("loadAlgoliaToken loading token ", tokenId.toString(), " error ", error);
     			  return false;
   			};
 }

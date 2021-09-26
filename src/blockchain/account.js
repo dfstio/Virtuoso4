@@ -30,7 +30,7 @@ const MetaMaskAccount = () => {
 
 
 const handleEvents = useCallback( async (params) => {
-  if(DEBUG) console.log("handleEvents ", params.event, params.eventSignature, params.args);
+  if(DEBUG) console.log("handleEvents ", params);
 
   switch( params.event )
   {
@@ -57,7 +57,7 @@ const handleEvents = useCallback( async (params) => {
         case "Transfer":
           break;
         default:
-            if(DEBUG) console.log("handleEvents unexpected event", params.event, params.eventSignature, params.args);
+            if(DEBUG) console.log("handleEvents unexpected event", params);
 
   };
 
