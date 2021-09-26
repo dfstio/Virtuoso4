@@ -1,5 +1,7 @@
+import api from "../serverless/api";
 // SET TARGET NETWORK
 const {NETWORKS} = require("../constants/Blockchain.js");
+
 export const network = NETWORKS.mumbai; // IMPORTANT
 
 const ethers = require("ethers");
@@ -145,6 +147,30 @@ export async function getVirtuosoUnlockableContentKey(tokenId, address)
 
 };
 
+export async function virtuosoSell(tokenId, ipfsHash, operatorAddress, unlockableIPFSHash, address)
+{
+    signer = provider && provider.getSigner();
+    let txresult = '';
+
+    if( signer  && (address !== ""))
+    {
+           const chainId =  await window.ethereum.request({method: 'eth_chainId'});
+           const signerAddress = await signer.getAddress();
+           if(DEBUG) console.log("virtuosoSell called on chain", chainId, "and address", address, "signer address", signerAddress);
+
+           if((chainId === network.hexChainId) && (address == signerAddress))
+           {
+                const writeVirtuoso = signer && new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
+                txresult = await writeVirtuoso.sell(tokenId, ipfsHash, operatorAddress, unlockableIPFSHash);
+                // Send tx to server
+                api.txSent(txresult, network.hexChainId);
+
+           } else console.error("virtuosoSell error - wrong chain or address");
+    };
+
+    return txresult;
+
+};
 
 
 export function convertAddress(address)

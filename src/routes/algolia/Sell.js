@@ -42,24 +42,27 @@ class SellButton extends React.Component {
       ModalText: 'Writing sale information to IPFS...',
       confirmLoading: true,
     });
-    const ipfsData = await sell.ipfs(operatorData.sale);
+    const ipfsHash = await sell.ipfs(operatorData.sale);
         this.setState({
       ModalText: 'Writing unlockable information to IPFS...',
       confirmLoading: true,
     });
-    const unlockableData = await sell.unlockable(sellData, operatorData, this.props.address);
+    const unlockableIPFSHash = await sell.unlockable(sellData, operatorData, this.props.address);
     this.setState({
       ModalText: 'Writing sale information to blockchain..',
       confirmLoading: true,
     });
-
-    setTimeout(() => {
-      this.setState({
+    const txresult = await sell.blockchain(
+            sellData.tokenId,
+            ipfsHash,
+            operatorData.sale.operator.address,
+            unlockableIPFSHash,
+            this.props.address );
+    console.log("Sell txresult", txresult);
+    this.setState({
         visible: false,
-        confirmLoading: false,
+        confirmLoading: false
       });
-    }, 10000);
-    console.log("Sold");
   };
   handleCancel = () => {
     this.setState({
