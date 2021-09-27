@@ -1,4 +1,5 @@
 const ethers = require("ethers");
+const EthCrypto = require('eth-crypto');
 const VirtuosoNFTJSON = require("../contract/mumbai_VirtuosoNFT.json");
 const rpcURL = process.env.RPC_URL;
 const contractAddress = process.env.CONTRACT_ADDRESS;
@@ -20,6 +21,34 @@ const TOKEN_JSON = { isLoading: false, isTokenLoaded: false, isPriceLoaded: fals
 const DEBUG = true;
 const URL = process.env.URL;
 const delayMS = 1000;
+
+
+async function testEthCrypto()
+{
+
+      let msg = "Test 777";
+      let a = {
+            privateKey: wallet.privateKey,
+    				publicKey: wallet.publicKey,
+    				//result.mnemonic = wallet.mnemonic;
+    				address: wallet.address,
+    				pub1: EthCrypto.publicKeyByPrivateKey(moderatorKey)
+    			};
+    				a.adr1 =  EthCrypto.publicKey.toAddress(a.pub1);
+    				a.pubCompress = EthCrypto.publicKey.compress(a.pub1);
+    				a.pubDecopmpress = EthCrypto.publicKey.decompress(a.pubCompress);
+    				a.encrypted = await EthCrypto.encryptWithPublicKey(a.pub1, msg);
+    				a.message = await EthCrypto.decryptWithPrivateKey(moderatorKey, a.encrypted);
+    				a.str = EthCrypto.cipher.stringify(a.encrypted);
+    				a.parsed = EthCrypto.cipher.parse(a.str);
+
+    	console.log("testEthCrypto", msg, a);
+
+
+
+
+};
+		//console.log("getTokenIndex ", tokenId);
 
 /*
 
@@ -485,7 +514,7 @@ async function loadTransaction(hash, chainId)
       const tx = await provider.getTransaction(hash);
       if( DEBUG) console.log("txBackground loadTransaction with hash ", hash, " to ", tx.to, "chainId", chainId );
       let resultwait = await tx.wait(6);
-      const contract = chainId.toString() + "." + tx.to.toString();
+      const contract = tx.to.toString();
 
 
       if(tx.to == virtuoso.address)
@@ -589,5 +618,6 @@ module.exports = {
     txBackground,
     addBalance,
     transferToken,
-    initAlgoliaTokens
+    initAlgoliaTokens,
+    testEthCrypto
 }

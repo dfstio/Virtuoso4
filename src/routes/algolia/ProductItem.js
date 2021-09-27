@@ -57,6 +57,7 @@ const ProductItem = ({item}) => {
                     if(DEBUG) console.log("Buy clicked");
                     if( canSell == false)
                     {
+                         message.loading("Preparing checkout page", 10);
                          const myaddress = await metamaskLogin();
                          dispatch(updateAddress(myaddress));
                          let buyTokenPath = "/api/create-checkout-session?type=buy&address=" + "generate" +

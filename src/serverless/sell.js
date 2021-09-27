@@ -2,7 +2,7 @@ import api from "./api";
 import { getFromIPFS, addToIPFS, getEncryptedFileFromIPFS } from "../blockchain/ipfs";
 import { getVirtuosoUnlockableContentKey, metamaskDecrypt, virtuosoSell } from "../blockchain/metamask";
 
-const crypto = require('crypto');
+const EthCrypto = require('eth-crypto');
 const DEBUG = true;
 
 
@@ -16,6 +16,7 @@ const operator = async (values) => {
                comment: "",
                contains_unlockable_content: false,
                operator: "",
+               time: ""
                };
 
          sellJSON.price = values.price;
@@ -24,8 +25,10 @@ const operator = async (values) => {
          if( values.item.uri.contains_unlockable_content !== undefined ) sellJSON.contains_unlockable_content = values.item.uri.contains_unlockable_content;
 
 		 const operator = await api.sell(values.tokenId, sellJSON);
-		 sellJSON.operator = operator.data.operator;
-		 //if (DEBUG) console.log('sellToken - operator: ', operator);
+		 if (DEBUG) console.log('sellToken - operator: ', operator);
+		 sellJSON.operator = operator.data.operator.address;
+		 sellJSON.time = operator.data.operator.time;
+
 		 return { key: operator.data.key, sale: sellJSON };
 };
 
@@ -35,7 +38,20 @@ const ipfs = async (data) => {
 		 return result.path ;
 };
 
+async function ethEncrypt(toEncrypt, publicKey)
+{
+      const encrypted = await EthCrypto.encryptWithPublicKey(publicKey, toEncrypt);
+      return EthCrypto.cipher.stringify(encrypted);
+};
 
+
+async function ethDecrypt(toDecrypt, privateKey)
+{
+    const data = EthCrypto.cipher.parse(toDecrypt);
+    const decrypted = await EthCrypto.decryptWithPrivateKey(privateKey, data);
+    return decrypted;
+
+};
 
 const unlockable = async (sellData, operatorData, address) => {
          let newSellKey = "";
@@ -47,19 +63,15 @@ const unlockable = async (sellData, operatorData, address) => {
              if(DEBUG)  console.log("sell.unlockable encryptedKey: ", encryptedKey);
              const unlockableIPFS = await getFromIPFS(encryptedKey);
              if(DEBUG)  console.log("sell.unlockable unlockableIPFS: ", unlockableIPFS );
-             const unlockableJSON = JSON.parse(unlockableIPFS.toString());
+             let unlockableJSON = JSON.parse(unlockableIPFS.toString());
 
              const password = await metamaskDecrypt( unlockableJSON.key, address );
              if(DEBUG)  console.log("Sale - Decrypted password: ", password);
-             const encryptedData = await api.encrypt(password, operatorData.key);
+             const encryptedData = await ethEncrypt(password, operatorData.key);
              if(DEBUG)  console.log("Sale - Encrypted password: ", encryptedData);
-             const newUnlockableKey = encryptedData.data;
+             unlockableJSON.key = encryptedData;
 
-             const newUnlockableJSON = {
-                    "data": unlockableJSON.data,
-                    "key": newUnlockableKey
-                    };
-             const newKeyResult = await addToIPFS(JSON.stringify(newUnlockableJSON));
+             const newKeyResult = await addToIPFS(JSON.stringify(unlockableJSON));
              newSellKey = newKeyResult.path;
          };
 

@@ -56,7 +56,7 @@ class SellButton extends React.Component {
     const txresult = await sell.blockchain(
             sellData.tokenId,
             ipfsHash,
-            operatorData.sale.operator.address,
+            operatorData.sale.operator,
             unlockableIPFSHash,
             this.props.address );
     console.log("Sell txresult", txresult);

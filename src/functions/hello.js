@@ -1,5 +1,5 @@
 
-const { lambdaGetOperator } = require("../serverless/lambda");
+const { testEthCrypto } = require("../serverless/contract");
 
 
 
@@ -21,8 +21,8 @@ exports.handler = async(event, context) => {
 
         // parse form data
         const body = JSON.parse(event.body);
-
-
+        const result = body;
+/*
 
         //result.message = "Hello";
 
@@ -43,8 +43,9 @@ exports.handler = async(event, context) => {
 	      result.DEPLOY_PRIME_URL = process.env.DEPLOY_PRIME_URL ;
 	      result.NETWORK_NAME = process.env.NETWORK_NAME ;
 	      result.NETWORK_NAME_1 = process.env.NETWORK_NAME_1 ;
-
-        console.log("Hello: ", lambda);
+*/
+        await testEthCrypto();
+        //console.log("Hello: ", lambda);
 
 
         //let result = await forwardTransaction(body);

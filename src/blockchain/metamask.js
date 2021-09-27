@@ -18,8 +18,12 @@ var signer = provider && provider.getSigner();
 var readVirtuoso = provider && new ethers.Contract(contractAddress, VirtuosoNFTJSON, provider);
 const DEBUG = true;
 
+
+
+
 export async function initVirtuoso(handleEvents )
 {
+
         const chainId =  await window.ethereum.request({method: 'eth_chainId'});
         if(DEBUG) console.log("initVirtuoso called on chain", chainId);
 
@@ -149,6 +153,8 @@ export async function getVirtuosoUnlockableContentKey(tokenId, address)
 
 export async function virtuosoSell(tokenId, ipfsHash, operatorAddress, unlockableIPFSHash, address)
 {
+    if(DEBUG) console.log("virtuosoSell called:", tokenId, ipfsHash, operatorAddress, unlockableIPFSHash, address);
+
     signer = provider && provider.getSigner();
     let txresult = '';
 
@@ -161,6 +167,7 @@ export async function virtuosoSell(tokenId, ipfsHash, operatorAddress, unlockabl
            if((chainId === network.hexChainId) && (address == signerAddress))
            {
                 const writeVirtuoso = signer && new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
+                if(DEBUG) console.log("virtuosoSell writeVirtuoso", writeVirtuoso);
                 txresult = await writeVirtuoso.sell(tokenId, ipfsHash, operatorAddress, unlockableIPFSHash);
                 // Send tx to server
                 await api.txSent(txresult.hash, network.chainId);
