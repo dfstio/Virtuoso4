@@ -1,3 +1,4 @@
+const { getFromIPFS } = require("./ipfs");
 const ethers = require("ethers");
 const EthCrypto = require('eth-crypto');
 const VirtuosoNFTJSON = require("../contract/mumbai_VirtuosoNFT.json");
@@ -115,12 +116,12 @@ async function initAlgoliaTokens(force)
 
 
       let result = await loadAlgoliaToken(tokenId, contract, chainId);
-      await sleep(2000);
+      await sleep(1000);
 
       if( result == false)
       {
         console.error("initAlgoliaTokens Warning: token No ", tokenId, " is not loaded: ");
-        await sleep(2000);
+        await sleep(10000);
         result = await loadAlgoliaToken(tokenId, contract, chainId);
         if( result == false)
         {
@@ -236,10 +237,13 @@ async function getTokenPrice(tokenId)
     let token  = TOKEN_JSON;
     try {
              const uri = await virtuoso.tokenURI(tokenId);
-             const tokenuri= await axios.get(uri);;
+             //const tokenuri= await axios.get(uri);;
+             const uriHash = uri.replace("https://ipfs.io/ipfs/", "");
+             const tokenuriraw = await getFromIPFS(uriHash);
+             const tokenuri = JSON.parse(tokenuriraw.toString());
              const owner = await virtuoso.ownerOf(tokenId);
              if(DEBUG) console.log("loadToken", tokenId.toString(), "uri", tokenuri.data);
-             token.uri=tokenuri.data;
+             token.uri=tokenuri;
              token.owner = owner;
 
 
@@ -263,10 +267,12 @@ async function getTokenPrice(tokenId)
                     else
                     {
                       token.onSale = true;
-                      const saleConditionsURL = "https://ipfs.io/ipfs/" + sale[2];
-                      const saleConditions = await axios.get(saleConditionsURL);
+                      //const saleConditionsURL = "https://ipfs.io/ipfs/" + sale[2];
+                      //const saleConditions = await axios.get(saleConditionsURL);
+                      const saleConditionsraw = await getFromIPFS(sale[2]);
+                      const saleConditions = JSON.parse(saleConditionsraw.toString());
                       if(DEBUG) console.log("loadToken", tokenId.toString(), "saleConditions", saleConditions.data);
-                      token.sale = saleConditions.data;
+                      token.sale = saleConditions;
                       token.isPriceLoaded = true;
                      };
               };
@@ -360,16 +366,31 @@ async function loadToken(tokenId, contract)
     			  return false;
   			};
 }
-*/
 
+
+          const ipfsHash = tokenURI.replace("https://ipfs.io/ipfs/", "");
+          if(DEBUGTOKENS) console.log("ipfsHash", ipfsHash);
+
+          const jsonManifestBuffer = await getFromIPFS(ipfsHash);
+
+*/
 async function loadAlgoliaToken(tokenId, contract, chainId)
+{
+      let loaded =  await _loadAlgoliaToken(tokenId, contract, chainId);
+      if( loaded === false) { await sleep(2000); loaded = await  _loadAlgoliaToken(tokenId, contract, chainId); }
+      if( loaded === false) { await sleep(5000); loaded = await  _loadAlgoliaToken(tokenId, contract, chainId); }
+      if( loaded === false) { await sleep(10000); loaded = await  _loadAlgoliaToken(tokenId, contract, chainId); }
+      return loaded;
+};
+
+async function _loadAlgoliaToken(tokenId, contract, chainId)
 {
 
    let token  = TOKEN_JSON;
-   if(DEBUG) console.log("loadToken", tokenId.toString(), "contract", contract);
+
 
     try {
-
+            if(DEBUG) console.log("loadToken", tokenId.toString(), "contract", contract, "chainId", chainId);
              const isBlocked = await virtuoso.isBlocked(tokenId);
              if( isBlocked == true)
              {
@@ -378,11 +399,16 @@ async function loadAlgoliaToken(tokenId, contract, chainId)
                   return true;
              }
              const uri = await virtuoso.tokenURI(tokenId);
-             const tokenuri= await axios.get(uri);;
+             const uriHash = uri.replace("https://ipfs.io/ipfs/", "");
+
+
+             const tokenuriraw = await getFromIPFS(uriHash);
+             const tokenuri = JSON.parse(tokenuriraw.toString());
+             //const tokenuri= await axios.get(uri);;
              const owner = await virtuoso.ownerOf(tokenId);
 
              //if(DEBUG) console.log("loadToken", tokenId.toString(), "uri", tokenuri.data);
-             token.uri=tokenuri.data;
+             token.uri=tokenuri;
              token.owner = ethers.utils.getAddress(owner);
              token.isTokenLoaded = true;
 
@@ -412,10 +438,12 @@ async function loadAlgoliaToken(tokenId, contract, chainId)
                         default: token.saleStatus = sale[1].toString();
                     };
 
-                      const saleConditionsURL = "https://ipfs.io/ipfs/" + sale[2];
-                      const saleConditions = await axios.get(saleConditionsURL);
+                      //const saleConditionsURL = "https://ipfs.io/ipfs/" + sale[2];
+                      //const saleConditions = await axios.get(saleConditionsURL);
+                      const saleConditionsraw = await getFromIPFS(sale[2]);
+                      const saleConditions = JSON.parse(saleConditionsraw.toString());
                       //if(DEBUG) console.log("loadToken", tokenId.toString(), "saleConditions", saleConditions.data);
-                      token.sale = saleConditions.data;
+                      token.sale = saleConditions;
                       token.isPriceLoaded = true;
 
               };

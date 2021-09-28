@@ -1,11 +1,11 @@
 const { initTokens } = require("../serverless/contract");
-        
-                          
+
+
 exports.handler = async(event, context) => {
     //const { name = "Anonymous" } = event.queryStringParameters;
 
-    
-    
+
+
         // check for POST
     if (event.httpMethod !== "POST") {
         return {
@@ -21,7 +21,7 @@ exports.handler = async(event, context) => {
         const body = JSON.parse(event.body);
         let force = true;
         if( body.force != undefined && body.force == false) force = false;
-        
+
         let result = await initTokens(force);
         console.log("init-background: ", result.toString(), " tokens");
 
