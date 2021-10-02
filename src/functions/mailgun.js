@@ -36,7 +36,7 @@ exports.handler = async(event, context) => {
           from: 'NFT Virtuoso <order@nftvirtuoso.io>',
           to: '7085777@gmail.com',
           subject: 'Hello from nftvirtuoso',
-          	template: "order",
+          	template: "test1",
 	          'v:name': "JOHN BEST"
           //text: 'Testing Mailgun',
           //html: '<b>Hey there! </b><br> This is our first message sent with Mailgun<br /><img src="https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/https://ipfs.io/ipfs/QmQAGbHxf9q1p1ocsp12LKtwMV8msYGW6N4A9yiGSovuiS" alt="mailtrap" />',
