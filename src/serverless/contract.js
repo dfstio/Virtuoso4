@@ -525,7 +525,7 @@ async function txBackground(body)
 {
     console.log("txBackground contract background: ", body);
 
-    if( body.chainId === CHAIN_ID)
+    if( body.chainId == CHAIN_ID)
     {
           await loadTransaction(body.txData, body.chainId);
     }
