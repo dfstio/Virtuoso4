@@ -187,7 +187,7 @@ export function convertAddress(address)
 
 };
 
-export async function metamaskLogin()
+export async function metamaskLogin( openlink = true )
 {
      let address = "";
      if(DEBUG) console.log("metamaskLogin called: ", window.ethereum); //, " with virtuosoBalance", virtuosoBalance);
@@ -229,7 +229,7 @@ export async function metamaskLogin()
      }
      else
      {
-        window.open("https://metamask.app.link/dapp/nftvirtuoso.io");
+        if( openlink ) window.open("https://metamask.app.link/dapp/nftvirtuoso.io");
      }
 
      if(DEBUG) console.log("metamaskLogin: connected with address: ", address );

@@ -45,6 +45,12 @@ async function testEthCrypto()
 
     	console.log("testEthCrypto", msg, a);
 
+        				const newWallet = ethers.Wallet.createRandom();
+
+						const seed = newWallet.mnemonic;
+						console.log("testEthCrypto 2" , seed);
+
+
 
 
 

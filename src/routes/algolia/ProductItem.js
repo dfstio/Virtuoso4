@@ -57,7 +57,7 @@ const ProductItem = ({item}) => {
                     if(DEBUG) console.log("Buy clicked");
 
                     message.loading("Preparing checkout page", 10);
-                    const myaddress = await metamaskLogin();
+                    const myaddress = await metamaskLogin(false);
                     dispatch(updateAddress(myaddress));
 
                     if( myaddress !== item.owner)
