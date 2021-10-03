@@ -38,7 +38,7 @@ async function  lambdaAddBalance( address, amount, description)
     const data = { address: address, amount: amount, description: description };
     let result = await lambdaHub("add", 0, data);
     if(DEBUG)  console.log("lambdaAddBalance result",  result );
-    return result.success;
+    return result;
 };
 
 async function lambdaHub(action, tokenId, data)

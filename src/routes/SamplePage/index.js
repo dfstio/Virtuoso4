@@ -13,7 +13,7 @@ const SamplePage = () => {
   {
 
             console.log("Add balance clicked", address);
-            if( address !== "") api.add( address, 1000, "Added USD 10 ");
+            if( address !== "") api.add( address, 100, "Added $1 ");
   }
 
 

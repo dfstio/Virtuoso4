@@ -2,16 +2,16 @@ const { getFromIPFS } = require("./ipfs");
 const ethers = require("ethers");
 const EthCrypto = require('eth-crypto');
 const VirtuosoNFTJSON = require("../contract/mumbai_VirtuosoNFT.json");
-const rpcURL = process.env.RPC_URL;
-const contractAddress = process.env.CONTRACT_ADDRESS;
+
+const {CHAIN_ID, CONTRACT_ADDRESS, RPC_URL } = process.env;
 const address= "0xbc356b91e24e0f3809fd1E455fc974995eF124dF";
 
-const provider = new ethers.providers.StaticJsonRpcProvider(rpcURL);
+const provider = new ethers.providers.StaticJsonRpcProvider(RPC_URL);
 const moderatorKey = process.env.MODERATOR_KEY;
 const REFRESH_INTERVAL_SEC = process.env.REFRESH_INTERVAL_SEC;
 const wallet = new ethers.Wallet(moderatorKey);
 const signer = wallet.connect(provider);
-const virtuoso = new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
+const virtuoso = new ethers.Contract(CONTRACT_ADDRESS, VirtuosoNFTJSON, signer);
 const inter = new ethers.utils.Interface(VirtuosoNFTJSON);
 
 //const fetch = require('node-fetch');
@@ -524,15 +524,14 @@ function sleep(ms) {
 async function txBackground(body)
 {
     console.log("txBackground contract background: ", body);
-    const chainId = await signer.getChainId();
 
-    if( body.chainId === chainId)
+    if( body.chainId === CHAIN_ID)
     {
           await loadTransaction(body.txData, body.chainId);
     }
     else
     {
-          console.error("txBackground wrong chain", body, "needs to be on chain", chain);
+          console.error("txBackground wrong chain", body, "needs to be on chain", CHAIN_ID);
     }
 
 }
@@ -581,6 +580,7 @@ async function loadTransaction(hash, chainId)
       	};
 };
 
+/*
 async function addBalance( address, amount, description)
 {
 	console.log("addBalance: address: ", address, "amount: ", amount);
@@ -636,17 +636,16 @@ async function transferToken(tokenId, address, credit)
 	return false;
 }
 
+*/
 
 module.exports = {
-    rpcURL,
+    RPC_URL,
     virtuoso,
     provider,
     signer,
     getBalance,
     getTokenPrice,
     txBackground,
-    addBalance,
-    transferToken,
     initAlgoliaTokens,
     testEthCrypto
 }
