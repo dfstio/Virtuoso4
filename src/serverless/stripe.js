@@ -5,7 +5,8 @@ const URL = process.env.URL;
 const delayMS = 1000;
 
 
-const { addBalance, transferToken, getTokenPrice } = require("./contract");
+const { addBalance, getTokenPrice } = require("./contract");
+const { lambdaTransferToken, lambdaAddBalance } = require("../serverless/lambda");
 const DEBUG = true;
 
 
@@ -15,9 +16,9 @@ async function checkoutCompleted(body, headers)
         //if(DEBUG) console.log("checkoutCompleted ", body, headers, STRIPE_ENDPOINT_SECRET, STRIPE_KEY);
         const sig = headers['stripe-signature'];
         let endpointSecret = STRIPE_ENDPOINT_SECRET;
-        if( (process.env.CONTEXT != undefined) && (process.env.CONTEXT == 'dev') ) endpointSecret  = "whsec_vEiZFsGgAlXHXaUOFgla0MoFS8hVrtdt";
+        if( (process.env.CONTEXT != undefined) && (process.env.CONTEXT == 'dev') ) endpointSecret  = "whsec_z15BzPOir0nXvUcGGsavF2FuTr1diPQT";
         let event;
-        //if(DEBUG) console.log("checkoutCompleted start");
+         if(DEBUG) console.log("checkoutCompleted start", endpointSecret, process.env.CONTEXT );
 
          try {
            event = stripe.webhooks.constructEvent(body, sig, endpointSecret);
@@ -84,12 +85,12 @@ async function handleCheckoutCompleted(checkout )
          switch (checkout.metadata.type) {
             case 'mint':
             console.log("Mint: adding balance");
-            await addBalance(checkout.metadata.address, 1000, "10 NFT mint pack bought");
+            await lambdaAddBalance(checkout.metadata.address, 1000, "10 NFT mint pack bought");
             break;
             case 'buy':
             console.log(`Buy`, checkout.metadata);
-            const id = parseInt(checkout.metadata.tokenID);
-            await transferToken(id, checkout.metadata.address, checkout.metadata.credit);
+            const id = parseInt(checkout.metadata.tokenId);
+            await lambdaTransferToken(id, checkout.metadata,  checkout.customer_details.email );
             break;
             default:
             // Unexpected event type
@@ -99,8 +100,8 @@ async function handleCheckoutCompleted(checkout )
        else if( checkout.payment_status == 'unpaid' && checkout.metadata.type == 'buy' && paymentIntent.status == 'requires_capture')
        {
          console.log("Checkout require capture");
-         const id = parseInt(checkout.metadata.tokenID);
-         const status = await transferToken(id, checkout.metadata.address, checkout.metadata.credit);
+         const id = parseInt(checkout.metadata.tokenId);
+         const status = await lambdaTransferToken(id, checkout.metadata,  checkout.customer_details.email );
          if( status)
          {
            const intent = await stripe.paymentIntents.capture(paymentIntent.id);
@@ -113,21 +114,21 @@ async function handleCheckoutCompleted(checkout )
 
 }
 
-async function createCheckoutSession(queryObject)
+async function createCheckoutSession(body)
 {
-  if(DEBUG) console.log("createCheckoutSession type: ", queryObject.type, " tokenID: ", queryObject.tokenID, " address: ", queryObject.address);
+  if(DEBUG) console.log("createCheckoutSession body", body);
 
   const success_url = URL + "/checkout/success";
 	const cancel_url = URL + "/checkout/cancel";
 
-  if( queryObject.type == "buy")
+  if( body.type == "buy")
   {
 
-		const token =  await getTokenPrice(queryObject.tokenID);
+		const token =  await getTokenPrice(body.tokenId);
 		if(DEBUG) console.log("createCheckoutSession token:", token);
 
 
-		if( token.onSale )
+		if( token.onSale && (token.saleID === body.saleID))
 		{
 			  const currency = token.sale.currency;
 			  const amount = token.sale.price * 100;
@@ -159,17 +160,17 @@ async function createCheckoutSession(queryObject)
 			   mode: 'payment',
 			   success_url: success_url,
 			   cancel_url: cancel_url,
-			   client_reference_id: queryObject.address,
+			   client_reference_id: body.address,
 			   payment_intent_data: { capture_method: 'manual'},
-			   metadata: { type: "buy", address: queryObject.address, tokenID: queryObject.tokenID, credit: creditAmount  },
+			   metadata: { type: "buy", address: body.address, tokenId: body.tokenId, saleID: body.saleID, credit: creditAmount  },
 			 });
 			 return  session.url;
 		}
-		else console.error("Token No ", queryObject.tokenID, " is not on sale" );
+		else console.error("Token No ", body.tokenId, " is not on sale" );
 	}
-	else if(queryObject.type == "mint" )
+	else if(body.type == "mint" )
 	{
-		console.log("Mint order received from ", queryObject.address);
+		console.log("Mint order received from ", body.address);
 	   const session = await stripe.checkout.sessions.create({
 		 payment_method_types: [
 		   'card',
@@ -184,8 +185,8 @@ async function createCheckoutSession(queryObject)
 		 mode: 'payment',
 		 success_url: success_url,
 		 cancel_url: cancel_url,
-		 client_reference_id: queryObject.address,
-		 metadata: { type: "mint", address: queryObject.address },
+		 client_reference_id: body.address,
+		 metadata: { type: "mint", address: body.address },
 	   });
 
 	   return  session.url;

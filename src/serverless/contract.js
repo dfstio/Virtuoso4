@@ -15,7 +15,7 @@ const virtuoso = new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
 const inter = new ethers.utils.Interface(VirtuosoNFTJSON);
 
 //const fetch = require('node-fetch');
-const axios = require("axios");
+//const axios = require("axios");
 //const {  dbWriteToken, dbReadToken } = require("./dynamodb");
 const {  alWriteToken, alDeleteToken } = require("./algolia");
 const TOKEN_JSON = { isLoading: false, isTokenLoaded: false, isPriceLoaded: false, owner: "", name: "", onSale: false };
@@ -248,6 +248,7 @@ async function getTokenPrice(tokenId)
 
 
              const saleID = await virtuoso.salesIndex(tokenId);
+             token.saleID = saleID.toString();
              if(DEBUG) console.log("loadToken", tokenId.toString(), "saleID", saleID);
              if( saleID == 0 )
              {

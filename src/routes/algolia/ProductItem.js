@@ -55,31 +55,34 @@ const ProductItem = ({item}) => {
           type="primary"
           onClick={ async () => {
                     if(DEBUG) console.log("Buy clicked");
-                    if( canSell == false)
+
+                    message.loading("Preparing checkout page", 10);
+                    const myaddress = await metamaskLogin();
+                    dispatch(updateAddress(myaddress));
+
+                    if( myaddress !== item.owner)
                     {
-                         message.loading("Preparing checkout page", 10);
-                         const myaddress = await metamaskLogin();
-                         dispatch(updateAddress(myaddress));
-                         let buyTokenPath = "/api/create-checkout-session?type=buy&address=" + "generate" +
-                          "&tokenID=" + item.tokenId.toString();
-                         if( myaddress !== "")
-                         {
-                             buyTokenPath = "/api/create-checkout-session?type=buy&address=" + myaddress +
-                               "&tokenID=" + item.tokenId.toString();
-                         };
+                           let buyTokenPath = "/api/create-checkout-session?type=buy&address=" + "generate" +
+                            "&tokenId=" + item.tokenId.toString() + "&saleID=" + item.saleID.toString();
+                           if( myaddress !== "")
+                           {
+                               buyTokenPath = "/api/create-checkout-session?type=buy&address=" + myaddress +
+                                 "&tokenId=" + item.tokenId.toString() + "&saleID=" + item.saleID.toString();;
+                           };
 
-                         let form = document.createElement('form');
-                         form.action = buyTokenPath;
-                         form.method = 'POST';
+                           let form = document.createElement('form');
 
-                         // the form must be in the document to submit it
-                         document.body.append(form);
+                           form.action = buyTokenPath;
+                           form.method = 'POST';
 
-                         form.submit();
+                           // the form must be in the document to submit it
+                           document.body.append(form);
+
+                           form.submit();
                     }
                     else
                     {
-                          message.error("Sell is not implemented yet", 10);
+                          message.error("You already own this NFT token", 10);
                     };
 
                 }}

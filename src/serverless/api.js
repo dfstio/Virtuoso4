@@ -2,6 +2,17 @@
 
 const DEBUG = true;
 
+const add = (address, amount, description) => {
+  const data = {"address": address, "amount": amount, "description": description };
+  if(DEBUG) console.log("add api: ", data);
+  return fetch('/api/add-background', {
+    body: JSON.stringify(data),
+    method: 'POST'
+  }).then(response => {
+    return response.json()
+  })
+}
+
 const sell = (tokenId, sellData) => {
   const data = {"tokenId": tokenId, "data": sellData };
   if(DEBUG) console.log("sell api: ", data);
@@ -80,5 +91,6 @@ export default {
   getCollection: getCollection,
   hello: hello,
   sell: sell,
-  encrypt: encrypt
+  encrypt: encrypt,
+  add: add
 }

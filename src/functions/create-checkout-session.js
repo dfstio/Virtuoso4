@@ -17,9 +17,12 @@ exports.handler = async(event, context) => {
     try {
 
         // parse form data
-        console.log("createCheckoutSession called 1: ", event.queryStringParameters);
+        //console.log("createCheckoutSession called 1: ", event.body);
+        //let body1 = event.body;
+        //const body2 = body1.replace("params=", "");
         const body = event.queryStringParameters;
-        console.log("createCheckoutSession called 2: ", body);
+        //const body = JSON.parse(body2);
+        console.log("createCheckoutSession called: ", body);
         //console.log("getToken: ", body);
 
         let result = await createCheckoutSession(body);

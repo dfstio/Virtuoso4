@@ -25,6 +25,22 @@ async function lambdaSell(tokenId, data)
 };
 
 
+async function  lambdaTransferToken(tokenId, checkout_metadata, email_address)
+{
+    const data = { checkout_metadata: checkout_metadata, email_address: email_address };
+    let result = await lambdaHub("transfer", tokenId, data);
+    if(DEBUG)  console.log("lambdaTransferToken result",  result );
+    return result.success;
+};
+
+async function  lambdaAddBalance( address, amount, description)
+{
+    const data = { address: address, amount: amount, description: description };
+    let result = await lambdaHub("add", 0, data);
+    if(DEBUG)  console.log("lambdaAddBalance result",  result );
+    return result.success;
+};
+
 async function lambdaHub(action, tokenId, data)
 {
 
@@ -163,6 +179,8 @@ function decrypt(toDecrypt, privateKey)
 module.exports = {
     lambdaGetOperator,
     lambdaSell,
+    lambdaTransferToken,
+    lambdaAddBalance,
     encrypt,
     decrypt
 }
