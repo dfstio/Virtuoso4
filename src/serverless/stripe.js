@@ -162,7 +162,17 @@ async function createCheckoutSession(body)
 			   cancel_url: cancel_url,
 			   client_reference_id: body.address,
 			   payment_intent_data: { capture_method: 'manual'},
-			   metadata: { type: "buy", address: body.address, tokenId: body.tokenId, saleID: body.saleID, credit: creditAmount  },
+			   metadata: {
+			        type: "buy",
+			        address: body.address,
+			        tokenId: body.tokenId,
+			        saleID: body.saleID,
+			        credit: creditAmount,
+			        currency: currency,
+			        name: token.uri.name,
+			        price: token.sale.price,
+			        image: image
+			        },
 			 });
 			 return  session.url;
 		}
