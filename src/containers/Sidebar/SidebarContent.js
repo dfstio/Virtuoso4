@@ -53,6 +53,12 @@ const SidebarContent = ({sidebarCollapsed, setSidebarCollapsed}) => {
                 <IntlMessages id="sidebar.samplePage"/>
               </Link>
             </Menu.Item>
+               <Menu.Item key="settings">
+              <Link to="/settings">
+                <i className="icon icon-widgets"/>
+                <IntlMessages id="sidebar.settings"/>
+              </Link>
+            </Menu.Item>
 
 
           </Menu>

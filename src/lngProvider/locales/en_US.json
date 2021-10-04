@@ -310,5 +310,6 @@
   "sidebar.map.weather": "Weather map",
   "sidebar.extensions.shuffle": "Shuffle",
   "sidebar.extensions.profile": "Profile",
-  "sidebar.social": "Social Apps"
+  "sidebar.social": "Social Apps",
+  "sidebar.settings": "Settings"
 }
