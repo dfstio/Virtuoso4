@@ -21,10 +21,12 @@ const ProductItem = ({item}) => {
       buttonId = "sidebar.algolia.sell";
       canSell = true;
   }
+  const tokenPath = "/token/" + item.chainId + "/" + item.contract + "/" + item.tokenId;
 
 
   return (
     <div className="gx-product-item gx-product-vertical" >
+    <a href={tokenPath}>
       <div className="gx-product-image">
         <img
           src={`https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/${
@@ -121,6 +123,7 @@ const ProductItem = ({item}) => {
           <Highlight attribute="shortdescription" hit={item}/>
         </div>
       </div>
+       </a>
     </div>
   );
 };
