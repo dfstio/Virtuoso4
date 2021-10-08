@@ -45,8 +45,8 @@ const HorizontalNav = () => {
             <Link to="/marketplace"><i className="icon icon-shopping-cart "/>
             <IntlMessages id="sidebar.algolia"/></Link>
       </Menu.Item>
-        <Menu.Item className="gx-menu-horizontal-flex gx-submenu-popup-curve"  key="sample">
-          <Link to="/sample">
+        <Menu.Item className="gx-menu-horizontal-flex gx-submenu-popup-curve"  key="mint">
+          <Link to="/mint">
             <i className="icon icon-widgets"/>
             <IntlMessages id="sidebar.samplePage"/>
           </Link>

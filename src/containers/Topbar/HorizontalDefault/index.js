@@ -128,7 +128,7 @@ const HorizontalDefault = () => {
 
             </div>
 */}
-            <ul className="gx-header-notifications gx-ml-auto">
+            <ul className="gx-header-notifications gx-ml-auto" style={{"padding-right": "10px"}}>
 
 {/*}
               <li className="gx-notify gx-notify-search gx-d-inline-block gx-d-lg-none">
@@ -166,6 +166,7 @@ const HorizontalDefault = () => {
                 </Popover>
               </li>
 */}
+              <li className="gx-user-nav"><UserInfo/></li>
               <li className="gx-language">
                 <Popover overlayClassName="gx-popover-horizantal" placement="bottomRight"
                          content={languageMenu()} trigger="click">
@@ -174,7 +175,7 @@ const HorizontalDefault = () => {
               </span>
                 </Popover>
               </li>
-              <li className="gx-user-nav"><UserInfo/></li>
+
             </ul>
           </div>
         </div>

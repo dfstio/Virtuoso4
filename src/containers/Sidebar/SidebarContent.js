@@ -47,8 +47,8 @@ const SidebarContent = ({sidebarCollapsed, setSidebarCollapsed}) => {
                   <Link to="/marketplace"><i className="icon icon-shopping-cart "/>
                   <IntlMessages id="sidebar.algolia"/></Link>
             </Menu.Item>
-            <Menu.Item key="sample">
-              <Link to="/sample">
+            <Menu.Item key="mint">
+              <Link to="/mint">
                 <i className="icon icon-widgets"/>
                 <IntlMessages id="sidebar.samplePage"/>
               </Link>

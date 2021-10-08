@@ -6,6 +6,7 @@ import {Button} from "antd";
 import IntlMessages from "util/IntlMessages";
 import { metamaskLogin } from "../../blockchain/metamask";
 import  SellButton  from "../algolia/Sell";
+import ReactPlayer from 'react-player';
 const DEBUG = true;
 
 const TokenItem = ({item}) => {
@@ -24,17 +25,30 @@ const TokenItem = ({item}) => {
 
   return (
     <div className="gx-product-item gx-product-vertical" >
-      <div className="gx-product-image">
-        <img
-          src={`https://res.cloudinary.com/virtuoso/image/fetch/h_500,q_100,f_auto/${
-            item.image
-            }`} alt=''
-        />
+      <div className="gx-product-image" style={{position: "relative"}}>
+       {(item.uri.animation_url !== undefined && item.uri.animation_url !== "")?
+           (
+              <ReactPlayer
+              url={item.uri.animation_url}
+              controls={true}
+              //light={item.image}
+              width='100%'
+              height='100%'
+              />
+            )
+            :
+            (
+               <img
+                 src={`https://res.cloudinary.com/virtuoso/image/fetch/h_500,q_100,f_auto/${
+                   item.image
+                   }`} alt=''
+               />
+            )}
       </div>
       <div className="gx-product-body" >
 
         <div className="gx-product-name">
-        <span style={{"font-size":22}}>
+        <span style={{"font-size":22, "color":"#038fde"}}>
           {item.name}
         </span>
         {canSell?(

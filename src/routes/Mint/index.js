@@ -5,7 +5,7 @@ import {Button} from "antd";
 
 import IntlMessages from "util/IntlMessages";
 
-const SamplePage = () => {
+const Mint = () => {
 
   const address = useSelector(({blockchain}) => blockchain.address);
 
@@ -35,4 +35,4 @@ const SamplePage = () => {
   );
 };
 
-export default SamplePage;
+export default Mint;

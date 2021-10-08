@@ -151,7 +151,7 @@ const handleAccountsChanged = useCallback( async (accounts) => {
     blockExplorer = network.blockExplorer + "address/" + address;
     result =
     (
-            <ul className="gx-login-list">
+            <ul className="gx-login-list" >
               <li
                onClick={ async () => {
                     window.open(blockExplorer);

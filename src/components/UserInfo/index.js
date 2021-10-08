@@ -5,6 +5,7 @@ import {useDispatch, useSelector} from "react-redux";
 
 const UserInfo = () => {
 
+  const address = useSelector(({blockchain}) => blockchain.address);
 
   const userMenuOptions = (
     <ul className="gx-user-popover">
@@ -35,16 +36,26 @@ const UserInfo = () => {
   return (
     <Popover overlayClassName="gx-popover-horizantal" placement="bottomRight" content={userMenuOptions}
              trigger="click">
-      <Jazz className="gx-avatar gx-pointer" />
+      {(address==="")?
+      (
+          ""
+      )
+      :
+      (
+      <Jazz
+        className="gx-avatar gx-pointer"
+        address={address}
+        />
+      )}
     </Popover>
   );
 
 };
 
-const Jazz = () => {
+const Jazz = (props) => {
 
 // 38 x 38
-  const address = useSelector(({blockchain}) => blockchain.address);
+  const address = props.address;
   const diameter = 38;
   //console.log("Jazz", address);
 
@@ -71,6 +82,7 @@ const Jazz = () => {
           container.current.appendChild(identicon);
 
   },[address])
+
 
 return (<div ref={container}  />)
 
