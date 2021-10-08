@@ -34,12 +34,15 @@ const ProductItem = ({item}) => {
             }`} alt=''
         />
       </div>
+      </a>
       <div className="gx-product-body" >
 
         <div className="gx-product-name">
+        <a href={tokenPath}>
         <span>
           <Highlight attribute="name" hit={item}/>
         </span>
+         </a>
         {canSell?(
         <span style={{ float: "right"}}>
         <SellButton
@@ -123,7 +126,6 @@ const ProductItem = ({item}) => {
           <Highlight attribute="shortdescription" hit={item}/>
         </div>
       </div>
-       </a>
     </div>
   );
 };
