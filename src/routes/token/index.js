@@ -1,38 +1,69 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector} from "react-redux";
 import api from "../../serverless/api";
 import {Button} from "antd";
 
 import IntlMessages from "util/IntlMessages";
+import TokenItem from './Token';
+import algoliasearch from 'algoliasearch';
+const {REACT_APP_ALGOLIA_KEY, REACT_APP_ALGOLIA_PROJECT} = process.env;
+const searchClient = algoliasearch(REACT_APP_ALGOLIA_PROJECT, REACT_APP_ALGOLIA_KEY);
+const searchIndex = searchClient.initIndex('virtuoso');
+const DEBUG = true;
 
 const Token = ({match}) => {
 
   const address = useSelector(({blockchain}) => blockchain.address);
-  const {id} = useParams();
-  console.log("id", match, match.params, match.params.chainId, match.params.contract, match.params.tokenId);
 
-  function add()
-  {
+  const [item, setItem] = useState();
+  const [messageText, setMessageText] = useState('Loading token');
 
-            console.log("Add balance clicked", address);
-            if( address !== "") api.add( address, 1000, "Added $10 ");
-  }
+  if(DEBUG) console.log("Token match", match.params.chainId, match.params.contract, match.params.tokenId);
+  if(DEBUG) console.log("Token item", item);
+
+    useEffect(() => {
+    async function getItem() {
+        const objectID = match.params.chainId.toString() + '.' + match.params.contract.toLowerCase() + '.' + match.params.tokenId.toString();
+        if(DEBUG) console.log("Token objectID", objectID);
+        try {
+             const newItem = await searchIndex.getObject(objectID);
+             if(DEBUG) console.log("Token item received", newItem);
+             setItem(newItem);
+
+        } catch (error)
+        {
+          console.log("Token item not received", error);
+          setMessageText("Token not found");
+        }
+
+
+    }
+    getItem();
+  }, [match]);
+
+
 
 
   return (
-    <div>
-      <h2 className="title gx-mb-4"><IntlMessages id="sidebar.settings"/></h2>
+     <div className="gx-algolia-content-inner">
 
-      <div className="gx-d-flex justify-content-center">
-        <h4>NFT Virtouso settings {match.params.chainId} {match.params.contract} {match.params.tokenId}</h4>
-      </div>
-      <div className="gx-d-flex justify-content-center">
-        <Button type="primary" onClick={add}
-        >
-        Token
-        </Button>
-      </div>
+      {(item===undefined)?
+      (
+        <div className="gx-d-flex justify-content-center">
+        {messageText}
+         </div>
+      ):
+      (
+      <div>
+            <TokenItem
+              item={item}
+              key="MyToken"
+
+              />
+         </div>
+      )
+      }
 
     </div>
   );

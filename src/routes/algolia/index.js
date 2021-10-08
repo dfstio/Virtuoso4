@@ -12,10 +12,8 @@ import algoliasearch from 'algoliasearch';
 
 const {Content} = Layout;
 
-const searchClient = algoliasearch('KJYWN9CKS8', 'e362c0f63b9afb700db75abfafecb1aa');
-//  'KJYWN9CKS8',
-//  'e5df9ff3c346eacace48ca6a18fab2c3'
-//);
+const {REACT_APP_ALGOLIA_KEY, REACT_APP_ALGOLIA_PROJECT} = process.env;
+const searchClient = algoliasearch(REACT_APP_ALGOLIA_PROJECT, REACT_APP_ALGOLIA_KEY);
 
 const App = props => (
   <InstantSearch className="gx-main-content"

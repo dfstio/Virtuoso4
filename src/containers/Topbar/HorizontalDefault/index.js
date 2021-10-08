@@ -107,7 +107,7 @@ const HorizontalDefault = () => {
               <img alt="" src="/assets/images/virtuoso.png"/></Link>
             <div
 
-                style={{"fontSize": "22px"}}
+                style={{"fontSize": "22px", "padding-left": "10px"}}
                 >
             NFT Virtuoso
             </div>
