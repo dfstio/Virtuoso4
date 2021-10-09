@@ -9,7 +9,7 @@ import  SellButton  from "../algolia/Sell";
 import ReactPlayer from 'react-player';
 const DEBUG = true;
 
-const TokenItem = ({item}) => {
+const TokenItem = ({item, small=false, preview=false}) => {
   //const icons = [];
   //console.log("Item: ", item);
   const address = useSelector(({blockchain}) => blockchain.address);
@@ -26,7 +26,7 @@ const TokenItem = ({item}) => {
   return (
     <div className="gx-product-item gx-product-vertical" >
       <div className="gx-product-image" style={{position: "relative"}}>
-       {(item.uri.animation_url !== undefined && item.uri.animation_url !== "")?
+       {(small==false && item.uri.animation_url !== undefined && item.uri.animation_url !== "")?
            (
               <ReactPlayer
               url={item.uri.animation_url}
