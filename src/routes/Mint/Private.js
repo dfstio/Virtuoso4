@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import { useSelector} from "react-redux";
 import api from "../../serverless/api";
-import {Button, Row, Col} from "antd";
+import {Button, Row, Col, Form, Input, Radio, Card } from "antd";
 import TokenItem from '../token/Token';
 
 import IntlMessages from "util/IntlMessages";
@@ -73,10 +73,168 @@ const startToken =
   "objectID": "80001.0x49368c4ed51be6484705f07b63ebd92270923081.17"
 };
 
+const STARTING_JSON = {
+"name": "My NFT",
+"type": "object",
+"image": "",
+"category": "",
+"visibility": "private",
+"external_url":"nftvirtuoso.io",
+"animation_url":"",
+"description": "",
+"license": "NFT Virtuoso V1 personal",
+"license_id": "0",
+"title": "",
+"properties": { "image": "", "animation": ""},
+"unlockable_description": "",
+"contains_unlockable_content": false,
+"unlockable": {
+    "image": "",
+    "video": "",
+    "audio": "",
+    "pdf": "",
+    "files": "",
+    "files_number": 0
+  }
+};
+
+
+const DEBUG = true;
+
 const MintPrivate = () => {
 
   const address = useSelector(({blockchain}) => blockchain.address);
   const [token, setToken] = useState(startToken);
+
+
+
+  const MintForm = () => {
+  const [form] = Form.useForm();
+
+  const onValuesChange = (values) => {
+
+    if(DEBUG) console.log("onValuesChange", values);
+
+  };
+
+    const onFinish = async (values) => {
+
+    if(DEBUG) console.log("onFinish", values);
+
+  };
+
+
+
+    return (
+      <Card className="gx-card" title="Create Private NFT">
+      <Form
+        form={form}
+        labelCol={{
+          span: 4,
+        }}
+        wrapperCol={{
+          span: 14,
+        }}
+        layout="horizontal"
+        initialValues={STARTING_JSON}
+        onFinish={onFinish}
+        onValuesChange={onValuesChange}
+      >
+              <Form.Item label="Song name" name="name">
+                <Input />
+              </Form.Item>
+              <Form.Item
+              label="Description"
+              name="description"
+              placeholder="Please describe your song"
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item>
+              <span className="ant-form-text" style={{ paddingBottom: 16, textAlign: "left" }}>
+              Please upload image (350x350 is recommended)
+              </span>
+
+              <input
+                type="file"
+                name="imageupload"
+                id="imageupload"
+                style={{ paddingLeft: 130, paddingBottom: 32 }}
+                //onChange={onChangeImage}
+              />
+              </Form.Item>
+              <Form.Item>
+              <span className="ant-form-text" style={{ paddingBottom: 16, textAlign: "left"  }}>Please upload video</span>
+
+              <input
+                type="file"
+                name="videoupload"
+                id="videoupload"
+                style={{ paddingLeft: 130, paddingBottom: 32 }}
+                //onChange={onChangeVideo}
+              />
+              </Form.Item>
+              <Form.Item label="External URL" name="external_url">
+                <Input />
+              </Form.Item>
+                 <Form.Item label="Artist"
+                 name="title"
+                 placeholder="Artist name"
+                 >
+                <Input />
+              </Form.Item>
+
+              <Form.Item>
+              <span className="ant-form-text" style={{ paddingBottom: 16, textAlign: "left"  }}>Unlockable content: </span>
+             </Form.Item>
+               <Form.Item
+               label="Description"
+               name="unlockable_description"
+               placeholder="This text and content below can see only the owner of NFT"
+               >
+                <Input />
+              </Form.Item>
+              <Form.Item>
+              <span className="ant-form-text" style={{ paddingBottom: 16, textAlign: "left" }}>
+              Please upload unlockable image (350x350 is recommended)
+              </span>
+
+              <input
+                type="file"
+                name="uimageupload"
+                id="uimageupload"
+                style={{ paddingLeft: 130, paddingBottom: 32 }}
+                //onChange={onChangeUnlockableImage}
+              />
+
+              </Form.Item>
+              <Form.Item>
+              <span className="ant-form-text" style={{ paddingBottom: 16, textAlign: "left"  }}>Please upload unlockable video</span>
+
+              <input
+                type="file"
+                name="uvideoupload"
+                id="uvideoupload"
+                style={{ paddingLeft: 130, paddingBottom: 32 }}
+                //onChange={onChangeUnlockableVideo}
+              />
+
+              </Form.Item>
+              <Form.Item>
+              <span className="ant-form-text" style={{ paddingBottom: 16, textAlign: "left"  }}>Please upload one or more files in any format (PDF, ZIP, etc)</span>
+
+              <input
+                type="file"
+                name="ufileupload"
+                id="ufileupload"
+                multiple
+                style={{ paddingLeft: 130, paddingBottom: 32 }}
+                //onChange={onChangeUnlockableFile}
+              />
+              </Form.Item>
+      </Form>
+    </Card> )
+};
 
   function add()
   {
@@ -90,7 +248,7 @@ const MintPrivate = () => {
     <div className="gx-main-content">
       <Row>
         <Col xxl={18} xl={18} lg={18} md={12} sm={24} xs={24}>
-          Form
+          <MintForm/>
         </Col>
         <Col xxl={6} xl={6} lg={6} md={12} sm={24} xs={24}>
             <TokenItem

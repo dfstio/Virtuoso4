@@ -43,19 +43,20 @@ const SidebarContent = ({sidebarCollapsed, setSidebarCollapsed}) => {
             theme={themeType === THEME_TYPE_LITE ? 'lite' : 'dark'}
             mode="inline">
 
+            <Menu.Item key="mint">
+              <Link to="/mint">
+                <i className="icon icon-culture-calendar"/>
+                <IntlMessages id="sidebar.samplePage"/>
+              </Link>
+            </Menu.Item>
+
             <Menu.Item key="marketplace">
                   <Link to="/marketplace"><i className="icon icon-shopping-cart "/>
                   <IntlMessages id="sidebar.algolia"/></Link>
             </Menu.Item>
-            <Menu.Item key="mint">
-              <Link to="/mint">
-                <i className="icon icon-widgets"/>
-                <IntlMessages id="sidebar.samplePage"/>
-              </Link>
-            </Menu.Item>
                <Menu.Item key="settings">
               <Link to="/settings">
-                <i className="icon icon-widgets"/>
+                <i className="icon icon-components"/>
                 <IntlMessages id="sidebar.settings"/>
               </Link>
             </Menu.Item>

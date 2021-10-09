@@ -20,12 +20,13 @@ const Mint = () => {
 
 
   return (
-    <div className="gx-main-content">
+    <div className="gx-algolia-content-inner">
       <Row>
-      <Col xxl={12} xl={12} lg={12} md={12} sm={24} xs={24}>
+      <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
             <MintMenuItem
-              creator="Your Private Token"
+              creator="Your Private NFT Token"
               title="Create your own private NFT token"
+              link="/mint/private"
               price="USD 10 for 10 private NFT tokens"
               description="Private NFT token will be visible only to you on NFT Virtuoso, except when you'll put it for sale"
               image="https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/https://nftvirtuoso.io/mintimages/private.png"
@@ -33,7 +34,7 @@ const Mint = () => {
 
               />
         </Col>
-        <Col xxl={12} xl={12} lg={12} md={12} sm={24} xs={24}>
+        <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
             <MintMenuItem
               creator="Your Public NFT token"
               title="Create your own public NFT token"
@@ -44,7 +45,7 @@ const Mint = () => {
 
               />
         </Col>
-        <Col xxl={12} xl={12} lg={12} md={12} sm={24} xs={24}>
+        <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
             <MintMenuItem
               creator="DJ Korean"
               title="DJ Korean Последний герой"
@@ -55,7 +56,7 @@ const Mint = () => {
 
               />
         </Col>
-        <Col xxl={12}  xl={12} lg={12} md={12} sm={24} xs={24}>
+        <Col xxl={8}  xl={8} lg={12} md={12} sm={24} xs={24}>
             <MintMenuItem
               creator="DJ Korean"
               title="DJ Korean Push The Button"
@@ -66,7 +67,7 @@ const Mint = () => {
 
               />
         </Col>
-        <Col xxl={12} xl={12} lg={12} md={12} sm={24} xs={24}>
+        <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
             <MintMenuItem
               creator="Dokar Japanese Taping"
               title="Taping Video and Instruction"
@@ -77,7 +78,7 @@ const Mint = () => {
 
               />
         </Col>
-                <Col xxl={12} xl={12} lg={12} md={12} sm={24} xs={24}>
+                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
             <MintMenuItem
               creator="Artist L"
               title="Глубина NFT"
