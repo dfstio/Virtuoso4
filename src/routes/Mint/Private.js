@@ -1,10 +1,18 @@
 import React, {useState} from "react";
 import { useSelector} from "react-redux";
 import api from "../../serverless/api";
-import {Button, Row, Col, Form, Input, Radio, Card } from "antd";
+import {Button, Row, Col, Form, Input, Radio, Card, Upload, Switch, Select } from "antd";
 import TokenItem from '../token/Token';
-
+import {LoadingOutlined, PlusOutlined} from '@ant-design/icons';
+import {message} from 'antd';
 import IntlMessages from "util/IntlMessages";
+
+const { addFileToIPFS } = require("../../blockchain/ipfs");
+const { TextArea } = Input;
+const { Option } = Select;
+
+
+
 
 const startToken =
 {
@@ -23,13 +31,15 @@ const startToken =
   "price": 101,
   "currency": "USD",
   "category": "Music",
-  "image": "https://ipfs.io/ipfs/QmQAGbHxf9q1p1ocsp12LKtwMV8msYGW6N4A9yiGSovuiS",
+  "image": "",
+  "contains_unlockable_content": false,
+  "unlockable_description": "",
   "uri": {
     "name": "Последний герой",
     "type": "object",
     "image": "https://ipfs.io/ipfs/QmQAGbHxf9q1p1ocsp12LKtwMV8msYGW6N4A9yiGSovuiS",
     "external_url": "nftvirtuoso.io",
-    "animation_url": "https://arweave.net/QQbPpRqmSZorvVsjEW-JF7p2n83i50sdI-fdBRixHwQ",
+    "animation_url": "",
     "description": "Tribute группе Кино",
     "license": "NFT Virtuoso Personal License Agreement V1",
     "license_id": "0",
@@ -105,27 +115,90 @@ const MintPrivate = () => {
 
   const address = useSelector(({blockchain}) => blockchain.address);
   const [token, setToken] = useState(startToken);
-
-
-
-  const MintForm = () => {
+  const [counter, setCounter] = useState(0);
+  const [loadingImage, setLoadingImage] = useState(false);
+  const [loadingVideo, setLoadingVideo] = useState(false);
+  const [showUnlockable, setShowUnlockable] = useState(false);
   const [form] = Form.useForm();
 
-  const onValuesChange = (values) => {
+  const onValuesChange = async (values) => {
 
-    if(DEBUG) console.log("onValuesChange", values);
+    if(DEBUG) console.log("onValuesChange 1", values);
+    let newToken = token;
+    //if( values.title !== undefined) token.name = values.title;
+    if( values.name !== undefined) newToken.name = values.name;
+    if( values.description !== undefined) newToken.description = values.description;
+    if( values.category !== undefined) newToken.category = values.category;
+    if( values.contains_unlockable_content !== undefined)
+    {
+        setShowUnlockable(values.contains_unlockable_content);
+        newToken.contains_unlockable_content = values.contains_unlockable_content;
+    };
+
+    setToken(newToken);
+    if(DEBUG) console.log("onValuesChange 2", token.name);
+    setCounter(counter+1);
+
 
   };
 
-    const onFinish = async (values) => {
+  const onFinish = async (values) => {
 
     if(DEBUG) console.log("onFinish", values);
 
   };
 
 
+    const categoryChange = (value) => {
 
-    return (
+    if(DEBUG) console.log("categoryChange", value);
+    let newToken = token;
+    newToken.category = value;
+    setToken(newToken);
+    setCounter(counter+1);
+
+  };
+
+    const beforeUploadImage = async (file) => {
+
+        if(DEBUG) console.log("beforeUploadImage ", file);
+        setLoadingImage(true);
+        let newToken = token;
+        const key = 'IPFSimageloading';
+        message.loading({content: `Uploading ${file.name} to IPFS`, key});
+
+        const hash = await addFileToIPFS(file);
+        if(DEBUG) console.log("Image File added to IPFS: ", hash.path);
+        const url = `https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/https://ipfs.io/ipfs/${hash.path}`;
+
+        newToken.image = url;
+        message.success({content: `File ${file.name} uploaded to https://ipfs.io/ipfs/${hash.path}`, key, duration: 5});
+        setToken(newToken);
+        setLoadingImage(false);
+        return false;
+  };
+
+    const beforeUploadVideo = async (file) => {
+        if(DEBUG) console.log("beforeUploadVideo ", file);
+        setLoadingVideo(true);
+        let newToken = token;
+        const key = 'IPFSvideoloading';
+        message.loading({content: `Uploading ${file.name} to IPFS`, key, duration: 60});
+        const hash = await addFileToIPFS(file);
+        if(DEBUG) console.log("Video File added to IPFS: ", hash.path);
+        const url = `https://ipfs.io/ipfs/${hash.path}`;
+
+        newToken.uri.animation_url = url;
+        message.success({content: `File ${file.name} uploaded to https://ipfs.io/ipfs/${hash.path}`, key, duration: 5});
+        setToken(newToken);
+        setLoadingVideo(false);
+        return false;
+  };
+
+  return (
+    <div className="gx-main-content">
+      <Row>
+        <Col xxl={24} xl={24} lg={24} md={24} sm={24} xs={24}>
       <Card className="gx-card" title="Create Private NFT">
       <Form
         form={form}
@@ -136,140 +209,163 @@ const MintPrivate = () => {
           span: 14,
         }}
         layout="horizontal"
-        initialValues={STARTING_JSON}
+        initialValues={token}
         onFinish={onFinish}
         onValuesChange={onValuesChange}
       >
-              <Form.Item label="Song name" name="name">
-                <Input />
-              </Form.Item>
               <Form.Item
+                label="Name"
+                name="name"
+                rules={[
+                 {
+                   required: true,
+                   message: 'Please name your NFT',
+                 },
+               ]}
+                placeholder="Please name your NFT">
+              <Input />
+              </Form.Item>
+               <Form.Item
               label="Description"
               name="description"
-              placeholder="Please describe your song"
+              rules={[
+                 {
+                   required: true,
+                   message: 'Please describe your NFT',
+                 },
+               ]}
+              placeholder="Please describe your NFT"
               >
-                <Input />
+                <TextArea
+                autoSize={{ minRows: 2, maxRows: 10 }}
+                 />
               </Form.Item>
-              <Form.Item>
-              <span className="ant-form-text" style={{ paddingBottom: 16, textAlign: "left" }}>
-              Please upload image (350x350 is recommended)
-              </span>
 
-              <input
-                type="file"
-                name="imageupload"
-                id="imageupload"
-                style={{ paddingLeft: 130, paddingBottom: 32 }}
-                //onChange={onChangeImage}
-              />
-              </Form.Item>
-              <Form.Item>
-              <span className="ant-form-text" style={{ paddingBottom: 16, textAlign: "left"  }}>Please upload video</span>
 
-              <input
-                type="file"
-                name="videoupload"
-                id="videoupload"
-                style={{ paddingLeft: 130, paddingBottom: 32 }}
-                //onChange={onChangeVideo}
-              />
-              </Form.Item>
-              <Form.Item label="External URL" name="external_url">
-                <Input />
-              </Form.Item>
-                 <Form.Item label="Artist"
-                 name="title"
-                 placeholder="Artist name"
+              <Form.Item
+               name="category"
+               label="Category"
+               hasFeedback
+               rules={[
+                 {
+                   required: true,
+                   message: 'Please select category',
+                 },
+               ]}
+             >
+             <Row
+                gutter={24}
+                >
+              <Col span={10} >
+               <Select
+                  placeholder="Please select a category"
+                  onChange={categoryChange}
+                  >
+                 <Option value="Music">Music</Option>
+                 <Option value="Video">Video</Option>
+                 <Option value="Art">Art</Option>
+                 <Option value="Dance">Dance</Option>
+                 <Option value="Document">Document</Option>
+                 <Option value="Technology">Technology</Option>
+                 <Option value="Health">Health</Option>
+                 <Option value="Event">Event</Option>
+               </Select>
+
+             </Col>
+             <Col span={6} push={2}>
+                <Upload
+                   name="image"
+                   listType="picture-card"
+                   className="avatar-uploader"
+                   showUploadList={false}
+                   //action="//jsonplaceholder.typicode.com/posts/"
+                   beforeUpload={beforeUploadImage}
+                   //onChange={this.handleChange}
                  >
-                <Input />
+                   {token.image!=="" ? <img src={token.image} alt=""/> :
+                    (
+                      <div>
+                        {loadingImage ? <LoadingOutlined/> : <PlusOutlined/>}
+                         <div className="ant-upload-text">Image</div>
+                         </div>
+                    )}
+                 </Upload>
+
+                 </Col>
+                <Col span={6} push={2}>
+
+                  <Upload
+                   name="video"
+                   listType="picture-card"
+                   className="avatar-uploader"
+                   showUploadList={false}
+                   //action="//jsonplaceholder.typicode.com/posts/"
+                   beforeUpload={beforeUploadVideo}
+                   //onChange={this.handleChange}
+                 >
+                 {token.uri.animation_url!=="" ? <video width="100px" height="100px" src={token.uri.animation_url} alt=""/> :
+                    (
+                  <div>
+                    {loadingVideo ? <LoadingOutlined/> : <PlusOutlined/>}
+                      <div className="ant-upload-text">Video or Audio</div>
+                  </div>
+                  )}
+                 </Upload>
+
+                 </Col>
+                 </Row>
+                 </Form.Item>
+
+
+
+
+
+              <Form.Item
+                label="Unlockable content"
+                name="contains_unlockable_content"
+              >
+              <Switch />
               </Form.Item>
 
-              <Form.Item>
-              <span className="ant-form-text" style={{ paddingBottom: 16, textAlign: "left"  }}>Unlockable content: </span>
-             </Form.Item>
+              {showUnlockable?
+              (
                <Form.Item
                label="Description"
                name="unlockable_description"
                placeholder="This text and content below can see only the owner of NFT"
                >
-                <Input />
+                <TextArea
+                autoSize={{ minRows: 2, maxRows: 10 }}
+                 />
               </Form.Item>
-              <Form.Item>
-              <span className="ant-form-text" style={{ paddingBottom: 16, textAlign: "left" }}>
-              Please upload unlockable image (350x350 is recommended)
-              </span>
-
-              <input
-                type="file"
-                name="uimageupload"
-                id="uimageupload"
-                style={{ paddingLeft: 130, paddingBottom: 32 }}
-                //onChange={onChangeUnlockableImage}
-              />
-
-              </Form.Item>
-              <Form.Item>
-              <span className="ant-form-text" style={{ paddingBottom: 16, textAlign: "left"  }}>Please upload unlockable video</span>
-
-              <input
-                type="file"
-                name="uvideoupload"
-                id="uvideoupload"
-                style={{ paddingLeft: 130, paddingBottom: 32 }}
-                //onChange={onChangeUnlockableVideo}
-              />
-
-              </Form.Item>
-              <Form.Item>
-              <span className="ant-form-text" style={{ paddingBottom: 16, textAlign: "left"  }}>Please upload one or more files in any format (PDF, ZIP, etc)</span>
-
-              <input
-                type="file"
-                name="ufileupload"
-                id="ufileupload"
-                multiple
-                style={{ paddingLeft: 130, paddingBottom: 32 }}
-                //onChange={onChangeUnlockableFile}
-              />
-              </Form.Item>
+              ):("")}
+              <Form.Item >
+          <Button type="primary">Create NFT</Button>
+        </Form.Item>
       </Form>
-    </Card> )
-};
+    </Card>
 
-  function add()
-  {
-
-            console.log("Add balance clicked", address);
-            if( address !== "") api.add( address, 100, "Added $1 ");
-  }
-
-
-  return (
-    <div className="gx-main-content">
-      <Row>
-        <Col xxl={18} xl={18} lg={18} md={12} sm={24} xs={24}>
-          <MintForm/>
         </Col>
-        <Col xxl={6} xl={6} lg={6} md={12} sm={24} xs={24}>
+        <Col xxl={8} xl={8} lg={6} md={12} sm={24} xs={24}>
             <TokenItem
-              item={startToken}
+              item={token}
               small={true}
               preview={true}
               key="MintSmallToken"
 
               />
         </Col>
-        <Col xxl={12}  xl={12} lg={12} md={12} sm={24} xs={24}>
+        <Col xxl={8}  xl={8} lg={12} md={12} sm={24} xs={24}>
          <TokenItem
-              item={startToken}
+              item={token}
               key="MintBigToken"
               preview={true}
 
               />
         </Col>
-        <Col xxl={12} xl={12} lg={12} md={12} sm={24} xs={24}>
+        <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
          <TokenItem
-              item={startToken}
+              item={token}
               key="MintBigToken"
               preview={true}
 
