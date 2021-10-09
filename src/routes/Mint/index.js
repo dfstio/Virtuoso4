@@ -83,6 +83,8 @@ const Mint = () => {
               title="Глубина NFT"
               price="USD 5000"
               description="Описание картины глубина NFT"
+              image="https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/https://nftvirtuoso.io/mintimages/deepnft.jpg"
+
               key="Artist L Mint"
 
               />
