@@ -73,7 +73,7 @@ const startToken =
   "objectID": "80001.0x49368c4ed51be6484705f07b63ebd92270923081.17"
 };
 
-const Mint = () => {
+const MintCustom = () => {
 
   const address = useSelector(({blockchain}) => blockchain.address);
   const [token, setToken] = useState(startToken);
@@ -123,4 +123,4 @@ const Mint = () => {
   );
 };
 
-export default Mint;
+export default MintCustom;
