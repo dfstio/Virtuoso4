@@ -31,7 +31,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
               <ReactPlayer
               url={item.uri.animation_url}
               controls={true}
-              //light={item.image}
+              //light={true}
               width='100%'
               height='100%'
               />

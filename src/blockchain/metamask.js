@@ -179,6 +179,36 @@ export async function virtuosoSell(tokenId, ipfsHash, operatorAddress, unlockabl
 
 };
 
+export async function virtuosoMint(address, ipfsHash, unlockableIPFSHash, onEscrow)
+{
+    if(DEBUG) console.log("virtuosoMint called:", address, ipfsHash, unlockableIPFSHash, onEscrow);
+
+    signer = provider && provider.getSigner();
+    let txresult = '';
+
+    if( signer  && (address !== ""))
+    {
+           const chainId =  await window.ethereum.request({method: 'eth_chainId'});
+           const signerAddress = await signer.getAddress();
+           if(DEBUG) console.log("virtuosoMint called on chain", chainId, "and address", address, "signer address", signerAddress);
+
+           if((chainId === network.hexChainId) && (address == signerAddress))
+           {
+                const writeVirtuoso = signer && new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
+                if(DEBUG) console.log("virtuosoMint writeVirtuoso", writeVirtuoso);
+                txresult = await writeVirtuoso.mintItem(address, ipfsHash, unlockableIPFSHash, onEscrow);
+                // Send tx to server
+                await api.txSent(txresult.hash, network.chainId);
+
+           } else console.error("virtuosoMint error - wrong chain or address");
+    };
+
+    return txresult;
+
+};
+
+
+
 
 export function convertAddress(address)
 {

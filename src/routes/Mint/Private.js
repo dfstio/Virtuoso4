@@ -6,8 +6,10 @@ import TokenItem from '../token/Token';
 import {LoadingOutlined, PlusOutlined} from '@ant-design/icons';
 import {message} from 'antd';
 import IntlMessages from "util/IntlMessages";
+import { virtuosoMint } from "../../blockchain/metamask";
 
-const { addFileToIPFS } = require("../../blockchain/ipfs");
+const { addFileHashToIPFS, addToIPFS } = require("../../blockchain/ipfs");
+
 const { TextArea } = Input;
 const { Option } = Select;
 
@@ -22,10 +24,10 @@ const startToken =
   "vrtTokenId": "VRT1-17",
   "updated": 1633284972170,
   "owner": "0xa73CC65aBfb96FD65D6EF407535CFDeBBF77fCbb",
-  "name": "Последний герой",
-  "description": "Tribute группе Кино",
-  "shortdescription": "Tribute группе Кино",
-  "saleID": 19,
+  "name": "",
+  "description": "",
+  "shortdescription": "",
+  "saleID": 0,
   "onSale": false,
   "saleStatus": "on sale",
   "price": 101,
@@ -35,31 +37,22 @@ const startToken =
   "contains_unlockable_content": false,
   "unlockable_description": "",
   "uri": {
-    "name": "Последний герой",
+    "name": "",
     "type": "object",
-    "image": "https://ipfs.io/ipfs/QmQAGbHxf9q1p1ocsp12LKtwMV8msYGW6N4A9yiGSovuiS",
+    "image": "",
     "external_url": "nftvirtuoso.io",
     "animation_url": "",
-    "description": "Tribute группе Кино",
+    "description": "",
     "license": "NFT Virtuoso Personal License Agreement V1",
     "license_id": "0",
     "license_url": "https://arweave.net/wCPAjAJISEeHgrFCkX1xKML1ZF9A4pKT0ij0SmrQyJU",
-    "contains_unlockable_content": true,
+    "contains_unlockable_content": false,
     "unlockable_content_encryption": {
       "unlockableContentKey": "MetaMask.eth-sig-util.encrypt.x25519-xsalsa20-poly1305",
       "unlockableContent": "crypto-js.AES.encrypt"
     },
     "properties": {
-      "image": {
-        "MD5_Hash": "7da8efd95a38f088938e80f38f90087f",
-        "SHA256_Hash": "4728c12a728609ca32d328fd44ac73bfb59587f27b8486e53eee4efdbca66dc7",
-        "IPFShash": "QmQAGbHxf9q1p1ocsp12LKtwMV8msYGW6N4A9yiGSovuiS",
-        "URL": "https://ipfs.io/ipfs/QmQAGbHxf9q1p1ocsp12LKtwMV8msYGW6N4A9yiGSovuiS",
-        "filename": "lasthero.png",
-        "filetype": "image/png",
-        "lastModified": 1631695253436,
-        "size": 909890
-      },
+      "image": "",
       "animation": ""
     },
     "attributes": [
@@ -70,13 +63,13 @@ const startToken =
     ]
   },
   "sale": {
-    "price": 101,
+    "price": 100,
     "type": "fixedprice",
     "currency": "usd",
     "comment": "test",
-    "contains_unlockable_content": true,
+    "contains_unlockable_content": false,
     "operator": {
-      "address": "0xf640988326232A441540e4f01643318131aa5c02",
+      "address": "",
       "time": 1632691467099
     }
   },
@@ -117,9 +110,20 @@ const MintPrivate = () => {
   const [token, setToken] = useState(startToken);
   const [counter, setCounter] = useState(0);
   const [loadingImage, setLoadingImage] = useState(false);
+  const [minting, setMinting] = useState(false);
   const [loadingVideo, setLoadingVideo] = useState(false);
   const [showUnlockable, setShowUnlockable] = useState(false);
+  const [mintDisabled, setMintDisabled] = useState(true);
   const [form] = Form.useForm();
+
+
+
+  const checkCanMint = () => {
+
+        let newMintDisabled = true;
+        if( token.name !== "" && token.description !== "" && token.image !== "" && address !== "") newMintDisabled = false;
+        if( newMintDisabled !== mintDisabled ) setMintDisabled(newMintDisabled);
+  };
 
   const onValuesChange = async (values) => {
 
@@ -138,6 +142,7 @@ const MintPrivate = () => {
     setToken(newToken);
     if(DEBUG) console.log("onValuesChange 2", token.name);
     setCounter(counter+1);
+    checkCanMint();
 
 
   };
@@ -156,6 +161,7 @@ const MintPrivate = () => {
     newToken.category = value;
     setToken(newToken);
     setCounter(counter+1);
+    checkCanMint();
 
   };
 
@@ -167,14 +173,14 @@ const MintPrivate = () => {
         const key = 'IPFSimageloading';
         message.loading({content: `Uploading ${file.name} to IPFS`, key});
 
-        const hash = await addFileToIPFS(file);
-        if(DEBUG) console.log("Image File added to IPFS: ", hash.path);
-        const url = `https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/https://ipfs.io/ipfs/${hash.path}`;
-
-        newToken.image = url;
-        message.success({content: `File ${file.name} uploaded to https://ipfs.io/ipfs/${hash.path}`, key, duration: 5});
+        const result = await addFileHashToIPFS(file);
+        if(DEBUG) console.log("Image File added to IPFS: ", result);
+        newToken.image = result.url;
+        newToken.uri.properties.image = result;
+        message.success({content: `File ${file.name} uploaded to ${result.url}`, key, duration: 5});
         setToken(newToken);
         setLoadingImage(false);
+        checkCanMint();
         return false;
   };
 
@@ -184,16 +190,79 @@ const MintPrivate = () => {
         let newToken = token;
         const key = 'IPFSvideoloading';
         message.loading({content: `Uploading ${file.name} to IPFS`, key, duration: 60});
-        const hash = await addFileToIPFS(file);
-        if(DEBUG) console.log("Video File added to IPFS: ", hash.path);
-        const url = `https://ipfs.io/ipfs/${hash.path}`;
+        const result = await addFileHashToIPFS(file);
+        if(DEBUG) console.log("Video File added to IPFS: ", result);
 
-        newToken.uri.animation_url = url;
-        message.success({content: `File ${file.name} uploaded to https://ipfs.io/ipfs/${hash.path}`, key, duration: 5});
+
+        newToken.uri.animation_url = result.url;
+        newToken.uri.properties.animation = result;
+        message.success({content: `File ${file.name} uploaded to ${result.url}`, key, duration: 5});
         setToken(newToken);
         setLoadingVideo(false);
+        checkCanMint();
         return false;
   };
+
+    const mint = async () => {
+    if(DEBUG) console.log("Mint token: ", token);
+    setMinting(true);
+    const key = 'MintingPrivate';
+    message.loading({content: `Minting NFT token - uploading to IPFS`, key, duration: 60});
+
+
+    //let key = mmPublicKey;
+    //if (key == "") key = await acceptLicense();
+
+    //const encryptedContent = await encryptUnlockableContent(yourJSON, key); // yourJSON.unlockable_content)
+    try{
+
+    let mintJSON = {
+      "name": token.name,
+      "type": "object",
+      "category": token.category,
+      "visibility": "private",
+      "image": token.image,
+      "external_url": "nftvirtuoso.io",
+      "animation_url": token.uri.animation_url,
+      "description": token.description,
+      "license": "NFT Virtuoso Personal License Agreement V1",
+      "license_id": "0",
+      "license_url": "https://arweave.net/wCPAjAJISEeHgrFCkX1xKML1ZF9A4pKT0ij0SmrQyJU",
+      "contains_unlockable_content": false,
+      //"unlockable_content_encryption": encryptedContent.method,
+      "properties": token.uri.properties,
+      "attributes": [
+      {"trait_type": "Category", "value": token.category},
+        ]
+      };
+
+
+    if(DEBUG) console.log("MINT - UPLOADING URI...", mintJSON);
+    //, "from yourJSON", yourJSON, "and encryptedContent", encryptedContent);
+
+    const result = await addToIPFS(JSON.stringify(mintJSON))
+
+    //var unlockableResult = { "path": "" };
+    //if( encryptedContent.key != "") unlockableResult = await addToIPFS(JSON.stringify(encryptedContent));
+
+    if(DEBUG) console.log("ipfsHash uploaded - uri: ", result.path); //, " unlockable: ", unlockableResult.path);
+    //if(DEBUG) console.log("Minting NFT with IPFS hashes ", result.path, unlockableResult.path )
+
+    message.loading({content: `Minting NFT token - - sending transaction to blockchain with IPFS hash ${result.path}`, key, duration: 60});
+    //tx(writeContracts.VirtuosoNFT.mintItem(address, result.path, unlockableResult.path, false, {gasLimit:1000000}));
+    const txresult = await virtuosoMint(address, result.path, "", false);
+    if(DEBUG) console.log("Mint  tx: ", txresult );
+    message.success({content: `NFT token minted successfully with transaction hash ${txresult.hash}`, key, duration: 10});
+    setToken(startToken);
+
+    } catch (error) { console.log("Mint error", error); }
+
+
+    setMinting(false);
+
+}
+
+  checkCanMint();
 
   return (
     <div className="gx-main-content">
@@ -260,6 +329,7 @@ const MintPrivate = () => {
                <Select
                   placeholder="Please select a category"
                   onChange={categoryChange}
+                  defaultValue="Music"
                   >
                  <Option value="Music">Music</Option>
                  <Option value="Video">Video</Option>
@@ -282,7 +352,7 @@ const MintPrivate = () => {
                    beforeUpload={beforeUploadImage}
                    //onChange={this.handleChange}
                  >
-                   {token.image!=="" ? <img src={token.image} alt=""/> :
+                   {token.image!=="" ? <img src={`https://res.cloudinary.com/virtuoso/image/fetch/h_100,q_100,f_auto/${token.image}`}alt=""/> :
                     (
                       <div>
                         {loadingImage ? <LoadingOutlined/> : <PlusOutlined/>}
@@ -340,7 +410,16 @@ const MintPrivate = () => {
               </Form.Item>
               ):("")}
               <Form.Item >
-          <Button type="primary">Create NFT</Button>
+              <span style={{ float: "right"}}>
+                 <Button
+                 type="primary"
+                 onClick={mint}
+                 disabled={mintDisabled}
+                 loading={minting}
+                 >
+                 Create NFT
+                 </Button>
+                </span>
         </Form.Item>
       </Form>
     </Card>

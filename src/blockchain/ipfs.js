@@ -147,6 +147,59 @@ export async function addEncryptedFileToIPFS(file)
     }
 };
 
+export async function addFileHashToIPFS(file)
+{
+
+     if(DEBUG) console.log("addFileHashToIPFS file: ", file);
+
+     try {
+     var binaryWA;
+     var md5Hash;
+     var sha256Hash;
+     var result = {
+        "IPFShash" : "",
+        "MD5_Hash": "",
+        "SHA256_Hash": "",
+        "filetype": "",
+        "filename": "",
+        "size" : "",
+        "lastModified" : "",
+        "url": ""
+        };
+
+
+      var reader = new FileReader();
+      reader.onload = async function(event) {
+          const binary = event.target.result;
+          binaryWA = CryptoJS.lib.WordArray.create(binary);
+
+          md5Hash = CryptoJS.MD5(binaryWA).toString();
+          sha256Hash = CryptoJS.SHA256(binaryWA).toString();
+          result.MD5_Hash = md5Hash;
+          result.SHA256_Hash = sha256Hash;
+          result.filename = file.name;
+          result.filetype = file.type;
+          result.lastModified = file.lastModified;
+          result.size = file.size;
+          //if(DEBUG) console.log("addFileHashToIPFS onload result: ", result);
+     };
+
+      await reader.readAsArrayBuffer(file);
+      const hash = await ipfs.add(file, {pin: true});
+      result.IPFShash = hash.path;
+      result.url = `https://ipfs.io/ipfs/${hash.path}`;
+
+      if(DEBUG) console.log("addFileHashToIPFS result: ", result);
+      return result;
+
+
+    } catch (error) {
+      console.log('addFileHashToIPFS Error uploading file: ', error)
+    }
+};
+
+
+
 function _base64ToArrayBuffer(base64) {
     var binary_string = window.atob(base64);
     var len = binary_string.length;
