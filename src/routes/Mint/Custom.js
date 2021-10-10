@@ -15,7 +15,7 @@ import { metamaskLogin,
          virtuosoMint
          } from "../../blockchain/metamask";
 
-const { addFileHashToIPFS, addToIPFS } = require("../../blockchain/ipfs");
+const { addFileHashToIPFS, addToIPFS, encryptUnlockableToken } = require("../../blockchain/ipfs");
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -252,7 +252,9 @@ const MintPrivate = () => {
         return false;
   };
 
-      const beforeUploadUnlockableFiles = async (info) => {
+
+
+  const beforeUploadUnlockableFiles = async (info) => {
 
         if(DEBUG) console.log("before unlockableFiles ", info);
         return false;
@@ -298,16 +300,14 @@ const MintPrivate = () => {
 
 
     const mint = async () => {
+
     if(DEBUG) console.log("Mint token: ", token);
+
+
     setMinting(true);
-    const key = 'MintingPrivate';
-    message.loading({content: `Minting NFT token - uploading to IPFS`, key, duration: 60});
+    const key = 'MintingCustomNFT';
+    message.loading({content: `Minting NFT token - uploading to IPFS`, key, duration: 240});
 
-
-    //let key = mmPublicKey;
-    //if (key == "") key = await acceptLicense();
-
-    //const encryptedContent = await encryptUnlockableContent(yourJSON, key); // yourJSON.unlockable_content)
     try{
 
     let mintJSON = {
@@ -322,37 +322,48 @@ const MintPrivate = () => {
       "license": "NFT Virtuoso Personal License Agreement V1",
       "license_id": "0",
       "license_url": "https://arweave.net/wCPAjAJISEeHgrFCkX1xKML1ZF9A4pKT0ij0SmrQyJU",
-      "contains_unlockable_content": false,
-      //"unlockable_content_encryption": encryptedContent.method,
+      "contains_unlockable_content": token.contains_unlockable_content,
       "properties": token.uri.properties,
       "attributes": [
       {"trait_type": "Category", "value": token.category},
         ]
       };
 
+    let unlockableResult = { "path": "" };
 
-    if(DEBUG) console.log("MINT - UPLOADING URI...", mintJSON);
-    //, "from yourJSON", yourJSON, "and encryptedContent", encryptedContent);
+    if(token.contains_unlockable_content === true)
+    {
+        let key = publicKey;
+        if (key === "") key = await register();
+        const encryptedContent = await encryptUnlockableToken(token, key);
+        if( encryptedContent.key != "") unlockableResult = await addToIPFS(JSON.stringify(encryptedContent));
+    };
+
 
     const result = await addToIPFS(JSON.stringify(mintJSON))
 
-    //var unlockableResult = { "path": "" };
-    //if( encryptedContent.key != "") unlockableResult = await addToIPFS(JSON.stringify(encryptedContent));
+
 
     if(DEBUG) console.log("ipfsHash uploaded - uri: ", result.path); //, " unlockable: ", unlockableResult.path);
-    //if(DEBUG) console.log("Minting NFT with IPFS hashes ", result.path, unlockableResult.path )
+    if(DEBUG) console.log("Minting NFT with IPFS hashes ", result.path, unlockableResult.path )
 
-    message.loading({content: `Minting NFT token - sending transaction to blockchain with IPFS hash ${result.path}`, key, duration: 60});
+    message.loading({content: `Minting NFT token - sending transaction to blockchain with IPFS hash ${result.path}`, key, duration: 240});
     //tx(writeContracts.VirtuosoNFT.mintItem(address, result.path, unlockableResult.path, false, {gasLimit:1000000}));
-    const txresult = await virtuosoMint(address, result.path, "", false);
+    const txresult = await virtuosoMint(address, result.path, unlockableResult.path, false);
     if(DEBUG) console.log("Mint  tx: ", txresult );
     message.success({content: `NFT token minted successfully with transaction hash ${txresult.hash}`, key, duration: 10});
     setToken(startToken);
-
-    } catch (error) { console.log("Mint error", error); }
-
-
     setMinting(false);
+
+    } catch (error)
+    {
+        console.log("Mint error", error);
+        setMinting(false);
+        message.error({content: `Error minting NFT token: ${error}`, key, duration: 30});
+    }
+
+
+
 
 }
 
@@ -372,12 +383,12 @@ const MintPrivate = () => {
                 {
                     dispatch(updatePublicKey(result.publicKey));
                     message.success({content: `Public key ${result.publicKey} is written to blockchain with transaction ${result.hash}`, key, duration: 10});
-                    return true;
+                    return publicKey;
                 }
                 else message.error({content: `Public key is not provided or written to blockchain`, key, duration: 10});
 
             };
-            return false;
+            return "";
   }
 
     async function allowUnlockableContent()
@@ -387,7 +398,8 @@ const MintPrivate = () => {
             let allow = false;
             if( publicKey === undefined || publicKey === "" || publicKey === 'a' )
             {
-              allow = await register();
+              const pk = await register();
+              if( pk !== "") allow = true;
             } else if(publicKey !== '') allow = true;
             if( allowUnlockable !== allow) setAllowUnlockable(allow);
             if( allow )
@@ -487,6 +499,7 @@ const MintPrivate = () => {
                    name="image"
                    listType="picture-card"
                    className="avatar-uploader"
+                   accept="image/*"
                    showUploadList={false}
                    //action="//jsonplaceholder.typicode.com/posts/"
                    beforeUpload={beforeUploadImage}
@@ -508,6 +521,7 @@ const MintPrivate = () => {
                    name="video"
                    listType="picture-card"
                    className="avatar-uploader"
+                   accept="video/*,audio/*"
                    showUploadList={false}
                    //action="//jsonplaceholder.typicode.com/posts/"
                    beforeUpload={beforeUploadVideo}
@@ -557,8 +571,8 @@ const MintPrivate = () => {
                 <Upload
                    name="unlockableimage"
                    listType="picture-card"
-                   showUploadList={true}
                    className="avatar-uploader"
+                   accept="image/*"
                    showUploadList={false}
                    //action="//jsonplaceholder.typicode.com/posts/"
                    beforeUpload={beforeUnlockableImage}
@@ -587,6 +601,7 @@ const MintPrivate = () => {
                    name="unlockablevideo"
                    listType="picture-card"
                    className="avatar-uploader"
+                   accept="video/*"
                    showUploadList={false}
                    //action="//jsonplaceholder.typicode.com/posts/"
                    beforeUpload={beforeUnlockableVideo}
@@ -615,6 +630,7 @@ const MintPrivate = () => {
                    name="unlockableaudio"
                    listType="picture-card"
                    className="avatar-uploader"
+                   accept="audio/*"
                    showUploadList={false}
                    //action="//jsonplaceholder.typicode.com/posts/"
                    beforeUpload={beforeUnlockableAudio}
@@ -643,6 +659,7 @@ const MintPrivate = () => {
                    name="unlockablepdf"
                    listType="picture-card"
                    className="avatar-uploader"
+                   accept=".pdf"
                    showUploadList={false}
                    //action="//jsonplaceholder.typicode.com/posts/"
                    beforeUpload={beforeUnlockablePDF}

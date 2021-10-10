@@ -1,9 +1,10 @@
-const { REACT_APP_INFURA_IPFS_PROJECT_ID, REACT_APP_INFURA_IPFS_PROJECT_SECRET } = process.env;
+import {message} from 'antd';
 
-//const ipfsAPI = require("ipfs-http-client");
+const { REACT_APP_INFURA_IPFS_PROJECT_ID, REACT_APP_INFURA_IPFS_PROJECT_SECRET } = process.env;
 const { BufferList } = require("bl");
-//const fs = require('fs');
 const CryptoJS = require('crypto-js');
+const sigUtil = require("eth-sig-util");
+
 
 const DEBUG = true;
 
@@ -113,6 +114,7 @@ export async function addEncryptedFileToIPFS(file)
         "lastModified" : ""
         };
 
+
       var reader = new FileReader();
       reader.onload = async function(event) {
           const binary = event.target.result;
@@ -139,12 +141,115 @@ export async function addEncryptedFileToIPFS(file)
 
       await reader.readAsArrayBuffer(file);
       if(DEBUG) console.log("addEncryptedFileToIPFS result: ", result);
+      message.success(`File ${file.name} uploaded to IPFS with hash ${result.IPFShash}`);
       return result;
 
 
     } catch (error) {
-      console.log('addEncryptedFileToIPFS Error uploading file: ', error)
+      console.log('addEncryptedFileToIPFS Error uploading file: ', error);
+      message.error(`Error uploading file ${file.name} to IPFS`);
     }
+};
+
+
+async function encryptUnlockableContent(content, key)
+{
+
+   let encryptedContent = {
+      "data": "",
+      "key": "",
+      "exists": false,
+      "method": ""
+      };
+
+    if (content==undefined) return encryptedContent;
+    if (content=="") return encryptedContent;
+
+    if (key == "")
+    {
+        console.error("encryptUnlockableContent - publicKey is empty",  key);
+        return encryptedContent;
+    }
+    else
+    {
+        //let msg = content.unlockable;
+        //msg.description = content.unlockable_description;
+        const msg = JSON.stringify(content);
+        const password = CryptoJS.lib.WordArray.random(64).toString(CryptoJS.enc.Base64);
+        if(DEBUG) console.log('msg: ', msg, " password: ", password);
+
+        encryptedContent.data = CryptoJS.AES.encrypt(msg, password).toString();
+
+
+          const buf = Buffer.from(
+                 JSON.stringify(
+                     sigUtil.encrypt(
+                     key,
+                     {data: password},
+                     "x25519-xsalsa20-poly1305"
+                     )
+                 ),
+                 "utf8"
+               );
+
+          encryptedContent.key = "0x" + buf.toString("hex");
+          if(DEBUG) console.log("encryptUnlockableContent encrypted: ", encryptedContent);
+          encryptedContent.exists = true;
+          encryptedContent.method = { "unlockableContentKey" : "MetaMask.eth-sig-util.encrypt.x25519-xsalsa20-poly1305", "unlockableContent": "crypto-js.AES.encrypt"};
+          return encryptedContent;
+    };
+
+};
+
+
+export async function encryptUnlockableToken(token, key)
+{
+      let content = {
+          "unlockable_description": "",
+          "image": "",
+          "video": "",
+          "audio": "",
+          "pdf": "",
+          "files": "",
+          "files_number": 0
+      };
+
+      let encryptedContent = {
+      "data": "",
+      "key": "",
+      "exists": false,
+      "method": ""
+      };
+
+
+      try {
+
+           if( token.unlockable.image !== "") content.image = await addEncryptedFileToIPFS(token.unlockable.image);
+           if( token.unlockable.video !== "") content.video = await addEncryptedFileToIPFS(token.unlockable.video);
+           if( token.unlockable.audio !== "") content.audio = await addEncryptedFileToIPFS(token.unlockable.audio);
+           if( token.unlockable.pdf !== "")   content.pdf   = await addEncryptedFileToIPFS(token.unlockable.pdf);
+           content.unlockable_description = token.unlockable_description;
+
+           const length = token.unlockable.files_number;
+           if( length > 0)
+           {
+                   let i;
+                   let filesJSON = { "0": ""};
+                   for(i = 0; i<length; i++)
+                   {
+                        filesJSON[i] = await addEncryptedFileToIPFS(token.unlockable.files[i].originFileObj);
+                   };
+                   content.files_number = length;
+                   content.files = filesJSON;
+
+           };
+           if(DEBUG) console.log('encryptUnlockableToken: ', content);
+           const encryptedContent = await encryptUnlockableContent(content, key);
+           return encryptedContent ;
+
+      } catch (error) {console.error("encryptUnlockableToken error:", error)}
+
+      return encryptedContent ;
 };
 
 export async function addFileHashToIPFS(file)
