@@ -3,14 +3,16 @@ import {
       UPDATE_ADDRESS,
       UPDATE_VIRTUOSO_BALANCE,
       UPDATE_BALANCE,
-      UPDATE_VRT1
+      UPDATE_VRT1,
+      UPDATE_PUBLIC_KEY
 } from "../../constants/Blockchain";
 
 const initialSettings = {
   address: "",
   virtuosoBalance: 0,
   balance: 0,
-  VRT1: 0
+  VRT1: 0,
+  publicKey: ""
 };
 
 
@@ -39,6 +41,13 @@ const SettingsReducer = (state = initialSettings, action) => {
         ...state,
         VRT1: action.VRT1
       };
+
+    case UPDATE_PUBLIC_KEY:
+      return {
+        ...state,
+        publicKey: action.publicKey
+      };
+
     default:
       return state;
   }

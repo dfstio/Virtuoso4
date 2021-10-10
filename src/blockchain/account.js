@@ -1,11 +1,12 @@
 import React, { useEffect, useCallback } from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {message} from 'antd';
-import {updateAddress, updateVirtuosoBalance} from "../appRedux/actions";
+import {updateAddress, updateVirtuosoBalance, updatePublicKey} from "../appRedux/actions";
 import { metamaskLogin,
          initAccount,
          network,
          getVirtuosoBalance,
+         getVirtuosoPublicKey,
          convertAddress,
          getAddress,
          initVirtuoso  } from "./metamask";
@@ -81,8 +82,10 @@ const handleChainChanged = useCallback( async (_chainId) => {
 
       if(DEBUG) console.log("handleChainChanged getVirtuosoBalance");
       const newVirtuosoBalance = await getVirtuosoBalance(newAddress);
+      const newPublicKey = await getVirtuosoPublicKey(newAddress);
       dispatch(updateAddress(newAddress1));
       dispatch(updateVirtuosoBalance(newVirtuosoBalance));
+      dispatch(updatePublicKey(newPublicKey));
       message.info(`You've switched to the right chain ${network.name} ${_chainId} with address ${newAddress1}`, 10);
 
 
@@ -103,7 +106,9 @@ const handleAccountsChanged = useCallback( async (accounts) => {
     {
          dispatch(updateAddress(newAddress));
          const newVirtuosoBalance = await getVirtuosoBalance(newAddress);
+         const newPublicKey = await getVirtuosoPublicKey(newAddress);
          dispatch(updateVirtuosoBalance(newVirtuosoBalance));
+         dispatch(updatePublicKey(newPublicKey));
          if(DEBUG) console.log('handleAccountsChanged: new address and balance', address, newAddress, newVirtuosoBalance);
          message.info(`Account changed to ${newAddress}`, 10);
     }
@@ -116,8 +121,10 @@ const handleAccountsChanged = useCallback( async (accounts) => {
               const newAddress = await initAccount(handleEvents, handleChainChanged, handleAccountsChanged );
               dispatch(updateAddress(newAddress));
               const newVirtuosoBalance = await getVirtuosoBalance(newAddress);
+              const newPublicKey = await getVirtuosoPublicKey(newAddress);
               dispatch(updateVirtuosoBalance(newVirtuosoBalance));
-              if(DEBUG) console.log(`useEffect Address ${newAddress} virtuosoBalance ${newVirtuosoBalance}`);
+              dispatch(updatePublicKey(newPublicKey));
+              if(DEBUG) console.log(`useEffect Address ${newAddress} virtuosoBalance ${newVirtuosoBalance} publicKey ${newPublicKey}`);
     }
   fetchAddress()
   },[dispatch, handleAccountsChanged, handleChainChanged, handleEvents])

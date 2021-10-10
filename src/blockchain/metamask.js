@@ -133,6 +133,26 @@ export async function getVirtuosoBalance(address)
 
 };
 
+
+
+export async function getVirtuosoPublicKey(address)
+{
+    let publicKey = "";
+    if( readVirtuoso  && (address !== ""))
+    {
+           const chainId =  await window.ethereum.request({method: 'eth_chainId'});
+           if(DEBUG) console.log("getVirtuosoPublicKey called on chain", chainId, "and address", address);
+
+           if(chainId === network.hexChainId)
+           {
+                publicKey = await readVirtuoso.publicKeys( address);
+           };
+    };
+
+    return publicKey;
+
+};
+
 export async function getVirtuosoUnlockableContentKey(tokenId, address)
 {
     let key = "";
@@ -183,8 +203,10 @@ export async function virtuosoMint(address, ipfsHash, unlockableIPFSHash, onEscr
 {
     if(DEBUG) console.log("virtuosoMint called:", address, ipfsHash, unlockableIPFSHash, onEscrow);
 
-    signer = provider && provider.getSigner();
     let txresult = '';
+    try {
+    signer = provider && provider.getSigner();
+
 
     if( signer  && (address !== ""))
     {
@@ -202,8 +224,52 @@ export async function virtuosoMint(address, ipfsHash, unlockableIPFSHash, onEscr
 
            } else console.error("virtuosoMint error - wrong chain or address");
     };
-
+    } catch (error) { console.error("virtuosoMint error", error );};
     return txresult;
+
+};
+
+export async function virtuosoRegisterPublicKey(address)
+{
+    if(DEBUG) console.log("virtuosoRegisterPublicKey called:", address);
+    let result = { hash : '', publicKey: ''};
+
+    try {
+
+    signer = provider && provider.getSigner();
+
+
+
+
+    if( signer  && (address !== ""))
+    {
+           const chainId =  await window.ethereum.request({method: 'eth_chainId'});
+           const signerAddress = await signer.getAddress();
+           if(DEBUG) console.log("virtuosoRegisterPublicKey called on chain", chainId, "and address", address, "signer address", signerAddress);
+
+           if((chainId === network.hexChainId) && (address == signerAddress))
+           {
+                const writeVirtuoso = signer && new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
+                if(DEBUG) console.log("virtuosoRegisterPublicKey writeVirtuoso", writeVirtuoso);
+
+                //const askForPublicKey = await injectedProvider.send("eth_getEncryptionPublicKey", [ address ]);
+                const publicKey = await window.ethereum.request({method: 'eth_getEncryptionPublicKey', params: [address]});
+                if( publicKey !== "")
+                {
+                  result.publicKey = publicKey;
+                  const txresult = await writeVirtuoso.setPublicKey(publicKey);
+                  // Send tx to server
+                  await api.txSent(txresult.hash, network.chainId);
+                  result.hash = txresult.hash;
+                };
+
+           } else console.error("virtuosoRegisterPublicKey error - wrong chain or address");
+    };
+
+    if(DEBUG) console.log("virtuosoRegisterPublicKey result:", result);
+
+    } catch (error) { console.error("virtuosoRegisterPublicKey error", error );};
+    return result;
 
 };
 

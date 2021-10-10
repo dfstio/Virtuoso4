@@ -24,27 +24,17 @@ const Mint = () => {
       <Row>
       <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
             <MintMenuItem
-              creator="Your Private NFT Token"
+              creator="Your NFT Token"
               title="Create your own private NFT token"
-              link="/mint/private"
-              price="USD 10 for 10 private NFT tokens"
-              description="Private NFT token will be visible only to you on NFT Virtuoso, except when you'll put it for sale"
+              link="/mint/custom"
+              price="USD 10 for 10 private NFT tokens or $100 for one public NFT token"
+              description="Private NFT token will be visible only to you on NFT Virtuoso marketplace, except when you'll put it for sale. Public NFT token is always visible to everyone on NFT Virtuoso marketplace"
               image="https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/https://nftvirtuoso.io/mintimages/private.png"
               key="Private Mint"
 
               />
         </Col>
-        <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
-            <MintMenuItem
-              creator="Your Public NFT token"
-              title="Create your own public NFT token"
-              price="USD 100"
-              description="Public NFT token is visible to everyone on NFT Virtuoso"
-              image="https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/https://nftvirtuoso.io/mintimages/public.jpg"
-              key="Public Mint"
 
-              />
-        </Col>
         <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
             <MintMenuItem
               creator="DJ Korean"
