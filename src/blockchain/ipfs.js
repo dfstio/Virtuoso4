@@ -234,10 +234,11 @@ export async function encryptUnlockableToken(token, key)
            if( length > 0)
            {
                    let i;
-                   let filesJSON = { "0": ""};
+                   let filesJSON = [];
                    for(i = 0; i<length; i++)
                    {
-                        filesJSON[i] = await addEncryptedFileToIPFS(token.unlockable.files[i].originFileObj);
+                        const newFile = await addEncryptedFileToIPFS(token.unlockable.files[i].originFileObj);
+                        filesJSON.push(newFile);
                    };
                    content.files_number = length;
                    content.files = filesJSON;
@@ -250,6 +251,77 @@ export async function encryptUnlockableToken(token, key)
       } catch (error) {console.error("encryptUnlockableToken error:", error)}
 
       return encryptedContent ;
+};
+
+export async function decryptUnlockableToken(data, password)
+{
+      let content = {
+          "unlockable_description": "",
+          "image": "",
+          "video": "",
+          "audio": "",
+          "pdf": "",
+          "files": "",
+          "files_number": 0,
+          "loaded": false
+      };
+
+      try {
+
+        var bytes  = CryptoJS.AES.decrypt(data, password);
+        var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+        if(DEBUG) console.log('decrypted: ', decryptedData);
+
+
+        if( decryptedData.image !== "")
+        {
+             const imageFile = await getEncryptedFileFromIPFS(decryptedData.image.IPFShash, decryptedData.image.password, decryptedData.image.filetype);
+             content.image = imageFile;
+        };
+
+        if( decryptedData.video !== "")
+        {
+             const videoFile = await getEncryptedFileFromIPFS(decryptedData.video.IPFShash, decryptedData.video.password, decryptedData.video.filetype);
+             content.video = videoFile;
+        };
+
+        if( decryptedData.audio !== "")
+        {
+             const audioFile = await getEncryptedFileFromIPFS(decryptedData.audio.IPFShash, decryptedData.audio.password, decryptedData.audio.filetype);
+             content.audio = audioFile;
+        };
+
+        if( decryptedData.pdf !== "")
+        {
+             const pdfFile = await getEncryptedFileFromIPFS(decryptedData.pdf.IPFShash, decryptedData.pdf.password, decryptedData.pdf.filetype);
+             content.pdf = pdfFile;
+        };
+
+
+        let i = 0;
+        let filesText = [];
+
+        for( i=0; i<decryptedData.files_number; i++)
+        {
+             const extraFile = await getEncryptedFileFromIPFS(decryptedData.files[i].IPFShash, decryptedData.files[i].password, decryptedData.files[i].filetype);
+             //if(DEBUG) console.log("Extra file " , i, " : ",  extraFile);
+             const key = "ufileTokenView" + i.toString();
+             filesText.push( <p key={key}><a href={extraFile} target="_blank" > File: {decryptedData.files[i].filename} </a> </p>);
+
+        };
+
+        content.files = filesText;
+        content.files_number = decryptedData.files_number;
+        content.unlockable_description = decryptedData.unlockable_description;
+        content.loaded = true;
+
+        if(DEBUG) console.log("decryptUnlockableToken result: " , content);
+
+
+        } catch (error) {console.error("decryptUnlockableToken error:", error)}
+
+        return content;
+
 };
 
 export async function addFileHashToIPFS(file)
