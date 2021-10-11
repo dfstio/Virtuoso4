@@ -124,8 +124,11 @@ const TokenItem = ({item, small=false, preview=false}) => {
     {(small===false && preview === false && item.uri.contains_unlockable_content === true && unlockable.loaded === true)?
     (
         <div className="gx-product-body" >
+            <div className="gx-product-name" style={{"font-size":16, "color":"#038fde"}}>
+              Unlockable content:
+             </div>
              <div className="gx-mt-4">
-              {unlockable.unlockable_description}
+              {unlockable.description}
               </div>
 
             <div className="gx-product-image" style={{position: "relative"}}>

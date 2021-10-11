@@ -95,14 +95,25 @@ const ipfs = ipfsAPI({
         });
 */
 
+function readFileAsync(file) {
+  return new Promise((resolve, reject) => {
+    let reader = new FileReader();
+
+    reader.onload = () => {
+      resolve(reader.result);
+    };
+
+    reader.onerror = reject;
+
+    reader.readAsArrayBuffer(file);
+  })
+};
+
+
 export async function addEncryptedFileToIPFS(file)
 {
 
      if(DEBUG) console.log("addEncryptedFileToIPFS file: ", file);
-     try {
-     var binaryWA;
-     var md5Hash;
-     var sha256Hash;
      var result = {
         "IPFShash" : "",
         "password" : "",
@@ -114,8 +125,18 @@ export async function addEncryptedFileToIPFS(file)
         "lastModified" : ""
         };
 
+     try {
+          var binaryWA;
+          var md5Hash;
+          var sha256Hash;
 
-      var reader = new FileReader();
+          result.filename = file.name;
+          result.filetype = file.type;
+          result.lastModified = file.lastModified;
+
+          // var reader = new FileReader();
+
+      /*
       reader.onload = async function(event) {
           const binary = event.target.result;
           binaryWA = CryptoJS.lib.WordArray.create(binary);
@@ -132,23 +153,41 @@ export async function addEncryptedFileToIPFS(file)
           result.password = password;
           result.MD5_Hash = md5Hash;
           result.SHA256_Hash = sha256Hash;
-          result.filename = file.name;
-          result.filetype = file.type;
-          result.lastModified = file.lastModified;
+
           result.size = file.size;
           if(DEBUG) console.log("addEncryptedFileToIPFS onload result: ", result);
      };
+     */
 
-      await reader.readAsArrayBuffer(file);
-      if(DEBUG) console.log("addEncryptedFileToIPFS result: ", result);
-      message.success(`File ${file.name} uploaded to IPFS with hash ${result.IPFShash}`);
-      return result;
+          //await reader.readAsArrayBuffer(file);
+          const binary = await readFileAsync(file); //reader.result;
+          binaryWA = CryptoJS.lib.WordArray.create(binary);
+
+          const password = CryptoJS.lib.WordArray.random(64).toString(CryptoJS.enc.Base64);
+          //if(DEBUG) console.log("addEncryptedFileToIPFS binary: ", binaryWA, md5Hash, password);
+          const ebuff = CryptoJS.AES.encrypt(binaryWA, password).toString();
+          //if(DEBUG) console.log("addEncryptedFileToIPFS ebuff: ", ebuff);
+
+          const hash = await ipfs.add(ebuff, {pin: true});
+          md5Hash = CryptoJS.MD5(binaryWA).toString();
+          sha256Hash = CryptoJS.SHA256(binaryWA).toString();
+          result.IPFShash = hash.path;
+          result.password = password;
+          result.MD5_Hash = md5Hash;
+          result.SHA256_Hash = sha256Hash;
+
+          result.size = file.size;
+          if(DEBUG) console.log("addEncryptedFileToIPFS result: ", result);
+
+          message.success(`File ${file.name} uploaded to IPFS with hash ${result.IPFShash}`);
+
 
 
     } catch (error) {
       console.log('addEncryptedFileToIPFS Error uploading file: ', error);
       message.error(`Error uploading file ${file.name} to IPFS`);
     }
+    return result;
 };
 
 
@@ -174,11 +213,15 @@ async function encryptUnlockableContent(content, key)
     {
         //let msg = content.unlockable;
         //msg.description = content.unlockable_description;
-        const msg = JSON.stringify(content);
+        //if(DEBUG) console.log('encryptUnlockableContent 1: ', content.image.IPFShash);
+        //if(DEBUG) console.log('encryptUnlockableContent 2: ', content.image);
+        //let msg = content;
+        const msg1 = JSON.stringify(content);
+        //if(DEBUG) console.log('encryptUnlockableContent msg1: ', msg1);
         const password = CryptoJS.lib.WordArray.random(64).toString(CryptoJS.enc.Base64);
-        if(DEBUG) console.log('msg: ', msg, " password: ", password);
+        if(DEBUG) console.log('msg1: ', msg1, " password: ", password);
 
-        encryptedContent.data = CryptoJS.AES.encrypt(msg, password).toString();
+        encryptedContent.data = CryptoJS.AES.encrypt(msg1, password).toString();
 
 
           const buf = Buffer.from(
@@ -205,7 +248,7 @@ async function encryptUnlockableContent(content, key)
 export async function encryptUnlockableToken(token, key)
 {
       let content = {
-          "unlockable_description": "",
+          "description": "",
           "image": "",
           "video": "",
           "audio": "",
@@ -228,7 +271,7 @@ export async function encryptUnlockableToken(token, key)
            if( token.unlockable.video !== "") content.video = await addEncryptedFileToIPFS(token.unlockable.video);
            if( token.unlockable.audio !== "") content.audio = await addEncryptedFileToIPFS(token.unlockable.audio);
            if( token.unlockable.pdf !== "")   content.pdf   = await addEncryptedFileToIPFS(token.unlockable.pdf);
-           content.unlockable_description = token.unlockable_description;
+           content.description = token.unlockable_description;
 
            const length = token.unlockable.files_number;
            if( length > 0)
@@ -243,12 +286,14 @@ export async function encryptUnlockableToken(token, key)
                    content.files_number = length;
                    content.files = filesJSON;
 
+
            };
            if(DEBUG) console.log('encryptUnlockableToken: ', content);
-           const encryptedContent = await encryptUnlockableContent(content, key);
-           return encryptedContent ;
+           encryptedContent = await encryptUnlockableContent(content, key);
+
 
       } catch (error) {console.error("encryptUnlockableToken error:", error)}
+
 
       return encryptedContent ;
 };
@@ -256,7 +301,7 @@ export async function encryptUnlockableToken(token, key)
 export async function decryptUnlockableToken(data, password)
 {
       let content = {
-          "unlockable_description": "",
+          "description": "",
           "image": "",
           "video": "",
           "audio": "",
@@ -312,7 +357,7 @@ export async function decryptUnlockableToken(data, password)
 
         content.files = filesText;
         content.files_number = decryptedData.files_number;
-        content.unlockable_description = decryptedData.unlockable_description;
+        content.description = decryptedData.description;
         content.loaded = true;
 
         if(DEBUG) console.log("decryptUnlockableToken result: " , content);
@@ -394,11 +439,11 @@ export async function getEncryptedFileFromIPFS(hash, key, filetype)
      try {
 
      const file = await getFromIPFS(hash);
-     //if (DEBUG) console.log("getEncryptedFileFromIPFS file: ", file);
+     if (DEBUG) console.log("getEncryptedFileFromIPFS file: ", file);
      const ebuf = file.toString();
-     //if (DEBUG) console.log("getEncryptedFileFromIPFS ebuf: ", ebuf);
+     if (DEBUG) console.log("getEncryptedFileFromIPFS ebuf: ", ebuf);
      var bytes  = CryptoJS.AES.decrypt(ebuf, key);
-     //if (DEBUG) console.log("getEncryptedFileFromIPFS bytes: ", bytes);
+     if (DEBUG) console.log("getEncryptedFileFromIPFS bytes: ", bytes);
      const dcBase64String = bytes.toString(CryptoJS.enc.Base64); // to Base64-String
      const dcArrayBuffer = _base64ToArrayBuffer(dcBase64String); // to ArrayBuffer
      var blob = new Blob( [ dcArrayBuffer ], { type: filetype } );
