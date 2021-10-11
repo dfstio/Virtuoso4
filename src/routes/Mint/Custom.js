@@ -15,7 +15,7 @@ import { metamaskLogin,
          virtuosoMint
          } from "../../blockchain/metamask";
 
-const { addFileHashToIPFS, addToIPFS, encryptUnlockableToken } = require("../../blockchain/ipfs");
+const { addFileHashToIPFS, addToIPFS, encryptUnlockableToken, writeToken } = require("../../blockchain/ipfs");
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -44,6 +44,7 @@ const startToken =
   "currency": "USD",
   "category": "Music",
   "image": "",
+  "visibility": "private",
   "contains_unlockable_content": false,
   "unlockable_description": "",
   "uri": {
@@ -85,12 +86,14 @@ const startToken =
   },
   "objectID": "80001.0x49368c4ed51be6484705f07b63ebd92270923081.17",
   "unlockable": {
+    "media": "",
+    "attachments": "",
+  },
+  "main": {
     "image": "",
     "video": "",
-    "audio": "",
-    "pdf": "",
-    "files": "",
-    "files_number": 0
+    "media": "",
+    "attachments": "",
   }
 };
 
@@ -146,7 +149,7 @@ const MintPrivate = () => {
   const checkCanMint = () => {
 
         let newMintDisabled = true;
-        if( token.name !== "" && token.description !== "" && token.image !== "" && address !== "") newMintDisabled = false;
+        if( token.name !== "" && token.description !== "" && token.main.image !== "" && address !== "") newMintDisabled = false;
         if( newMintDisabled !== mintDisabled ) setMintDisabled(newMintDisabled);
 
         let newShowUnlockable = false;
@@ -157,18 +160,14 @@ const MintPrivate = () => {
 
   const onValuesChange = async (values) => {
 
-    if(DEBUG) console.log("onValuesChange 1", values);
+    if(DEBUG) console.log("onValuesChange", values);
     let newToken = token;
-    //if( values.title !== undefined) token.name = values.title;
+
     if( values.name !== undefined) newToken.name = values.name;
     if( values.description !== undefined) newToken.description = values.description;
     if( values.unlockable_description !== undefined) newToken.unlockable_description = values.unlockable_description;
     if( values.category !== undefined) newToken.category = values.category;
-    if( values.contains_unlockable_content !== undefined)
-    {
-        setShowUnlockable(values.contains_unlockable_content);
-        newToken.contains_unlockable_content = values.contains_unlockable_content;
-    };
+
     if( values.visibility !== undefined)
     {
         newToken.visibility = values.visibility;
@@ -176,12 +175,16 @@ const MintPrivate = () => {
         if( values.visibility == 'public') setMintPrice(mintPublicText);
     };
 
+    if( values.mainimage !== undefined) newToken.main.image = values.mainimage.file;
+    if( values.mainvideo !== undefined) newToken.main.video = values.mainvideo.file;
+    if( values.media !== undefined) newToken.main.media = values.media.fileList;
+    if( values.attachments !== undefined) newToken.main.attachments = values.attachments.fileList;
+    if( values.umedia !== undefined) newToken.unlockable.media = values.umedia.fileList;
+    if( values.uattachments !== undefined) newToken.unlockable.attachments = values.uattachments.fileList;
+
     setToken(newToken);
-    if(DEBUG) console.log("onValuesChange 2", token.name);
     setCounter(counter+1);
     checkCanMint();
-
-
   };
 
   const onFinish = async (values) => {
@@ -202,6 +205,7 @@ const MintPrivate = () => {
 
   };
 
+/*
     const beforeUploadImage = async (file) => {
 
         if(DEBUG) console.log("beforeUploadImage ", file);
@@ -295,7 +299,12 @@ const MintPrivate = () => {
         setCounter(counter+1);
         return false;
   };
+*/
 
+
+    const beforeUpload = (file) => {
+        return false;
+  };
 
 
 
@@ -310,24 +319,7 @@ const MintPrivate = () => {
 
     try{
 
-    let mintJSON = {
-      "name": token.name,
-      "type": "object",
-      "category": token.category,
-      "visibility": "private",
-      "image": token.image,
-      "external_url": "nftvirtuoso.io",
-      "animation_url": token.uri.animation_url,
-      "description": token.description,
-      "license": "NFT Virtuoso Personal License Agreement V1",
-      "license_id": "0",
-      "license_url": "https://arweave.net/wCPAjAJISEeHgrFCkX1xKML1ZF9A4pKT0ij0SmrQyJU",
-      "contains_unlockable_content": token.contains_unlockable_content,
-      "properties": token.uri.properties,
-      "attributes": [
-      {"trait_type": "Category", "value": token.category},
-        ]
-      };
+
 
     let unlockableResult = { "path": "" };
 
@@ -339,7 +331,7 @@ const MintPrivate = () => {
         if( encryptedContent.key != "") unlockableResult = await addToIPFS(JSON.stringify(encryptedContent));
     };
 
-
+    const mintJSON = await writeToken(token);
     const result = await addToIPFS(JSON.stringify(mintJSON))
 
 
@@ -424,16 +416,45 @@ const MintPrivate = () => {
       <Form
         form={form}
         labelCol={{
-          span: 4,
+          span: 24
         }}
         wrapperCol={{
-          span: 24,
+          span: 24
         }}
         layout="horizontal"
         initialValues={token}
         onFinish={onFinish}
         onValuesChange={onValuesChange}
       >
+     <Row>
+        <Col xxl={12} xl={12} lg={14} md={24} sm={24} xs={24}>
+              <Form.Item
+               name="mainimage"
+               label="Main image"
+              rules={[
+                 {
+                   required: true,
+                   message: 'Please upload NFT image',
+                 },
+               ]}
+                >
+                 <Upload
+                   name="mainimage"
+                   listType="picture-card"
+                   className="avatar-uploader"
+                   accept="image/*"
+                   showUploadList={true}
+                   multiple={false}
+                   maxCount={1}
+                   beforeUpload={beforeUpload}
+                 >       <div>
+                         <PlusOutlined/>
+                         <div className="ant-upload-text">Main Image
+                        </div>
+                         </div>
+                 </Upload>
+              </Form.Item>
+
               <Form.Item
                 label="Name"
                 name="name"
@@ -446,6 +467,8 @@ const MintPrivate = () => {
                 placeholder="Please name your NFT">
               <Input />
               </Form.Item>
+
+
                <Form.Item
               label="Description"
               name="description"
@@ -461,7 +484,49 @@ const MintPrivate = () => {
                 autoSize={{ minRows: 2, maxRows: 10 }}
                  />
               </Form.Item>
+    </Col>
 
+    <Col xxl={10} xl={8} lg={10} md={10} sm={12} xs={16}>
+              <Form.Item
+               name="mainvideo"
+               label="Main Video/Audio">
+                  <Upload
+                   name="video"
+                   listType="picture-card"
+                   className="avatar-uploader"
+                   accept="video/*,audio/*"
+                   showUploadList={true}
+                   multiple={false}
+                   maxCount={1}
+                   //action="//jsonplaceholder.typicode.com/posts/"
+                   beforeUpload={beforeUpload}
+                   //onChange={this.handleChange}
+                 >
+                 <div>
+                 <PlusOutlined/>
+                      <div className="ant-upload-text">Main Video or Audio</div>
+                  </div>
+                 </Upload>
+
+                 </Form.Item>
+
+                  <Form.Item
+                label="Visibility"
+                name="visibility"
+                rules={[
+                 {
+                   required: true,
+                   message: 'Please choose visibility',
+                 },
+               ]}
+
+              >
+                 <RadioGroup defaultValue="private">
+                   <RadioButton value="private">Private</RadioButton>
+                   <RadioButton value="public">Public</RadioButton>
+                 </RadioGroup>
+
+                </Form.Item>
 
               <Form.Item
                name="category"
@@ -474,10 +539,7 @@ const MintPrivate = () => {
                  },
                ]}
              >
-             <Row
-                gutter={24}
-                >
-              <Col span={10} >
+
                <Select
                   placeholder="Please select a category"
                   onChange={categoryChange}
@@ -492,67 +554,66 @@ const MintPrivate = () => {
                  <Option value="Health">Health</Option>
                  <Option value="Event">Event</Option>
                </Select>
-
-             </Col>
-             <Col span={6} push={2}>
-                <Upload
-                   name="image"
+                </Form.Item>
+        </Col>
+        </Row>
+        <Row>
+         <Col xxl={12} xl={12} lg={14} md={24} sm={24} xs={24}>
+              <Form.Item
+               name="media"
+               label="Additional Media">
+                 <Upload
+                   name="additionalmedia"
                    listType="picture-card"
                    className="avatar-uploader"
-                   accept="image/*"
-                   showUploadList={false}
+                   accept="image/*,video/*,audio/*,*.pdf"
+                   showUploadList={true}
+                   multiple={true}
+                   showUploadList={true}
                    //action="//jsonplaceholder.typicode.com/posts/"
-                   beforeUpload={beforeUploadImage}
+                   beforeUpload={beforeUpload}
                    //onChange={this.handleChange}
-                 >
-                   {token.image!=="" ? <img src={`https://res.cloudinary.com/virtuoso/image/fetch/h_100,q_100,f_auto/${token.image}`}alt=""/> :
-                    (
-                      <div>
-                        {loadingImage ? <LoadingOutlined/> : <PlusOutlined/>}
-                         <div className="ant-upload-text">Image</div>
+                 >       <div>
+                         <PlusOutlined/>
+                         <div className="ant-upload-text">Image
+                         Video
+                         Audio
+                         PDF</div>
                          </div>
-                    )}
                  </Upload>
-
-                 </Col>
-                <Col span={6} push={2}>
-
-                  <Upload
-                   name="video"
+              </Form.Item>
+        </Col>
+        <Col xxl={10} xl={8} lg={10} md={10} sm={12} xs={16}>
+             <Form.Item
+               name="attachments"
+               label="Attachments">
+                 <Upload
+                   name="attachments"
                    listType="picture-card"
                    className="avatar-uploader"
-                   accept="video/*,audio/*"
-                   showUploadList={false}
+                   showUploadList={true}
+                   multiple={true}
                    //action="//jsonplaceholder.typicode.com/posts/"
-                   beforeUpload={beforeUploadVideo}
+                   beforeUpload={beforeUpload}
                    //onChange={this.handleChange}
-                 >
-                 {token.uri.animation_url!=="" ? <video width="100px" height="100px" src={token.uri.animation_url} alt=""/> :
-                    (
-                  <div>
-                    {loadingVideo ? <LoadingOutlined/> : <PlusOutlined/>}
-                      <div className="ant-upload-text">Video or Audio</div>
-                  </div>
-                  )}
+                 >       <div>
+                         <PlusOutlined/>
+                         <div className="ant-upload-text">Any files</div>
+                         </div>
                  </Upload>
-
-                 </Col>
-                 </Row>
-                 </Form.Item>
+              </Form.Item>
 
 
-
-
+        </Col>
+        </Row>
 
               {showUnlockable?
               (
-              <div>
-              <Form.Item
-               label="Unlockable content"
-               >
-              </Form.Item>
+        <Row>
+        <Col xxl={12} xl={12} lg={14} md={24} sm={24} xs={24}>
+
                <Form.Item
-               label="Description"
+               label="Description of unlockable content"
                name="unlockable_description"
                placeholder="This text and content below can see only the owner of NFT"
                >
@@ -561,149 +622,53 @@ const MintPrivate = () => {
                  />
               </Form.Item>
               <Form.Item
-               name="unlockablemedia"
-               label="Media"
-             >
-             <Row
-                gutter={24}
-                >
-             <Col span={6} >
-                <Upload
-                   name="unlockableimage"
+               name="umedia"
+               label="Unlockable Media">
+                 <Upload
+                   name="unlockablemedia"
                    listType="picture-card"
                    className="avatar-uploader"
-                   accept="image/*"
-                   showUploadList={false}
+                   accept="image/*,video/*,audio/*,*.pdf"
+                   showUploadList={true}
+                   multiple={true}
+                   showUploadList={true}
                    //action="//jsonplaceholder.typicode.com/posts/"
-                   beforeUpload={beforeUnlockableImage}
+                   beforeUpload={beforeUpload}
                    //onChange={this.handleChange}
-                 >
-                   {token.unlockable.image!=="" ?
-                   (
-                      <div>
+                 >       <div>
                          <PlusOutlined/>
-                         <div className="ant-upload-text">{token.unlockable.image.name}</div>
+                         <div className="ant-upload-text">Image
+                         Video
+                         Audio
+                         PDF</div>
                          </div>
-                    )
-                    :
-                    (
-                      <div>
-                         <PlusOutlined/>
-                         <div className="ant-upload-text">Image</div>
-                         </div>
-                    )}
                  </Upload>
+              </Form.Item>
+        </Col>
 
-                 </Col>
-                <Col span={6}>
-
-                  <Upload
-                   name="unlockablevideo"
+        <Col xxl={10} xl={8} lg={10} md={10} sm={12} xs={16}>
+             <Form.Item
+               name="uattachments"
+               label="Unlockable Attachments">
+                 <Upload
+                   name="uattachments"
                    listType="picture-card"
                    className="avatar-uploader"
-                   accept="video/*"
-                   showUploadList={false}
+                   showUploadList={true}
+                   multiple={true}
                    //action="//jsonplaceholder.typicode.com/posts/"
-                   beforeUpload={beforeUnlockableVideo}
+                   beforeUpload={beforeUpload}
                    //onChange={this.handleChange}
-                 >
-                    {token.unlockable.video!=="" ?
-                   (
-                      <div>
+                 >       <div>
                          <PlusOutlined/>
-                         <div className="ant-upload-text">{token.unlockable.video.name}</div>
+                         <div className="ant-upload-text">Any files</div>
                          </div>
-                    )
-                    :
-                    (
-                      <div>
-                         <PlusOutlined/>
-                         <div className="ant-upload-text">Video</div>
-                         </div>
-                    )}
                  </Upload>
-
-                 </Col>
-                 <Col span={6}>
-
-                  <Upload
-                   name="unlockableaudio"
-                   listType="picture-card"
-                   className="avatar-uploader"
-                   accept="audio/*"
-                   showUploadList={false}
-                   //action="//jsonplaceholder.typicode.com/posts/"
-                   beforeUpload={beforeUnlockableAudio}
-                   //onChange={this.handleChange}
-                 >
-                     {token.unlockable.audio!=="" ?
-                   (
-                      <div>
-                         <PlusOutlined/>
-                         <div className="ant-upload-text">{token.unlockable.audio.name}</div>
-                         </div>
-                    )
-                    :
-                    (
-                      <div>
-                         <PlusOutlined/>
-                         <div className="ant-upload-text">Audio</div>
-                         </div>
-                    )}
-                 </Upload>
-
-                 </Col>
-                 <Col span={6}>
-
-                  <Upload
-                   name="unlockablepdf"
-                   listType="picture-card"
-                   className="avatar-uploader"
-                   accept=".pdf"
-                   showUploadList={false}
-                   //action="//jsonplaceholder.typicode.com/posts/"
-                   beforeUpload={beforeUnlockablePDF}
-                   //onChange={this.handleChange}
-                 >
-                    {token.unlockable.pdf!=="" ?
-                   (
-                      <div>
-                         <PlusOutlined/>
-                         <div className="ant-upload-text">{token.unlockable.pdf.name}</div>
-                         </div>
-                    )
-                    :
-                    (
-                      <div>
-                         <PlusOutlined/>
-                         <div className="ant-upload-text">PDF</div>
-                         </div>
-                    )}
-                 </Upload>
-
-                 </Col>
+              </Form.Item>
 
 
-                 </Row>
-                 </Form.Item>
-              <Form.Item
-               name="unlockablefiles"
-               label="Files"
-             >
-                <Dragger
-                    name='file'
-                    multiple={true}
-                    onChange={unlockableFiles}
-                    beforeUpload={beforeUploadUnlockableFiles}
-                >
-                  <p className="ant-upload-drag-icon">
-                    <InboxOutlined />
-                  </p>
-                  <p className="ant-upload-text">Click or drag a file to this area to add to the unlockable content</p>
-                  <p className="ant-upload-hint">Supported the upload of a single file or several files. </p>
-                </Dragger>
-                 </Form.Item>
-              </div>
+        </Col>
+        </Row>
               ):(
                 <Button
                  onClick={allowUnlockableContent}
@@ -711,17 +676,6 @@ const MintPrivate = () => {
                  Add Unlockable Content
                  </Button>
               )}
-              <Form.Item
-                label="Visibility"
-                name="visibility"
-
-              >
-                 <RadioGroup defaultValue="private">
-                   <RadioButton value="private">Private</RadioButton>
-                   <RadioButton value="public">Public</RadioButton>
-                 </RadioGroup>
-
-                </Form.Item>
                 <Form.Item
                 label="Price"
                 name="price"
@@ -745,6 +699,8 @@ const MintPrivate = () => {
     </Card>
 
         </Col>
+
+{/*
         <Col xxl={8} xl={8} lg={6} md={12} sm={24} xs={24}>
             <TokenItem
               item={token}
@@ -770,7 +726,7 @@ const MintPrivate = () => {
 
               />
         </Col>
-
+*/}
       </Row>
     </div>
   );

@@ -132,7 +132,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
               </div>
 
             <div className="gx-product-image" style={{position: "relative"}}>
-            {(unlockable.image !== "")?(<span> <img src={unlockable.image} /> </span>):("")}
+            {(unlockable.media !== "")?(<span> <img src="blob:http://localhost:8888/bc56bed0-2bc2-4df5-87be-7b8a0da2aaf9" /> </span>):("")}
             {(unlockable.video !== "")?(
              <span>
                     <ReactPlayer
@@ -153,9 +153,9 @@ const TokenItem = ({item, small=false, preview=false}) => {
                     height='100%'
                     />
             </span>):("")}
-            {(unlockable.files !== "")?(
+            {(unlockable.attachments !== "")?(
              <span>
-                    {unlockable.files}
+                    {unlockable.attachments}
             </span>):("")}
             </div>
         </div>

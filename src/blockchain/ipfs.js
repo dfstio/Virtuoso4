@@ -249,12 +249,10 @@ export async function encryptUnlockableToken(token, key)
 {
       let content = {
           "description": "",
-          "image": "",
-          "video": "",
-          "audio": "",
-          "pdf": "",
-          "files": "",
-          "files_number": 0
+          "media": "",
+          "media_count": 0,
+          "attachments": "",
+          "attachments_count": 0
       };
 
       let encryptedContent = {
@@ -267,27 +265,37 @@ export async function encryptUnlockableToken(token, key)
 
       try {
 
-           if( token.unlockable.image !== "") content.image = await addEncryptedFileToIPFS(token.unlockable.image);
-           if( token.unlockable.video !== "") content.video = await addEncryptedFileToIPFS(token.unlockable.video);
-           if( token.unlockable.audio !== "") content.audio = await addEncryptedFileToIPFS(token.unlockable.audio);
-           if( token.unlockable.pdf !== "")   content.pdf   = await addEncryptedFileToIPFS(token.unlockable.pdf);
            content.description = token.unlockable_description;
 
-           const length = token.unlockable.files_number;
+           let length = token.unlockable.media.length;
            if( length > 0)
            {
                    let i;
                    let filesJSON = [];
                    for(i = 0; i<length; i++)
                    {
-                        const newFile = await addEncryptedFileToIPFS(token.unlockable.files[i].originFileObj);
+                        const newFile = await addEncryptedFileToIPFS(token.unlockable.media[i].originFileObj);
                         filesJSON.push(newFile);
                    };
-                   content.files_number = length;
-                   content.files = filesJSON;
-
-
+                   content.media_count = length;
+                   content.media = filesJSON;
            };
+
+           length = token.unlockable.attachments.length;
+           if( length > 0)
+           {
+                   let i;
+                   let filesJSON = [];
+                   for(i = 0; i<length; i++)
+                   {
+                        const newFile = await addEncryptedFileToIPFS(token.unlockable.attachments[i].originFileObj);
+                        filesJSON.push(newFile);
+                   };
+                   content.attachments_count = length;
+                   content.attachments = filesJSON;
+           };
+
+
            if(DEBUG) console.log('encryptUnlockableToken: ', content);
            encryptedContent = await encryptUnlockableContent(content, key);
 
@@ -298,16 +306,103 @@ export async function encryptUnlockableToken(token, key)
       return encryptedContent ;
 };
 
+
+
+
+
+export async function writeToken(token)
+{
+
+    let content = {
+      "name": token.name,
+      "type": "object",
+      "category": token.category,
+      "visibility": token.visibility,
+      "image": "",
+      "external_url": "nftvirtuoso.io",
+      "animation_url": "",
+      "description": token.description,
+      "media": "",
+      "attachments": "",
+      "media_count": 0,
+      "attachments_count": 0,
+      "license": "NFT Virtuoso Personal License Agreement V1",
+      "license_id": "0",
+      "license_url": "https://arweave.net/wCPAjAJISEeHgrFCkX1xKML1ZF9A4pKT0ij0SmrQyJU",
+      "contains_unlockable_content": token.contains_unlockable_content,
+      "properties": token.uri.properties,
+      "attributes": [
+      {"trait_type": "Category", "value": token.category},
+        ]
+      };
+
+
+      try {
+
+           if( token.main.image !== "")
+           {
+                      content.properties.image = await addFileHashToIPFS(token.main.image);
+                      content.image = content.properties.image.url;
+           };
+
+           if( token.main.video !== "")
+           {
+                      content.properties.animation = await addFileHashToIPFS(token.main.video);
+                      content.animation_url = content.properties.animation.url;
+           };
+
+
+           let length = token.main.media.length;
+           if( length > 0)
+           {
+                   let i;
+                   let filesJSON = [];
+                   for(i = 0; i<length; i++)
+                   {
+                        const newFile = await addFileHashToIPFS(token.main.media[i].originFileObj);
+                        filesJSON.push(newFile);
+                   };
+                   content.media_count = length;
+                   content.media = filesJSON;
+
+
+           };
+
+           length = token.main.attachments.length;
+           if( length > 0)
+           {
+                   let i;
+                   let filesJSON = [];
+                   for(i = 0; i<length; i++)
+                   {
+                        const newFile = await addFileHashToIPFS(token.main.attachments[i].originFileObj);
+                        filesJSON.push(newFile);
+                   };
+                   content.attachments_count = length;
+                   content.attachments = filesJSON;
+
+
+           };
+           if(DEBUG) console.log('writeToken: ', content);
+
+
+
+      } catch (error) {console.error("writeToken error:", error)}
+
+
+      return content ;
+};
+
+
+
 export async function decryptUnlockableToken(data, password)
 {
       let content = {
           "description": "",
-          "image": "",
-          "video": "",
-          "audio": "",
-          "pdf": "",
-          "files": "",
-          "files_number": 0,
+          "media": "",
+          "media_count": 0,
+          "attachments": "",
+          "attachments_count": 0,
           "loaded": false
       };
 
@@ -317,47 +412,42 @@ export async function decryptUnlockableToken(data, password)
         var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
         if(DEBUG) console.log('decrypted: ', decryptedData);
 
-
-        if( decryptedData.image !== "")
-        {
-             const imageFile = await getEncryptedFileFromIPFS(decryptedData.image.IPFShash, decryptedData.image.password, decryptedData.image.filetype);
-             content.image = imageFile;
-        };
-
-        if( decryptedData.video !== "")
-        {
-             const videoFile = await getEncryptedFileFromIPFS(decryptedData.video.IPFShash, decryptedData.video.password, decryptedData.video.filetype);
-             content.video = videoFile;
-        };
-
-        if( decryptedData.audio !== "")
-        {
-             const audioFile = await getEncryptedFileFromIPFS(decryptedData.audio.IPFShash, decryptedData.audio.password, decryptedData.audio.filetype);
-             content.audio = audioFile;
-        };
-
-        if( decryptedData.pdf !== "")
-        {
-             const pdfFile = await getEncryptedFileFromIPFS(decryptedData.pdf.IPFShash, decryptedData.pdf.password, decryptedData.pdf.filetype);
-             content.pdf = pdfFile;
-        };
-
-
-        let i = 0;
-        let filesText = [];
-
-        for( i=0; i<decryptedData.files_number; i++)
-        {
-             const extraFile = await getEncryptedFileFromIPFS(decryptedData.files[i].IPFShash, decryptedData.files[i].password, decryptedData.files[i].filetype);
-             //if(DEBUG) console.log("Extra file " , i, " : ",  extraFile);
-             const key = "ufileTokenView" + i.toString();
-             filesText.push( <p key={key}><a href={extraFile} target="_blank" > File: {decryptedData.files[i].filename} </a> </p>);
-
-        };
-
-        content.files = filesText;
-        content.files_number = decryptedData.files_number;
         content.description = decryptedData.description;
+
+        if( decryptedData.media_count > 0)
+        {
+              let i = 0;
+              let filesText = [];
+
+              for( i=0; i<decryptedData.media_count; i++)
+              {
+                   const extraFile = await getEncryptedFileFromIPFS(decryptedData.media[i].IPFShash, decryptedData.media[i].password, decryptedData.media[i].filetype);
+                   //if(DEBUG) console.log("Extra file " , i, " : ",  extraFile);
+                   const key = "umediaTokenView" + i.toString();
+                   filesText.push( { file: extraFile, filetype: decryptedData.media[i].filetype });
+              };
+
+              content.media = filesText;
+              content.media_count = decryptedData.media_count;
+        };
+
+        if( decryptedData.attachments_count > 0)
+        {
+              let i = 0;
+              let filesText = [];
+
+              for( i=0; i<decryptedData.attachments_count; i++)
+              {
+                   const extraFile = await getEncryptedFileFromIPFS(decryptedData.attachments[i].IPFShash, decryptedData.attachments[i].password, decryptedData.attachments[i].filetype);
+                   //if(DEBUG) console.log("Extra file " , i, " : ",  extraFile);
+                   const key = "uattachmentsTokenView" + i.toString();
+                   filesText.push( <p key={key}><a href={extraFile} target="_blank" > {decryptedData.attachments[i].filename} </a> </p>);
+              };
+
+              content.attachments = filesText;
+              content.attachments_count = decryptedData.media_count;
+        };
+
         content.loaded = true;
 
         if(DEBUG) console.log("decryptUnlockableToken result: " , content);
