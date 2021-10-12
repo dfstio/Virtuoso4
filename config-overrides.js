@@ -11,6 +11,7 @@ const overrideProcessEnv = value => config => {
 module.exports = override(
   addLessLoader({
     javascriptEnabled: true,
+    modifyVars: { '@primary-color': '#038fde' },
   }),
   overrideProcessEnv({
     VERSION: JSON.stringify(require('./package.json').version),
