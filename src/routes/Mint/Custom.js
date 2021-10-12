@@ -566,7 +566,7 @@ const MintPrivate = () => {
                    name="additionalmedia"
                    listType="picture-card"
                    className="avatar-uploader"
-                   accept="image/*,video/*,audio/*,*.pdf"
+                   accept="image/*,video/*,audio/*,.pdf"
                    showUploadList={true}
                    multiple={true}
                    showUploadList={true}
@@ -628,7 +628,7 @@ const MintPrivate = () => {
                    name="unlockablemedia"
                    listType="picture-card"
                    className="avatar-uploader"
-                   accept="image/*,video/*,audio/*,*.pdf"
+                   accept="image/*,video/*,audio/*,.pdf"
                    showUploadList={true}
                    multiple={true}
                    showUploadList={true}

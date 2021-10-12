@@ -1,8 +1,9 @@
-import React, {useState} from "react";
+import React, {useState, useEffect } from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {message} from 'antd';
 import {updateAddress, updateVirtuosoBalance, updatePublicKey} from "../../appRedux/actions";
-import {Button} from "antd";
+import {Button, Row, Col} from "antd";
+import {LoadingOutlined, ExpandOutlined, CloseCircleFilled } from '@ant-design/icons';
 import IntlMessages from "util/IntlMessages";
 import { metamaskLogin, virtuosoRegisterPublicKey, getVirtuosoUnlockableContentKey, metamaskDecrypt } from "../../blockchain/metamask";
 import  SellButton  from "../algolia/Sell";
@@ -22,6 +23,100 @@ const content = {
           "loaded": false
       };
 
+
+
+const MediaList = ({hits}) => {
+  if(DEBUG) console.log("MediaList", hits);
+  return (
+    <div id="product">
+      <Row>
+        {hits.map(media => (
+          <Col xl={8} lg={12} md={12} sm={12} xs={24}>
+            <TokenMedia
+              media={media}
+              key={media.IPFShash}
+
+              />
+          </Col>
+        ))}
+      </Row>
+    </div>
+  );
+};
+
+const TokenMedia = ({media}) => {
+      //const [loading, setLoading] = useState(true);
+      const [content, setContent] = useState("<LoadingOutlined />{media.name}");
+
+      useEffect(() => {
+            async function fetchMedia() {
+              let newContent = "";
+              const type = media.filetype.replace(/\/[^/.]+$/, "");
+
+              switch(type)
+              {
+                  case "image": newContent = (<img src={media.url} alt={media.name}/>); break;
+                  case "video": newContent = (
+                                                  <ReactPlayer
+                                                     url={media.url}
+                                                     controls={true}
+                                                     //light={true}
+                                                     width='100%'
+                                                     height='100%'
+                                                     />
+
+                          ); break;
+                  default: newContent = (<CloseCircleFilled />);
+
+              };
+              if(DEBUG) console.log(`TokenMedia ${type}:`, content);
+              setContent(newContent);
+              //setLoading(false);
+        }
+      fetchMedia()
+      },[media]);
+
+  return (
+    <div className="gx-product-item gx-product-vertical" >
+      <div className="gx-product-image">
+        {content}
+      </div>
+      <div className="gx-product-body" >
+
+        <div className="gx-product-name">
+        <span>
+          {media.name}
+        </span>
+         <span style={{ float: "right"}}>
+            <ExpandOutlined />
+        </span>
+        </div>
+
+
+        <div className="gx-mt-4">
+          {media.description}
+        </div>
+      </div>
+    </div>
+  );
+
+};
+
+const TokenAudio = ({media}) => {
+      const [loading, setLoading] = useState(true);
+      const [content, setContent] = useState("<LoadingOutlined />{media.name}");
+
+
+
+
+
+
+
+
+};
+
+
+
 const TokenItem = ({item, small=false, preview=false}) => {
   //const icons = [];
   //if(DEBUG) console.log("Item: ", item, small, preview);
@@ -30,6 +125,41 @@ const TokenItem = ({item, small=false, preview=false}) => {
   const dispatch = useDispatch();
   const [unlockable, setUnlockable] = useState(content);
   const [loadingUnlockable, setLoadingUnlockable] = useState(false);
+
+  const [media, setMedia] = useState([]);
+  const [attachemts, setAttachments] = useState("");
+  const [uattachemts, setUAttachments] = useState("");
+  const [audio, setAudio] = useState("");
+  const [uaudio, setUAudio] = useState("");
+
+  useEffect(() => {
+            async function loadMedia() {
+              let newMedia = [];
+
+              if( item.uri.properties.image!== "") newMedia.push(item.uri.properties.image);
+              if( item.uri.properties.animation!== "")
+              {
+                   const type = item.uri.properties.animation.filetype.replace(/\/[^/.]+$/, "");
+                   if( type === 'video') newMedia.push(item.uri.properties.animation);
+              };
+              const count  = (item.uri.media_count === undefined)? 0 : item.uri.media_count;
+
+              if( count > 0)
+              {
+                      let i;
+
+                      for(i = 0; i<count; i++)
+                      {
+                           newMedia.push(item.uri.media[i]);
+                           newMedia[i].unlockable = false;
+                      };
+
+              };
+              setMedia(newMedia);
+              if(DEBUG) console.log(`TokenItem media ${count}:`, newMedia);
+        }
+      loadMedia()
+      },[item]);
 
 
   let buttonId = "sidebar.algolia.buy";
@@ -121,6 +251,8 @@ const TokenItem = ({item, small=false, preview=false}) => {
 
   return (
     <div className="gx-product-item gx-product-vertical" >
+    <MediaList  hits={media} />
+
     {(small===false && preview === false && item.uri.contains_unlockable_content === true && unlockable.loaded === true)?
     (
         <div className="gx-product-body" >
@@ -180,31 +312,6 @@ const TokenItem = ({item, small=false, preview=false}) => {
      (
        ""
      )}
-      <div className="gx-product-image" style={{position: "relative"}}>
-      <span>
-            <img
-             src={`https://res.cloudinary.com/virtuoso/image/fetch/q_100,f_auto/${
-               item.image
-               }`} alt=''
-           />
-      </span>
-      <span>
-       {(small==false && item.uri.animation_url !== undefined && item.uri.animation_url !== "")?
-           (
-              <ReactPlayer
-              url={item.uri.animation_url}
-              controls={true}
-              //light={true}
-              width='100%'
-              height='100%'
-              />
-            )
-            :
-            (
-              ""
-            )}
-      </span>
-      </div>
       <div className="gx-product-body" >
 
         <div className="gx-product-name">

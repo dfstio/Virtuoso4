@@ -122,7 +122,9 @@ export async function addEncryptedFileToIPFS(file)
         "filetype": "",
         "filename": "",
         "size" : "",
-        "lastModified" : ""
+        "lastModified" : "",
+        "name":"",
+        "description":""
         };
 
      try {
@@ -133,6 +135,8 @@ export async function addEncryptedFileToIPFS(file)
           result.filename = file.name;
           result.filetype = file.type;
           result.lastModified = file.lastModified;
+          result.name=file.name.replace(/\.[^/.]+$/, "");
+          result.description="";
 
           // var reader = new FileReader();
 
@@ -476,7 +480,9 @@ export async function addFileHashToIPFS(file)
         "filename": "",
         "size" : "",
         "lastModified" : "",
-        "url": ""
+        "url": "",
+        "name":"",
+        "description":""
         };
 
 
@@ -490,6 +496,8 @@ export async function addFileHashToIPFS(file)
           result.MD5_Hash = md5Hash;
           result.SHA256_Hash = sha256Hash;
           result.filename = file.name;
+          result.name=file.name.replace(/\.[^/.]+$/, "");
+          result.description="";
           result.filetype = file.type;
           result.lastModified = file.lastModified;
           result.size = file.size;
