@@ -13,6 +13,7 @@ import 'react-jinke-music-player/assets/index.css'
 import 'react-jinke-music-player/lib/styles/index.less';
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
 import "./style.css";
+import Markdown from 'markdown-to-jsx';
 //import '../../styles/token/audio-player.less';
 
 const { getFromIPFS, decryptUnlockableToken } = require("../../blockchain/ipfs");
@@ -229,6 +230,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
   const dispatch = useDispatch();
   const [unlockable, setUnlockable] = useState(content);
   const [loadingUnlockable, setLoadingUnlockable] = useState(false);
+  const [showUnlockableButton, setShowUnlockableButton] = useState(false);
 
   const [media, setMedia] = useState([]);
   const [attachemts, setAttachments] = useState("");
@@ -237,6 +239,15 @@ const TokenItem = ({item, small=false, preview=false}) => {
   const [uaudio, setUAudio] = useState([]);
 
   const [currentMedia, setCurrentMedia] = useState(null);
+
+  useEffect(() => {
+            function checkAddress() {
+            let show = false;
+            if( address === item.owner) show = true;
+            if( show !== showUnlockableButton) setShowUnlockableButton(show);
+          }
+      checkAddress()
+      },[address]);
 
 
   useEffect(() => {
@@ -500,12 +511,14 @@ const TokenItem = ({item, small=false, preview=false}) => {
 
         ):(
             <div className="gx-product-price">
-            Token {item.vrtTokenId}
+             {item.vrtTokenId}
             </div>
           )
         }
         <div className="gx-mt-4">
-         {item.description}
+         <Markdown>
+            {item.description}
+         </Markdown>
         </div>
 
 
@@ -555,9 +568,9 @@ const TokenItem = ({item, small=false, preview=false}) => {
        ""
      )}
 
-    {(small===false && preview === false && item.uri.contains_unlockable_content === true && unlockable.loaded === false)?
+    {(showUnlockableButton && small===false && preview === false && item.uri.contains_unlockable_content === true && unlockable.loaded === false)?
     (
-        <div className="gx-product-body" >
+        <div className="gx-product-image" style={{"margin-top": "25px"}} >
                 <Button
                  onClick={showUnlockableContent}
                  >
