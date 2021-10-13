@@ -421,17 +421,19 @@ export async function decryptUnlockableToken(data, password)
         if( decryptedData.media_count > 0)
         {
               let i = 0;
-              let filesText = [];
+              let files = [];
 
               for( i=0; i<decryptedData.media_count; i++)
               {
-                   const extraFile = await getEncryptedFileFromIPFS(decryptedData.media[i].IPFShash, decryptedData.media[i].password, decryptedData.media[i].filetype);
+                   //const extraFile = await getEncryptedFileFromIPFS(decryptedData.media[i].IPFShash, decryptedData.media[i].password, decryptedData.media[i].filetype);
                    //if(DEBUG) console.log("Extra file " , i, " : ",  extraFile);
-                   const key = "umediaTokenView" + i.toString();
-                   filesText.push( { file: extraFile, filetype: decryptedData.media[i].filetype });
+                   //const key = "umediaTokenView" + i.toString();
+                   let media = decryptedData.media[i];
+                   media.url = ""; //extraFile;
+                   files.push( media);
               };
 
-              content.media = filesText;
+              content.media = files;
               content.media_count = decryptedData.media_count;
         };
 
@@ -449,7 +451,7 @@ export async function decryptUnlockableToken(data, password)
               };
 
               content.attachments = filesText;
-              content.attachments_count = decryptedData.media_count;
+              content.attachments_count = decryptedData.attachments_count;
         };
 
         content.loaded = true;
@@ -537,17 +539,18 @@ export async function getEncryptedFileFromIPFS(hash, key, filetype)
      try {
 
      const file = await getFromIPFS(hash);
-     if (DEBUG) console.log("getEncryptedFileFromIPFS file: ", file);
+     if (DEBUG) console.log("getEncryptedFileFromIPFS file: ", hash);
      const ebuf = file.toString();
-     if (DEBUG) console.log("getEncryptedFileFromIPFS ebuf: ", ebuf);
+     //if (DEBUG) console.log("getEncryptedFileFromIPFS ebuf: ", ebuf);
      var bytes  = CryptoJS.AES.decrypt(ebuf, key);
-     if (DEBUG) console.log("getEncryptedFileFromIPFS bytes: ", bytes);
+     //if (DEBUG) console.log("getEncryptedFileFromIPFS bytes: ", bytes);
      const dcBase64String = bytes.toString(CryptoJS.enc.Base64); // to Base64-String
      const dcArrayBuffer = _base64ToArrayBuffer(dcBase64String); // to ArrayBuffer
      var blob = new Blob( [ dcArrayBuffer ], { type: filetype } );
      //let filename = new File([ dcArrayBuffer ], "album1.jpeg", {type: filetype });
      var urlCreator = window.URL || window.webkitURL;
      var imageUrl = urlCreator.createObjectURL( blob);
+     if (DEBUG) console.log("getEncryptedFileFromIPFS result: ", hash, imageUrl);
      return imageUrl;
 
 
@@ -583,8 +586,8 @@ export async function getFromIPFS( hashToGet)
     for await (const chunk of ipfs.cat(hashToGet)) {
       content.append(chunk);
     };
-    if (DEBUG) console.log("getFromIPFS Content: ", content);
-    if( DEBUG && content !== undefined ) console.log("getFromIPFS Content as string: ", content.toString());
+    if (DEBUG) console.log("getFromIPFS finished ", hashToGet);
+    //if( DEBUG && content !== undefined ) console.log("getFromIPFS Content as string: ", content.toString());
     return content;
 };
 
