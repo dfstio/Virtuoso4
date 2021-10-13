@@ -401,6 +401,8 @@ export async function writeToken(token)
 
 export async function decryptUnlockableToken(data, password)
 {
+
+/*
       let content = {
           "description": "",
           "media": "",
@@ -409,13 +411,20 @@ export async function decryptUnlockableToken(data, password)
           "attachments_count": 0,
           "loaded": false
       };
-
+*/
       try {
 
         var bytes  = CryptoJS.AES.decrypt(data, password);
         var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
         if(DEBUG) console.log('decrypted: ', decryptedData);
+        decryptedData.loaded = true;
+        return decryptedData;
 
+        } catch (error) {console.error("decryptUnlockableToken error:", error)}
+
+
+
+/*
         content.description = decryptedData.description;
 
         if( decryptedData.media_count > 0)
@@ -447,7 +456,8 @@ export async function decryptUnlockableToken(data, password)
                    const extraFile = await getEncryptedFileFromIPFS(decryptedData.attachments[i].IPFShash, decryptedData.attachments[i].password, decryptedData.attachments[i].filetype);
                    //if(DEBUG) console.log("Extra file " , i, " : ",  extraFile);
                    const key = "uattachmentsTokenView" + i.toString();
-                   filesText.push( <p key={key}><a href={extraFile} target="_blank" > {decryptedData.attachments[i].filename} </a> </p>);
+                   //filesText.push( <p key={key}><a href={extraFile} target="_blank" > {decryptedData.attachments[i].filename} </a> </p>);
+                   filesText.push( <p key={key}><a href={extraFile} target="_blank" download={decryptedData.attachments[i].filename} > {decryptedData.attachments[i].filename} </a> </p>);
               };
 
               content.attachments = filesText;
@@ -462,6 +472,7 @@ export async function decryptUnlockableToken(data, password)
         } catch (error) {console.error("decryptUnlockableToken error:", error)}
 
         return content;
+*/
 
 };
 
