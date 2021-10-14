@@ -222,7 +222,8 @@ if(DEBUG) console.log("TokenAudio: ", media.length, media);
                                 const size = " ("+size1+")";
                                 msg = true;
                                 message.loading({content: `Loading unlockable audio ${media[i].filename} ${size} from IPFS`, key: 'loadUnlockableAudio', duration: 6000});
-                                url =  await getEncryptedFileFromIPFS(media[i].IPFShash, media[i].password, media[i].filetype);
+                                //  vm.feed = getFeed().then(function(data) {return data.data ;});
+                                url =  getEncryptedFileFromIPFS(media[i].IPFShash, media[i].password, media[i].filetype).then(function(data) {return data;});
                                 newMedia[i].url = url;
                             };
 
@@ -236,7 +237,7 @@ if(DEBUG) console.log("TokenAudio: ", media.length, media);
                        onLoadAudio(newMedia);
                        setAudioList(newAudio);
                        setVisible(true);
-                       if( msg) message.success({content: `Audio loaded from IPFS`, key: 'loadUnlockableAudio', duration: 30});
+                       if( msg) message.success({content: `Audio has loaded from IPFS`, key: 'loadUnlockableAudio', duration: 30});
 
               }
               else
@@ -549,7 +550,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
 
                   setCounter(counter+1);
                   await addUnlockable(decryptedData.media, decryptedData.media_count);
-                  message.success({content: `Unlockable content loaded`, key: 'loadUnlockable', duration: 30});
+                  message.success({content: `Unlockable content and files have loaded`, key: 'loadUnlockable', duration: 30});
                   if(DEBUG) console.log(`loadUnlockable media:`, media, "audio", audio);
 
 
