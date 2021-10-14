@@ -196,36 +196,46 @@ if(DEBUG) console.log("TokenAudio: ", media.length, media);
       const [audioList, setAudioList] = useState([]);
       const [visible, setVisible] = useState(false);
       const [length, setLength] = useState(0);
+      //const [purl, setPURL] = useState();
 
       if(media.length!==length) setLength(media.length);
+
 
       useEffect(() => {
             async function fetchMedia() {
 
               if(DEBUG) console.log("TokenAudio useEffect start: ", media.length, length, media);
               let newAudio = [];
-              let newMedia = media;
+              //let newMedia = media;
               const count = media.length;
               if(visible) setVisible(false);
 
               if( count > 0)
               {
                       let i;
-                      let msg = false;
+                      //let msg = false;
 
                       for(i = 0; i<count; i++)
                       {
                             let url =  (media[i].url===undefined)?"":media[i].url;
                             if( url === "" && media[i].password !== undefined && media[i].password !== "")
                             {
-                                const size1 = formatBytes( media[i].size);
-                                const size = " ("+size1+")";
-                                msg = true;
-                                message.loading({content: `Loading unlockable audio ${media[i].filename} ${size} from IPFS`, key: 'loadUnlockableAudio', duration: 6000});
+                                //const size1 = formatBytes( media[i].size);
+                                //const size = " ("+size1+")";
+                                //msg = true;
+                                //message.loading({content: `Loading unlockable audio ${media[i].filename} ${size} from IPFS`, key: 'loadUnlockableAudio', duration: 6000});
                                 //  vm.feed = getFeed().then(function(data) {return data.data ;});
-                                url =  getEncryptedFileFromIPFS(media[i].IPFShash, media[i].password, media[i].filetype).then(function(data) {return data;});
-                                newMedia[i].url = url;
+                                let url2 =  getEncryptedFileFromIPFS(media[i].IPFShash, media[i].password, media[i].filetype).then(function(data) {return data;});
+                                //setPURL(url2);
+                                if(DEBUG) console.log("url2", url2);
+                                url = () => { if(DEBUG) console.log("musicSrc url2", url2); return url2; };
+                                //musicSrc: () => {
+                                //  return Promise.resolve("http://res.cloudinary.com/alick/video/upload/v1502689683/Luis_Fonsi_-_Despacito_ft._Daddy_Yankee_uyvqw9.mp3")
+                                //}
+
+                                //newMedia[i].url = url;
                             };
+
 
                             let track = {
                                    name: media[i].name,
@@ -234,10 +244,10 @@ if(DEBUG) console.log("TokenAudio: ", media.length, media);
                            if( image !== "") track.cover = `https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/${image}`;
                            newAudio.push(track);
                        };
-                       onLoadAudio(newMedia);
+                       //onLoadAudio(newMedia);
                        setAudioList(newAudio);
                        setVisible(true);
-                       if( msg) message.success({content: `Audio has loaded from IPFS`, key: 'loadUnlockableAudio', duration: 30});
+                       //if( msg) message.success({content: `Audio has loaded from IPFS`, key: 'loadUnlockableAudio', duration: 30});
 
               }
               else
@@ -247,7 +257,7 @@ if(DEBUG) console.log("TokenAudio: ", media.length, media);
               };
 
 
-              if(DEBUG) console.log(`TokenAudio: useEffect ${count}:`, newMedia, newAudio);
+              if(DEBUG) console.log(`TokenAudio: useEffect ${count}:`, newAudio);
         }
       fetchMedia()
       },[media, length]);
@@ -478,7 +488,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
             const size1 = formatBytes( newMedia[i].data.size);
             const size = " ("+size1+")";
             message.loading({content: `Loading unlockable file ${newMedia[i].data.filename} ${size} from IPFS`, key: 'loadUnlockable', duration: 6000});
-            const url = await getEncryptedFileFromIPFS(newMedia[i].data.IPFShash, newMedia[i].data.password, newMedia[i].data.filetype);
+            const url = getEncryptedFileFromIPFS(newMedia[i].data.IPFShash, newMedia[i].data.password, newMedia[i].data.filetype).then(function(data) {return data;});
             media2[i].data.url = url;
             setMedia(media2);
             setCounter(counter+1);
