@@ -17,7 +17,7 @@ const Sidebar = () => {
 
     const address = useSelector(({blockchain}) => blockchain.address);
 
-    const [filter, setFilter] = useState('');
+    const [filter, setFilter] = useState("uri.visibility:public OR onSale:true");
     const [disabled, setDisabled] = useState(true);
 
 
@@ -34,7 +34,11 @@ const Sidebar = () => {
                //console.log("On change", e.target.checked, filterStr);
              }
              else
-               setFilter("");
+             {
+               const filterStr = "uri.visibility:public OR onSale:true OR owner:" + address;
+               setFilter( filterStr );
+
+            }
          }
          else
          {
@@ -45,8 +49,21 @@ const Sidebar = () => {
     };
 
     useEffect(() => {
-      if (address == "") setDisabled(true);
-        else setDisabled(false);
+      if (address == "")
+      {
+          setDisabled(true);
+          setFilter( "uri.visibility:public OR onSale:true");
+
+      }
+      else
+      {
+            setDisabled(false);
+            const filterStr = "uri.visibility:public OR onSale:true OR owner:" + address;
+            setFilter( filterStr );
+
+      }
+
+
   }, [address]);
 
 return (
@@ -75,7 +92,7 @@ return (
           disabled={disabled}
           style={{marginBottom:"20px"}}
 
-          >My NFTs
+          >Only my NFTs
 
 
           </Checkbox>

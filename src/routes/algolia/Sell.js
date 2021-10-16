@@ -2,7 +2,7 @@ import React from "react";
 import {Button, Card, Modal, Form, InputNumber, Input, Radio} from "antd";
 import sell from "../../serverless/sell"
 
-
+const DEBUG = true;
 
 
 class SellButton extends React.Component {
@@ -27,7 +27,7 @@ class SellButton extends React.Component {
       ModalText: 'Preparing sale information...',
       confirmLoading: true,
     });
-    console.log("Sell", this.props.item.tokenId, this.state);
+    if(DEBUG) console.log("Sell", this.props.item.tokenId, this.state);
     const sellData =
     {
         tokenId: this.props.item.tokenId,
@@ -38,7 +38,7 @@ class SellButton extends React.Component {
 
     };
     const operatorData = await sell.operator(sellData);
-    console.log("Sell 2", operatorData);
+    if(DEBUG) console.log("Sell 2", operatorData);
     this.setState({
       ModalText: 'Writing sale information to IPFS...',
       confirmLoading: true,
@@ -59,7 +59,7 @@ class SellButton extends React.Component {
             operatorData.sale.operator,
             unlockableIPFSHash,
             this.props.address );
-    console.log("Sell txresult", txresult);
+    if(DEBUG) console.log("Sell txresult", txresult);
     this.setState({
         visible: false,
       });
@@ -71,7 +71,7 @@ class SellButton extends React.Component {
   };
 
   handleChange = (values) => {
-  console.log("Sell values changed", values);
+  if(DEBUG) console.log("Sell values changed", values);
       if( values.price !== undefined) this.setState({price: values.price});
       if( values.comment !== undefined) this.setState({comment: values.comment});
       if( values.currency !== undefined) this.setState({currency: values.currency});

@@ -125,7 +125,7 @@ const TokenMedia = ({media, onSelect, mediaId, pdfPages, counter1, onLoadMedia})
 
                  };
                  setLoading(false);
-                 if(DEBUG) console.log("TokenMedia useEffect percent: ", percent);
+                 //if(DEBUG) console.log("TokenMedia useEffect percent: ", percent);
 
 
         }
@@ -355,7 +355,7 @@ const Attachments = ({attachments}) => {
 
       <Row key={"attachmentrow"}>
         {attachments.map(attachment => (
-          <Col xl={12} lg={24} md={24} sm={24} xs={24} key={"attachmentcol"+attachment.IPFShash}>
+          <Col xl={24} lg={24} md={24} sm={24} xs={24} key={"attachmentcol"+attachment.IPFShash}>
             <Attachment
               attachment={attachment}
               key={"attachment"+attachment.IPFShash}
