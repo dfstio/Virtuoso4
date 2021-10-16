@@ -107,7 +107,7 @@ const HorizontalDefault = () => {
               <img alt="" src="/assets/images/virtuoso.png"/></Link>
             <div
 
-                style={{"fontSize": "22px", "padding-left": "10px"}}
+                style={{"fontSize": "22px", "paddingLeft": "10px"}}
                 >
             NFT Virtuoso
             </div>
@@ -128,7 +128,7 @@ const HorizontalDefault = () => {
 
             </div>
 */}
-            <ul className="gx-header-notifications gx-ml-auto" style={{"padding-right": "10px"}}>
+            <ul className="gx-header-notifications gx-ml-auto" style={{"paddingRight": "10px"}}>
 
 {/*}
               <li className="gx-notify gx-notify-search gx-d-inline-block gx-d-lg-none">

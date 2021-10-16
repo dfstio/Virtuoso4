@@ -2,7 +2,7 @@ import React, {useState, useEffect } from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {message} from 'antd';
 import {updateAddress, updateVirtuosoBalance, updatePublicKey} from "../../appRedux/actions";
-import {Button, Row, Col} from "antd";
+import {Button, Row, Col, Alert, Card, Progress, Skeleton} from "antd";
 import {LoadingOutlined, ExpandOutlined, CloseCircleFilled, CaretUpFilled, CaretDownFilled } from '@ant-design/icons';
 import IntlMessages from "util/IntlMessages";
 import { metamaskLogin, virtuosoRegisterPublicKey, getVirtuosoUnlockableContentKey, metamaskDecrypt } from "../../blockchain/metamask";
@@ -22,20 +22,21 @@ const { getFromIPFS, decryptUnlockableToken, getEncryptedFileFromIPFS } = requir
 const DEBUG = true;
 
 
-const MediaList = ({hits, onSelect, pdfPages, counter}) => {
+const MediaList = ({hits, onSelect, pdfPages, counter, onLoadMedia}) => {
   if(DEBUG) console.log("MediaList", hits);
   return (
-    <div id="medialist">
-      <Row>
+    <div id="medialistid">
+      <Row key={"medialistrow"}>
         {hits.map(media => (
-          <Col xl={12} lg={12} md={12} sm={24} xs={24}>
+          <Col xl={12} lg={12} md={12} sm={24} xs={24} key={"medialistcol"+media.data.IPFShash}>
             <TokenMedia
               media={media.data}
               onSelect={onSelect}
-              key={media.IPFShash}
+              key={"TokenMediaMediaList"+media.data.IPFShash}
               mediaId={media.id}
               pdfPages={pdfPages}
               counter1={counter}
+              onLoadMedia={onLoadMedia}
 
               />
           </Col>
@@ -45,15 +46,21 @@ const MediaList = ({hits, onSelect, pdfPages, counter}) => {
   );
 };
 
-const TokenMedia = ({media, onSelect, key, mediaId, pdfPages, counter1}) => {
+const TokenMedia = ({media, onSelect, mediaId, pdfPages, counter1, onLoadMedia}) => {
       const [loading, setLoading] = useState(true);
-      if(DEBUG) console.log("TokenMedia: ", mediaId, media);
-      const [content, setContent] = useState("");
       const [numPages, setNumPages] = useState(null);
       const [pageNumber, setPageNumber] = useState(1);
-      const [pdf, setPDF] = useState(false);
       const [counter, setCounter] = useState(0);
+      const [url, setURL] = useState("");
+      const [image, setImage] = useState(false);
+      const [video, setVideo] = useState(false);
+      const [pdf, setPDF] = useState(false);
+      const [filesize, setFileSize] = useState("");
+      const [percent, setPercent] = useState(0);
 
+
+
+      //if(DEBUG) console.log("TokenMedia: ", mediaId, "url:", url, "media", media) ;
 
       if(media.pdf!==undefined && media.pdf.page !== pageNumber) setPageNumber(media.pdf.page);
 
@@ -84,33 +91,43 @@ const TokenMedia = ({media, onSelect, key, mediaId, pdfPages, counter1}) => {
         onSelect(mediaId);
       }
 
+       function loadPercent(loadedSize) {
+
+           const loaded = loadedSize*75/media.size;
+           const percent1 = loaded.toFixed(0);
+           setPercent(percent1);
+      }
+
       useEffect(() => {
             async function fetchMedia() {
+                 const size1 = formatBytes( media.size);
+                 setFileSize(size1 + "  ");
 
-            if( media.url !== "")
-            {
-              let newContent = (<CloseCircleFilled />);
-              const type = media.filetype.replace(/\/[^/.]+$/, "");
+                 if( media.url === undefined && media.password !== undefined)
+                 {
+                       const newURL = await getEncryptedFileFromIPFS(media.IPFShash, media.password, media.filetype, loadPercent);
+                       setURL(newURL);
+                       onLoadMedia(mediaId, newURL);
+                       if(DEBUG) console.log("TokenMedia useEffect url: ", media.name, newURL);
 
-              switch(type)
-              {
-                  case "image": newContent = (<img src={media.url} alt={media.name}/>); setContent(newContent); setLoading(false); break;
-                  case "video": newContent = (
-                                                  <ReactPlayer
-                                                     url={media.url}
-                                                     controls={true}
-                                                     //light={true}
-                                                     width='100%'
-                                                     height='100%'
-                                                     />
+                 }
+                 else setURL(media.url);
 
-                          ); setContent(newContent); setLoading(false); break;
+                 const type = media.filetype.replace(/\/[^/.]+$/, "");
 
-                   case "application":
-                      if( media.filetype === "application/pdf" ) setPDF(true); setLoading(false); break;
+                 switch(type)
+                 {
+                     case "image": setImage(true);  break;
+                     case "video": setVideo(true);  break;
 
-              };
-            };
+                      case "application":
+                         if( media.filetype === "application/pdf" )  setPDF(true);  break;
+
+                 };
+                 setLoading(false);
+                 if(DEBUG) console.log("TokenMedia useEffect percent: ", percent);
+
+
         }
       fetchMedia()
       },[media, counter1]);
@@ -122,14 +139,16 @@ const TokenMedia = ({media, onSelect, key, mediaId, pdfPages, counter1}) => {
       (
             <div>
             <Document
-              file={media.url}
+              file={url}
               className="gx-product-image"
+              key={"DocumentPDF"+media.IPFShash}
               onLoadSuccess={onDocumentLoadSuccess}
              >
               <Page
                 pageNumber={pageNumber}
+                key={"PagePDF"+media.IPFShash}
                 className="gx-product-name"
-                width="800"
+                width={800}
               />
             </Document>
           </div>
@@ -137,7 +156,27 @@ const TokenMedia = ({media, onSelect, key, mediaId, pdfPages, counter1}) => {
       :
       (
         <div>
-        {content}
+        {image?(<img src={url} alt={media.name}/>):("")}
+        {video?( <ReactPlayer
+                    url={url}
+                    controls={true}
+                    //light={true}
+                    width='100%'
+                    height='100%'
+                    key={"VideoPlayer"+media.IPFShash}
+                    />):("")}
+         {(loading && filesize!=="")?(
+        <div style={{height:"300px", }}>
+         <Progress
+            type="circle"
+            filesize={filesize}
+            width="80px"
+            percent={percent}
+            style={{position:"absolute",top:"50%", marginTop:"-40px", left:"50%", marginLeft:"-40px", fontSize:16 }}
+            format={percent => `${filesize}`}
+            />
+        </div>
+         ):("")}
         </div>
       )}
       </div>
@@ -145,12 +184,12 @@ const TokenMedia = ({media, onSelect, key, mediaId, pdfPages, counter1}) => {
 
         <div className="gx-product-name">
 
-          {loading?(<span><LoadingOutlined />{media.name}</span>):(<span>{media.name}</span>)}
+          <span>{media.name}</span>
 
          <span style={{ float: "right"}}>
             {(loading === false && pdf)?
             (
-                <span style={{"margin-right":"20px"}}>
+                <span style={{"marginRight":"20px"}}>
                 Page {pageNumber} of {numPages} {"     "}
                 <CaretUpFilled onClick={previousPage} />{"  "}
                 <CaretDownFilled onClick={nextPage} disabled={pageNumber >= numPages}/>
@@ -266,7 +305,7 @@ if(DEBUG) console.log("TokenAudio: ", media.length, media);
 
 
   return (
-            <div className="gx-product-name" style={{"margin-bottom": "10px", "primary-color": "#f63"}}>
+            <div className="gx-product-name">
             {visible?
             <ReactJkMusicPlayer
                     audioLists={audioList}
@@ -282,6 +321,8 @@ if(DEBUG) console.log("TokenAudio: ", media.length, media);
                     autoHiddenCover= {true}
                     responsive= {false}
                     autoPlay= {false}
+                    showProgressLoadBar={true}
+                    showMiniProcessBar={true}
               />:""}
             </div>
 
@@ -308,15 +349,16 @@ const Attachments = ({attachments}) => {
   if(DEBUG) console.log("Attachments", attachments);
 
   return (
-    <div id="attachments">
+    <div id="attachments" className="gx-mt-2">
     {(attachments.length > 0)?
     (
 
-      <Row>
+      <Row key={"attachmentrow"}>
         {attachments.map(attachment => (
-          <Col xl={8} lg={8} md={8} sm={12} xs={24}>
+          <Col xl={12} lg={24} md={24} sm={24} xs={24} key={"attachmentcol"+attachment.IPFShash}>
             <Attachment
               attachment={attachment}
+              key={"attachment"+attachment.IPFShash}
 
               />
           </Col>
@@ -331,9 +373,18 @@ const Attachments = ({attachments}) => {
 const Attachment = ({attachment}) => {
 
    const [loading, setLoading] = useState(false);
+   const [percent, setPercent] = useState(0);
 
    const size1 = formatBytes( attachment.size);
    const size = " ("+size1+")";
+
+   function loadPercent(loadedSize) {
+
+        const loaded = loadedSize*75/attachment.size;
+        const percent1 = loaded.toFixed(0);
+        setPercent(percent1 + "%");
+    }
+
 
    async function onClick()
    {
@@ -342,14 +393,21 @@ const Attachment = ({attachment}) => {
       let url = (attachment.url === undefined )? "" : attachment.url;
       if( url === "" && attachment.password !== undefined && attachment.password !== "")
       {
-          url =  await getEncryptedFileFromIPFS(attachment.IPFShash, attachment.password, attachment.filetype);
+          url =  await getEncryptedFileFromIPFS(attachment.IPFShash, attachment.password, attachment.filetype, loadPercent);
       };
       if( url !== "") fileSaver.saveAs(url, attachment.filename);
       setLoading(false);
    };
 
   return (
-         <div className="gx-mt-4" style={{position: "relative"}}>
+         <div  style={{position: "relative"}}>
+         {loading?
+         <span style={{"fontSize":14, "color":"#038fde"}}>
+            {percent}
+          </span>
+         :("")
+         }
+         <span>
          <Button
               onClick={onClick}
               type="link"
@@ -357,6 +415,7 @@ const Attachment = ({attachment}) => {
          >
               {attachment.filename} {size}
         </Button>
+        </span>
             </div>
          );
 };
@@ -406,7 +465,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
               let newMedia = [];
               let newAudio = [];
 
-              if( item.uri.properties.image!== "") { const id = newMedia.length; newMedia.push({data:item.uri.properties.image, id:id}); };
+              //if( item.uri.properties.image!== "") { const id = newMedia.length; newMedia.push({data:item.uri.properties.image, id:id}); };
               if( item.uri.properties.animation!== "")
               {
                    const type = item.uri.properties.animation.filetype.replace(/\/[^/.]+$/, "");
@@ -489,6 +548,8 @@ const TokenItem = ({item, small=false, preview=false}) => {
             const size = " ("+size1+")";
             message.loading({content: `Loading unlockable file ${newMedia[i].data.filename} ${size} from IPFS`, key: 'loadUnlockable', duration: 6000});
             const url = getEncryptedFileFromIPFS(newMedia[i].data.IPFShash, newMedia[i].data.password, newMedia[i].data.filetype).then(function(data) {return data;});
+            if(DEBUG) console.log(`fetchUnlockable url:`, url);
+
             media2[i].data.url = url;
             setMedia(media2);
             setCounter(counter+1);
@@ -528,7 +589,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
               setAudio(newAudio);
 
               if(DEBUG) console.log(`addUnlockable media ${count}:`, newMedia, newAudio);
-              await fetchUnlockable(newMedia, initial_count, newCount);
+              //await fetchUnlockable(newMedia, initial_count, newCount);
 
  };
 
@@ -551,6 +612,13 @@ const TokenItem = ({item, small=false, preview=false}) => {
                   //if(DEBUG)  console.log("unlockable unlockableIPFS: ", unlockableIPFS );
                   let unlockableJSON = JSON.parse(unlockableIPFS.toString());
                   const password = await metamaskDecrypt( unlockableJSON.key, address );
+
+                  if( password === "")
+                  {
+                      setLoadingUnlockable(false);
+                      message.error({content: `Error loading unlockable content`,key:  'loadUnlockable', duration: 30});
+                      return;
+                  }
                   const decryptedData = await decryptUnlockableToken(unlockableJSON.data, password);
 
                   setUnlockable(decryptedData);
@@ -611,6 +679,14 @@ function sleep(ms) {
         else setCurrentMedia(id);
   }
 
+  function onLoadMedia(id, url)
+  {
+        if(DEBUG) console.log("onLoadMedia",id, "url", url);
+        let newMedia = media;
+        newMedia[id].data.url = url;
+        setMedia(newMedia);
+  }
+
   function pdfPages(id, numPages, page)
   {
         if(DEBUG) console.log("pdf", id, numPages, page);
@@ -645,24 +721,34 @@ function sleep(ms) {
         <TokenMedia
               media={media[currentMedia].data}
               onSelect={onSelect}
-              key={media[currentMedia].data.IPFShash}
+              key={"TokenMedia"+media[currentMedia].data.IPFShash}
               mediaId={currentMedia}
               pdfPages={pdfPages}
               counter={counter}
+              onLoadMedia={onLoadMedia}
 
         />
 
         </div>
     )
     :
-    (  <div>
+    (  <div style={{"marginBottom": "35px"}}>
 
-       <div className="gx-product-item">
+       <div className="gx-product-item" >
+       <Row>
+       <Col xl={8} lg={8} md={24} sm={24} xs={24}>
+        <div className="gx-product-image"  style={{"marginTop": "25px", "marginLeft": "25px"}}>
+          <img src={`https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/${
+            item.image
+            }`} alt={item.name}/>
+         </div>
+       </Col>
+       <Col xl={16} lg={16} md={24} sm={24} xs={24}>
        <div className="gx-product-body">
 
 
         <div className="gx-product-name">
-        <span style={{"font-size":22, "color":"#038fde"}}>
+        <span style={{"fontSize":22, "color":"#038fde"}}>
           {item.name}
         </span>
         {canSell?(
@@ -744,6 +830,8 @@ function sleep(ms) {
             </div>
           )
         }
+
+
         <div className="gx-mt-4">
          <Markdown>
             {item.description}
@@ -767,7 +855,7 @@ function sleep(ms) {
     (
         <div className="gx-mt-4" >
 
-            <div className="gx-product-name" style={{"font-size":16, "color":"#038fde"}}>
+            <div className="gx-product-name" style={{"fontSize":16, "color":"#038fde"}}>
               Unlockable content:
              </div>
              <div className="gx-mt-2">
@@ -787,7 +875,7 @@ function sleep(ms) {
 
     {(showUnlockableButton && small===false && preview === false && item.uri.contains_unlockable_content === true && unlockable.loaded === false)?
     (
-        <div className="gx-product-image" style={{"margin-top": "25px"}} >
+        <div className="gx-product-image" style={{"marginTop": "25px"}} >
                 <Button
                  onClick={showUnlockableContent}
                  loading={loadingUnlockable}
@@ -802,10 +890,13 @@ function sleep(ms) {
        ""
      )}
       </div>
+      </Col>
+      </Row>
       </div>
 
 
-        <MediaList  hits={media} onSelect={onSelect} pdfPages={pdfPages} counter={counter}/>
+
+        <MediaList  hits={media} onLoadMedia={onLoadMedia} onSelect={onSelect} pdfPages={pdfPages} counter={counter} key="medialistunlockable"/>
         </div>
     )}
     </div>

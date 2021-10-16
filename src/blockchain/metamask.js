@@ -107,6 +107,7 @@ export async function metamaskDecrypt(key, address)
 
                   } catch (error) {
                       console.error( "metamaskDecrypt error", error);
+                      return "";
                   };
 
      };

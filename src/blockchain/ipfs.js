@@ -6,7 +6,7 @@ const CryptoJS = require('crypto-js');
 const sigUtil = require("eth-sig-util");
 
 
-const DEBUG = true;
+const DEBUG = false;
 
 const ipfsClient = require('ipfs-http-client');
 
@@ -543,13 +543,13 @@ function _base64ToArrayBuffer(base64) {
     return bytes.buffer;
 };
 
-export async function getEncryptedFileFromIPFS(hash, key, filetype)
+export async function getEncryptedFileFromIPFS(hash, key, filetype, sizeFunction = null)
 {
      if( hash === undefined || hash === "" ) return "";
 
      try {
 
-     const file = await getFromIPFS(hash);
+     const file = await getFromIPFS(hash, sizeFunction);
      if (DEBUG) console.log("getEncryptedFileFromIPFS file: ", hash);
      const ebuf = file.toString();
      //if (DEBUG) console.log("getEncryptedFileFromIPFS ebuf: ", ebuf);
@@ -590,14 +590,18 @@ export async function getFromIPFS( hashToGet)
   }
 };
 */
-export async function getFromIPFS( hashToGet)
+export async function getFromIPFS( hashToGet, sizeFunction = null)
 {
     if (DEBUG) console.log("getFromIPFS hash:", hashToGet);
+    let size = 0;
     const content = new BufferList();
     for await (const chunk of ipfs.cat(hashToGet)) {
       content.append(chunk);
+      size += chunk.length;
+      //if (DEBUG) console.log("getFromIPFS chunk ", chunk.length, size);
+      if( sizeFunction!== null) sizeFunction(size);
     };
-    if (DEBUG) console.log("getFromIPFS finished ", hashToGet);
+    if (DEBUG) console.log("getFromIPFS finished ", hashToGet, size);
     //if( DEBUG && content !== undefined ) console.log("getFromIPFS Content as string: ", content.toString());
     return content;
 };
