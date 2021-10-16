@@ -17,6 +17,16 @@ AWS.config.update({
 
 var lambda = new AWS.Lambda();
 
+
+async function lambdaUnlockable(tokenId, address)
+{
+    const data = { address: address };
+    let result = await lambdaHub("unlockable", tokenId, data);
+    //if(DEBUG)  console.log("lambdaSell result",  result );
+    return result;
+};
+
+
 async function lambdaResend(tokenId, saleID)
 {
     const data = { saleID: saleID };
@@ -191,5 +201,6 @@ module.exports = {
     lambdaAddBalance,
     lambdaResend,
     encrypt,
-    decrypt
+    decrypt,
+    lambdaUnlockable
 }

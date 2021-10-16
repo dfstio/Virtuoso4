@@ -200,6 +200,13 @@ export async function virtuosoSell(tokenId, ipfsHash, operatorAddress, unlockabl
 
 };
 
+export async function waitForHash(txresult)
+{
+    let resultwait = await txresult.wait(6);
+    if(resultwait.confirmations > 5 ) return true
+    else return false;
+};
+
 export async function virtuosoMint(address, ipfsHash, unlockableIPFSHash, onEscrow)
 {
     if(DEBUG) console.log("virtuosoMint called:", address, ipfsHash, unlockableIPFSHash, onEscrow);
@@ -262,6 +269,8 @@ export async function virtuosoRegisterPublicKey(address)
                   // Send tx to server
                   await api.txSent(txresult.hash, network.chainId);
                   result.hash = txresult.hash;
+                  txresult.wait(6);
+
                 };
 
            } else console.error("virtuosoRegisterPublicKey error - wrong chain or address");

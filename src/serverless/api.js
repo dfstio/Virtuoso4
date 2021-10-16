@@ -24,6 +24,18 @@ const sell = (tokenId, sellData) => {
   })
 }
 
+const unlockable = (tokenId, address) => {
+  const data = {"tokenId": tokenId, "address": address };
+  if(DEBUG) console.log("unlockable api: ", data);
+  return fetch('/api/unlockable-background', {
+    body: JSON.stringify(data),
+    method: 'POST'
+  }).then(response => {
+    return response;
+  })
+}
+
+
 const encrypt = (toEncrypt, key) => {
   const data = {"data": toEncrypt, "key": key };
   if(DEBUG) console.log("encrypt api: ", data);
@@ -92,5 +104,6 @@ export default {
   hello: hello,
   sell: sell,
   encrypt: encrypt,
-  add: add
+  add: add,
+  unlockable: unlockable
 }

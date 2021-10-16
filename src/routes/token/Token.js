@@ -5,7 +5,7 @@ import {updateAddress, updateVirtuosoBalance, updatePublicKey} from "../../appRe
 import {Button, Row, Col, Alert, Card, Progress, Skeleton} from "antd";
 import {LoadingOutlined, ExpandOutlined, CloseCircleFilled, CaretUpFilled, CaretDownFilled } from '@ant-design/icons';
 import IntlMessages from "util/IntlMessages";
-import { metamaskLogin, virtuosoRegisterPublicKey, getVirtuosoUnlockableContentKey, metamaskDecrypt } from "../../blockchain/metamask";
+import { metamaskLogin, virtuosoRegisterPublicKey, getVirtuosoUnlockableContentKey, metamaskDecrypt, waitForHash } from "../../blockchain/metamask";
 import  SellButton  from "../algolia/Sell";
 import ReactPlayer from 'react-player';
 import ReactJkMusicPlayer from 'react-jinke-music-player'
@@ -15,11 +15,13 @@ import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
 import "./style.css";
 import Markdown from 'markdown-to-jsx';
 import fileSaver from 'file-saver';
+import api from "../../serverless/api";
 //import '../../styles/token/audio-player.less';
 
 const { getFromIPFS, decryptUnlockableToken, getEncryptedFileFromIPFS } = require("../../blockchain/ipfs");
 
 const DEBUG = true;
+
 
 
 const MediaList = ({hits, onSelect, pdfPages, counter, onLoadMedia}) => {
@@ -511,6 +513,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
       canSell = true;
   }
 
+
   async function register()
   {
 
@@ -523,14 +526,16 @@ const TokenItem = ({item, small=false, preview=false}) => {
                 const result = await virtuosoRegisterPublicKey(address);
                 if( result.publicKey !== "" && result.hash !== "")
                 {
+                    await api.unlockable(item.tokenId, address);
                     dispatch(updatePublicKey(result.publicKey));
                     message.success({content: `Public key ${result.publicKey} is written to blockchain with transaction ${result.hash}`, key, duration: 30});
-                    return publicKey;
+
+                    return true;
                 }
                 else message.error({content: `Public key is not provided or written to blockchain`, key, duration: 10});
 
             };
-            return "";
+            return false;
   }
 
 
@@ -595,7 +600,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
 
 
 
-  const loadUnlockable = async () => {
+  const loadUnlockable = async (again=false) => {
 
 
          setLoadingUnlockable(true);
@@ -603,8 +608,27 @@ const TokenItem = ({item, small=false, preview=false}) => {
 
 
          try {
-              const encryptedKey = await getVirtuosoUnlockableContentKey(item.tokenId, address);
+              let encryptedKey = await getVirtuosoUnlockableContentKey(item.tokenId, address);
               if(DEBUG)  console.log("View - unlockable key: ", encryptedKey);
+              if( encryptedKey === "" && again === true)
+              {
+                  await sleep(5000);
+                  encryptedKey = await getVirtuosoUnlockableContentKey(item.tokenId, address);
+                  if(DEBUG)  console.log("View - unlockable key 1: ", encryptedKey);
+              };
+              if( encryptedKey === "" && again === true)
+              {
+                  await sleep(5000);
+                  encryptedKey = await getVirtuosoUnlockableContentKey(item.tokenId, address);
+                  if(DEBUG)  console.log("View - unlockable key 2: ", encryptedKey);
+              };
+              if( encryptedKey === "" && again === true)
+              {
+                  await sleep(5000);
+                  encryptedKey = await getVirtuosoUnlockableContentKey(item.tokenId, address);
+                  if(DEBUG)  console.log("View - unlockable key 2: ", encryptedKey);
+              };
+
 
               if( encryptedKey !== "")
               {
@@ -632,7 +656,13 @@ const TokenItem = ({item, small=false, preview=false}) => {
                   if(DEBUG) console.log(`loadUnlockable media:`, media, "audio", audio);
 
 
-              } else message.error({content: `Error loading unlockable content`, key: 'loadUnlockable', duration: 30});
+              }
+              else
+              {
+                  message.error({content: `Error loading unlockable content`, key: 'loadUnlockable', duration: 30});
+                  await api.unlockable(item.tokenId, address);
+
+              };
 
          } catch(error)
          {
@@ -642,9 +672,9 @@ const TokenItem = ({item, small=false, preview=false}) => {
 
          setLoadingUnlockable(false);
          setCounter(counter+1);
-         sleep(1000);
+         await sleep(1000);
          setCounter(counter+1);
-         sleep(1000);
+         await sleep(1000);
          setCounter(counter+1);
 
 };
@@ -661,7 +691,12 @@ function sleep(ms) {
             if( publicKey === undefined || publicKey === "" || publicKey === 'a' )
             {
                 if(DEBUG) console.log("showUnlockableContent wrong public key" , publicKey);
-                await register();
+                const result = await register();
+                if( result )
+                {
+                    await sleep(5000);
+                    await loadUnlockable(true);
+                };
             }
             else
             {
