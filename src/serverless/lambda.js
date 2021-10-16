@@ -17,6 +17,14 @@ AWS.config.update({
 
 var lambda = new AWS.Lambda();
 
+async function lambdaResend(tokenId, saleID)
+{
+    const data = { saleID: saleID };
+    let result = await lambdaHub("resend", tokenId, data);
+    //if(DEBUG)  console.log("lambdaSell result",  result );
+    return result;
+};
+
 async function lambdaSell(tokenId, data)
 {
     let result = await lambdaHub("sell", tokenId, data);
@@ -181,6 +189,7 @@ module.exports = {
     lambdaSell,
     lambdaTransferToken,
     lambdaAddBalance,
+    lambdaResend,
     encrypt,
     decrypt
 }

@@ -833,9 +833,7 @@ function sleep(ms) {
 
 
         <div className="gx-mt-4">
-         <Markdown>
             {item.description}
-         </Markdown>
         </div>
         <Attachments attachments={attachments}/>
 

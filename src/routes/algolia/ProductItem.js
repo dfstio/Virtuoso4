@@ -1,6 +1,5 @@
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
-import Markdown from 'markdown-to-jsx';
 import {message} from 'antd';
 import {updateAddress, updateVirtuosoBalance} from "../../appRedux/actions";
 import {Highlight,} from 'react-instantsearch-dom';
@@ -124,10 +123,7 @@ const ProductItem = ({item}) => {
           )
         }
         <div className="gx-mt-4">
-              <Markdown>
-          {/* <Highlight attribute="shortdescription" hit={item}/> */}
-          {item.shortdescription}
-          </Markdown>
+          <Highlight attribute="shortdescription" hit={item}/>
         </div>
       </div>
     </div>
