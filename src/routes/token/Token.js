@@ -610,25 +610,20 @@ const TokenItem = ({item, small=false, preview=false}) => {
          try {
               let encryptedKey = await getVirtuosoUnlockableContentKey(item.tokenId, address);
               if(DEBUG)  console.log("View - unlockable key: ", encryptedKey);
-              if( encryptedKey === "" && again === true)
-              {
-                  await sleep(5000);
-                  encryptedKey = await getVirtuosoUnlockableContentKey(item.tokenId, address);
-                  if(DEBUG)  console.log("View - unlockable key 1: ", encryptedKey);
-              };
-              if( encryptedKey === "" && again === true)
-              {
-                  await sleep(5000);
-                  encryptedKey = await getVirtuosoUnlockableContentKey(item.tokenId, address);
-                  if(DEBUG)  console.log("View - unlockable key 2: ", encryptedKey);
-              };
-              if( encryptedKey === "" && again === true)
-              {
-                  await sleep(5000);
-                  encryptedKey = await getVirtuosoUnlockableContentKey(item.tokenId, address);
-                  if(DEBUG)  console.log("View - unlockable key 2: ", encryptedKey);
-              };
 
+
+              if( encryptedKey === "" && again === true)
+              {
+                  let i = 0;
+                  while( encryptedKey === "" &&  i<20)
+                  {
+                      await sleep(5000);
+                      encryptedKey = await getVirtuosoUnlockableContentKey(item.tokenId, address);
+                      i++;
+                      if(DEBUG)  console.log("View - unlockable key", i, ":",  encryptedKey);
+
+                  };
+              };
 
               if( encryptedKey !== "")
               {
