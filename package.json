@@ -85,6 +85,7 @@
     "stripe": "^8.174.0",
     "url-search-params": "^1.1.0",
     "victory": "^35.4.6",
+    "web3-core": "^1.6.0",
     "yarn": "^1.22.11"
   },
   "scripts": {
