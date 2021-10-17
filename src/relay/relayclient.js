@@ -2,22 +2,13 @@
 // Note that, instead of sending the tx, the end-user signs the request and sends it to a relayer server
 // This server will process the request, and if valid, send the tx via a Defender Relayer
 
-//import ethers from 'ethers';
-
-//import BoxesAbi from '../abis/Boxes.json';
-
 
 const ethers = require("ethers");
-const { TypedDataUtils } = require('eth-sig-util');
-const { bufferToHex } = require('ethereumjs-util');
 const VirtuosoNFTJSON = require("../contract/mumbai_VirtuosoNFT.json");
 const ForwarderAbi  = require('./IForwarder.json');
 
 
 const {REACT_APP_CONTRACT_ADDRESS, REACT_APP_FORWARDER_ADDRESS, REACT_APP_CHAIN_ID} = process.env;
-//const ZeroAddress = '0x0000000000000000000000000000000000000000';
-//const BoxesAddress = process.env.REACT_APP_BOXES_ADDRESS || ZeroAddress;
-//const ForwarderAddress = process.env.REACT_APP_FORWARDER_ADDRESS || ZeroAddress;
 const RelayUrl = '/api/relay';
 const DEBUG = true;
 
@@ -55,23 +46,12 @@ const TypedData = {
 
 
 
-const GenericParams = 'address from,address to,uint256 value,uint256 gas,uint256 nonce,bytes data,uint256 validUntil';
-const TypeName = `ForwardRequest(${GenericParams})`;
-const TypeHash = ethers.utils.id(TypeName);
-
-const DomainSeparator = bufferToHex(TypedDataUtils.hashStruct('EIP712Domain', TypedData.domain, TypedData.types));
-const SuffixData = '0x';
 
 
-
-export async function submitPublicKey(publicKey) {
+export async function relayFunction(name, args) {
 
   var provider = window.ethereum && new ethers.providers.Web3Provider(window.ethereum);
   var signer = provider && provider.getSigner();
-  // Initialize provider and signer from metamask
-  //await window.ethereum.enable();
-  //const provider = new ethers.providers.Web3Provider(window.ethereum);
-  //const signer = provider.getSigner();
   const from = await signer.getAddress();
   const network = await provider.getNetwork();
   if (network.chainId !== 80001) console.error(`Must be connected to Mumbai`);
@@ -82,32 +62,32 @@ export async function submitPublicKey(publicKey) {
   //const r1 = await forwarder.registerDomainSeparator("NFT Virtuoso", "1");
   //if(DEBUG) console.log("Relay r1:", r1);
 
-
-
   // Encode meta-tx request
   const virtuosoInterface = new ethers.utils.Interface(VirtuosoNFTJSON);
-  const forwarderInterface = new ethers.utils.Interface(ForwarderAbi);
-  const data = virtuosoInterface.encodeFunctionData('setPublicKey', [publicKey]);
+  //const forwarderInterface = new ethers.utils.Interface(ForwarderAbi);
+  //const data = virtuosoInterface.encodeFunctionData('setPublicKey', [publicKey]);
+  const data = virtuosoInterface.encodeFunctionData(name, args);
+  /*
   const gasEstimate = await provider.estimateGas({
-  // Wrapped ETH address
-  to: REACT_APP_CONTRACT_ADDRESS,
+           // Wrapped ETH address
+           to: REACT_APP_CONTRACT_ADDRESS,
 
-  // `function deposit() payable`
-  data: data,
+           // `function deposit() payable`
+           data: data,
 
-  // 1 ether
-  value: 0
-});
-
+           // 1 ether
+           value: 0
+         });
 
   if(DEBUG) console.log("Relay gas:", gasEstimate);
-  const nonceNumber = ethers.BigNumber.from(nonce).toHexString()
+*/
+ // const nonceNumber = ethers.BigNumber.from(nonce).toHexString()
 
   const request = {
     from,
     to: REACT_APP_CONTRACT_ADDRESS,
     value: '0x0',
-    gas: 1e5,
+    gas: 500000,
     nonce,
     data,
     validUntil: "0x0"
@@ -152,13 +132,13 @@ export async function submitPublicKey(publicKey) {
   ];
 
   if(DEBUG) console.log("Relay3:", args);
-*/
+
 
 
   //const forwarderData = forwarderInterface.encodeFunctionData('execute', args );
   const forwarderData = forwarderInterface.getFunction('execute');
    if(DEBUG) console.log("Relay forwarderData:", forwarderData);
-/*
+
     const requestForwarder = {
     from,
     to: REACT_APP_FORWARDER_ADDRESS,
@@ -177,6 +157,7 @@ export async function submitPublicKey(publicKey) {
 
 
 */
+
   // Send request to the server
   const response = await fetch(RelayUrl, {
     method: 'POST',

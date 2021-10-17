@@ -1,9 +1,10 @@
 import api from "../serverless/api";
-import {submitPublicKey} from "../relay/relayclient";
+import {relayFunction} from "../relay/relayclient";
 // SET TARGET NETWORK
 const {NETWORKS} = require("../constants/Blockchain.js");
 
 export const network = NETWORKS.mumbai; // IMPORTANT
+const MINIMUM_BALANCE  = 1e17; // to switch to relay
 
 const ethers = require("ethers");
 //const MetaMaskOnboarding = require('@metamask/onboarding');
@@ -188,11 +189,23 @@ export async function virtuosoSell(tokenId, ipfsHash, operatorAddress, unlockabl
 
            if((chainId === network.hexChainId) && (address == signerAddress))
            {
-                const writeVirtuoso = signer && new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
-                if(DEBUG) console.log("virtuosoSell writeVirtuoso", writeVirtuoso);
-                txresult = await writeVirtuoso.sell(tokenId, ipfsHash, operatorAddress, unlockableIPFSHash);
-                // Send tx to server
-                await api.txSent(txresult.hash, network.chainId);
+
+                  const balance = await window.ethereum.request(
+                          { method: 'eth_getBalance',
+                            params: [address],
+                          });
+                  if(DEBUG) console.log("virtuosoSell balance", balance/1e18);
+                  if( balance < MINIMUM_BALANCE )
+                  {
+                       txresult = await relayFunction('sell', [tokenId, ipfsHash, operatorAddress, unlockableIPFSHash]);
+                  }
+                  else
+                  {
+                        const writeVirtuoso = signer && new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
+                        if(DEBUG) console.log("virtuosoSell writeVirtuoso", writeVirtuoso);
+                        txresult = await writeVirtuoso.sell(tokenId, ipfsHash, operatorAddress, unlockableIPFSHash);
+                    };
+                    await api.txSent(txresult.hash, network.chainId);
 
            } else console.error("virtuosoSell error - wrong chain or address");
     };
@@ -225,10 +238,23 @@ export async function virtuosoMint(address, ipfsHash, unlockableIPFSHash, onEscr
 
            if((chainId === network.hexChainId) && (address == signerAddress))
            {
-                const writeVirtuoso = signer && new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
-                if(DEBUG) console.log("virtuosoMint writeVirtuoso", writeVirtuoso);
-                txresult = await writeVirtuoso.mintItem(address, ipfsHash, unlockableIPFSHash, onEscrow);
-                // Send tx to server
+
+                  const balance = await window.ethereum.request(
+                          { method: 'eth_getBalance',
+                            params: [address],
+                          });
+                  if(DEBUG) console.log("virtuosoMint balance", balance/1e18);
+                  if( balance < MINIMUM_BALANCE )
+                  {
+                       txresult = await relayFunction('mintItem', [address, ipfsHash, unlockableIPFSHash, onEscrow]);
+                  }
+                  else
+                  {
+                       const writeVirtuoso = signer && new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
+                       if(DEBUG) console.log("virtuosoMint writeVirtuoso", writeVirtuoso);
+                       txresult = await writeVirtuoso.mintItem(address, ipfsHash, unlockableIPFSHash, onEscrow);
+                  };
+                       // Send tx to server
                 await api.txSent(txresult.hash, network.chainId);
 
            } else console.error("virtuosoMint error - wrong chain or address");
@@ -271,10 +297,12 @@ export async function virtuosoRegisterPublicKey(address)
                             params: [address],
                           });
                   if(DEBUG) console.log("virtuosoRegisterPublicKey balance", balance/1e18);
-                  if( balance < 1e17 )
+                  if( balance < MINIMUM_BALANCE )
                   {
-                       const relayresult = await submitPublicKey(publicKey);
+                       //const relayresult = await submitPublicKey(publicKey);
+                       const relayresult = await relayFunction('setPublicKey', [publicKey]);
                        result.hash = relayresult.hash;
+                       await api.txSent(relayresult.hash, network.chainId);
                   }
                   else
                   {

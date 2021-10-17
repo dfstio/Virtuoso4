@@ -2,8 +2,9 @@ const { getFromIPFS } = require("./ipfs");
 const ethers = require("ethers");
 const EthCrypto = require('eth-crypto');
 const VirtuosoNFTJSON = require("../contract/mumbai_VirtuosoNFT.json");
+const ForwarderAbi = require('../relay/IForwarder.json');
 
-const {CHAIN_ID, CONTRACT_ADDRESS, RPC_URL } = process.env;
+const {CHAIN_ID, CONTRACT_ADDRESS, REACT_APP_FORWARDER_ADDRESS, RPC_URL } = process.env;
 const address= "0xbc356b91e24e0f3809fd1E455fc974995eF124dF";
 
 const provider = new ethers.providers.StaticJsonRpcProvider(RPC_URL);
@@ -12,7 +13,9 @@ const REFRESH_INTERVAL_SEC = process.env.REFRESH_INTERVAL_SEC;
 const wallet = new ethers.Wallet(moderatorKey);
 const signer = wallet.connect(provider);
 const virtuoso = new ethers.Contract(CONTRACT_ADDRESS, VirtuosoNFTJSON, signer);
+const forwarder = new ethers.Contract(REACT_APP_FORWARDER_ADDRESS, ForwarderAbi, signer);
 const inter = new ethers.utils.Interface(VirtuosoNFTJSON);
+const interForwarder = new ethers.utils.Interface(ForwarderAbi);
 
 //const fetch = require('node-fetch');
 //const axios = require("axios");
@@ -548,42 +551,70 @@ async function loadTransaction(hash, chainId)
       const tx = await provider.getTransaction(hash);
       if( DEBUG) console.log("txBackground loadTransaction with hash ", hash, " to ", tx.to, "chainId", chainId );
       let resultwait = await tx.wait(6);
-      const contract = tx.to.toString();
+      let contract = tx.to.toString();
+      let name = "";
+      let args = "";
 
 
       if(tx.to == virtuoso.address)
       {
 
              const decodedInput = inter.parseTransaction({ data: tx.data, value: tx.value});
-             const name = decodedInput.name;
-             const args = decodedInput.args;
+             name = decodedInput.name;
+             args = decodedInput.args;
              if( DEBUG) console.log("txBackground loadTransaction confirmations: ", resultwait.confirmations, " function: ", name); //, " args: ", args );
-
-             if( name == "approveSale" ||
-                 name == "cancelSale" ||
-                 name == "setBlock" ||
-                 name == "safeTransferFrom" ||
-                 name == "sell" ||
-                 name == "transferFrom" ||
-                 name == "virtuosoSafeTransferFrom"
-                 )
-               {
-                 const tokenId = args.tokenId;
-                 if( DEBUG) console.log("txBackground loadToken ", tokenId.toString(), " on ", name); //, " with args ", args );
-                 await loadAlgoliaToken(tokenId, contract, chainId)
-
-               };
-
-              if( name == "mintItem" ||
-                 name == "mintChildItem"
-                 )
-               {
-                 if( DEBUG) console.log("loadTransaction initTokens on ", name); //, " with args ", args );
-                 await initAlgoliaTokens(true);
-
-               };
-
       	};
+
+      	if(tx.to == forwarder.address)
+        {
+
+             const decodedInput1 = interForwarder.parseTransaction({ data: tx.data, value: tx.value});
+             const name1 = decodedInput1.name;
+             const args1 = decodedInput1.args;
+
+             if( DEBUG) console.log("relay txBackground loadTransaction confirmations: ", resultwait.confirmations, " function: ", name1); //, " args: ", args1 );
+              if( name1 === 'execute')
+              {
+                      const from = decodedInput1.args.forwardRequest.from;
+                      const to = decodedInput1.args.forwardRequest.to;
+                      //const data = decodedInput1.args.forwardRequest.data;
+                      if( DEBUG) console.log("relay txBackground execute from", from, "to", to );
+                      const decodedInput2 = inter.parseTransaction({ data: decodedInput1.args.forwardRequest.data, value: decodedInput1.args.forwardRequest.value});
+                      if( DEBUG) console.log("relay txBackground virtuoso: ", decodedInput2.name, "from", from, "to", to );
+                      name = decodedInput2.name;
+                      args = decodedInput2.args;
+                      contract = to.toString();
+
+              };
+        };
+
+        if( name == "approveSale" ||
+            name == "cancelSale" ||
+            name == "setBlock" ||
+            name == "safeTransferFrom" ||
+            name == "sell" ||
+            name == "transferFrom" ||
+            name == "virtuosoSafeTransferFrom"
+            )
+          {
+            const tokenId = args.tokenId;
+            if( DEBUG) console.log("txBackground loadToken ", tokenId.toString(), " on ", name); //, " with args ", args );
+            await loadAlgoliaToken(tokenId, contract, chainId)
+
+          };
+
+         if( name == "mintItem" ||
+            name == "mintChildItem"
+            )
+          {
+            if( DEBUG) console.log("loadTransaction initTokens on ", name); //, " with args ", args );
+            await initAlgoliaTokens(true);
+
+          };
+
+
+
+
 };
 
 /*
