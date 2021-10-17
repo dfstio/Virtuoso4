@@ -1,4 +1,5 @@
 import api from "../serverless/api";
+import {submitPublicKey} from "../relay/relayclient";
 // SET TARGET NETWORK
 const {NETWORKS} = require("../constants/Blockchain.js");
 
@@ -265,11 +266,24 @@ export async function virtuosoRegisterPublicKey(address)
                 if( publicKey !== "")
                 {
                   result.publicKey = publicKey;
-                  const txresult = await writeVirtuoso.setPublicKey(publicKey);
-                  // Send tx to server
-                  await api.txSent(txresult.hash, network.chainId);
-                  result.hash = txresult.hash;
-                  txresult.wait(6);
+                  const balance = await window.ethereum.request(
+                          { method: 'eth_getBalance',
+                            params: [address],
+                          });
+                  if(DEBUG) console.log("virtuosoRegisterPublicKey balance", balance/1e18);
+                  if( balance < 1e17 )
+                  {
+                       const relayresult = await submitPublicKey(publicKey);
+                       result.hash = relayresult.hash;
+                  }
+                  else
+                  {
+                        const txresult = await writeVirtuoso.setPublicKey(publicKey);
+                        // Send tx to server
+                        await api.txSent(txresult.hash, network.chainId);
+                        result.hash = txresult.hash;
+                        //txresult.wait(6);
+                  }
 
                 };
 

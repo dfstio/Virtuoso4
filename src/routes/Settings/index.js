@@ -1,6 +1,6 @@
 import React from "react";
 import api from "../../serverless/api";
-import {submitPublicKey} from "../../relay/relayclient";
+//import {submitPublicKey from "../../relay/relayclient";
 
 import {Button, message} from "antd";
 
@@ -63,29 +63,6 @@ const Settings = () => {
             };
   }
 
-  async function relay()
-  {
-
-            if(DEBUG) console.log("Relay clicked", address);
-            if( address !== undefined && address !== "")
-            {
-                 const key = 'RegisterRelayPublicKey';
-                 message.loading({content: `Please provide public key in Metamask and sign transaction`, key, duration: 10});
-
-
-
-                const result = await submitPublicKey("AAA1");
-                if(DEBUG) console.log("Relay result", result);
-                /*
-                if( result.publicKey !== "" && result.hash !== "")
-                {
-                    dispatch(updatePublicKey(result.publicKey));
-                    message.success({content: `Public key ${result.publicKey} is written to blockchain with transaction ${result.hash}`, key, duration: 10});
-                }
-                else message.error({content: `Public key is not provided or written to blockchain`, key, duration: 10});
-                */
-            };
-  }
 
 
   async function connect()
@@ -141,15 +118,6 @@ const Settings = () => {
         </Button>
       </div>
 
-        <div className="gx-d-flex justify-content-center">
-        <Button
-        type="primary"
-        onClick={relay}
-        key="relay"
-        >
-        Relay test
-        </Button>
-      </div>
       </div>
       )}
 

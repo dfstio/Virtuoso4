@@ -26,13 +26,14 @@ const ForwardRequestType = [
   { name: 'value', type: 'uint256' },
   { name: 'gas', type: 'uint256' },
   { name: 'nonce', type: 'uint256' },
-  { name: 'data', type: 'bytes' }
+  { name: 'data', type: 'bytes' },
+  { name: 'validUntil', type:  "uint256" }
 ];
 
 const TypedData = {
   domain: {
-    name: 'Defender',
-    version: '1',
+    name: 'NFT Virtuoso', //'GSN Relayed Transaction',
+    version: '1', //'2',
     chainId: 80001,
     verifyingContract: REACT_APP_FORWARDER_ADDRESS
   },
@@ -44,7 +45,7 @@ const TypedData = {
   message: {}
 };
 
-const GenericParams = 'address from,address to,uint256 value,uint256 gas,uint256 nonce,bytes data';
+const GenericParams = 'address from,address to,uint256 value,uint256 gas,uint256 nonce,bytes data,uint256 validUntil';
 const TypeName = `ForwardRequest(${GenericParams})`;
 const TypeHash = ethers.utils.id(TypeName);
 
@@ -73,7 +74,7 @@ async function relay(request) {
   //if(DEBUG) console.log("Relay forwarder 2:", forwarder);
 
   const args = [
-    { to, from, value, gas, nonce, data },
+    { to, from, value, gas, nonce, data, validUntil: "0x0"  },
     DomainSeparator,
     TypeHash,
     SuffixData,
@@ -89,11 +90,12 @@ async function relay(request) {
   const forwarderInterface = new ethers.utils.Interface(ForwarderAbi);
   const forwardData = forwarderInterface.encodeFunctionData('execute', args);
   if(DEBUG) console.log("Relay forwarder 5:", forwardData);
-  const relayer = new Relayer(RELAY_KEY, RELAY_SECRET);
+  if(DEBUG) console.log("Relay forwarder 6:", RELAY_KEY, RELAY_SECRET);
+  const relayer = new Relayer({apiKey: RELAY_KEY, apiSecret: RELAY_SECRET});
   const tx = await relayer.sendTransaction({
     speed: 'fast',
-    to: ForwarderAddress,
-    gasLimit: gas,
+    to: REACT_APP_FORWARDER_ADDRESS,
+    gasLimit: 1e6,
     data: forwardData,
   });
 
