@@ -248,7 +248,7 @@ async function getTokenPrice(tokenId)
              const tokenuriraw = await getFromIPFS(uriHash);
              const tokenuri = JSON.parse(tokenuriraw.toString());
              const owner = await virtuoso.ownerOf(tokenId);
-             if(DEBUG) console.log("loadToken", tokenId.toString(), "uri", tokenuri.data);
+             if(DEBUG) console.log("loadToken", tokenId.toString(), "uri", tokenuri);
              token.uri=tokenuri;
              token.owner = owner;
 

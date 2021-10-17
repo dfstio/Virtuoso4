@@ -5,7 +5,7 @@ import {updateAddress, updateVirtuosoBalance, updatePublicKey} from "../../appRe
 import {Button, Row, Col, Alert, Card, Progress, Skeleton} from "antd";
 import {LoadingOutlined, ExpandOutlined, CloseCircleFilled, CaretUpFilled, CaretDownFilled } from '@ant-design/icons';
 import IntlMessages from "util/IntlMessages";
-import { metamaskLogin, virtuosoRegisterPublicKey, getVirtuosoUnlockableContentKey, metamaskDecrypt, waitForHash } from "../../blockchain/metamask";
+import { metamaskLogin, virtuosoRegisterPublicKey, getVirtuosoUnlockableContentKey, getVirtuosoPublicKey, metamaskDecrypt, waitForHash } from "../../blockchain/metamask";
 import  SellButton  from "../algolia/Sell";
 import ReactPlayer from 'react-player';
 import ReactJkMusicPlayer from 'react-jinke-music-player'
@@ -520,14 +520,38 @@ const TokenItem = ({item, small=false, preview=false}) => {
             if(DEBUG) console.log("Register clicked", address);
             if( address !== undefined && address !== "")
             {
+                 const newKey1 = await getVirtuosoPublicKey(address);
+                 if( newKey1 !== "")
+                 {
+                      dispatch(updatePublicKey(newKey1));
+                      return true;
+                 }
+
                  const key = 'RegisterPublicKeyTokenItem';
                  message.loading({content: `To view unlockable content please provide public key in Metamask and confirm transaction`, key, duration: 60});
 
                 const result = await virtuosoRegisterPublicKey(address);
                 if( result.publicKey !== "" && result.hash !== "")
                 {
+
+                    let i = 0;
+                    let newKey = "";
+                    while( newKey === "" &&  i<20)
+                    {
+                        await sleep(5000);
+                        newKey = await getVirtuosoPublicKey(address);
+
+                        i++;
+                        if(DEBUG)  console.log("Register - public key", i, ":",   newKey);
+
+                    };
+
+
+                    dispatch(updatePublicKey(newKey));
+                    await sleep(10000);
                     await api.unlockable(item.tokenId, address);
-                    dispatch(updatePublicKey(result.publicKey));
+                    await sleep(10000);
+
                     message.success({content: `Public key ${result.publicKey} is written to blockchain with transaction ${result.hash}`, key, duration: 30});
 
                     return true;
@@ -617,7 +641,8 @@ const TokenItem = ({item, small=false, preview=false}) => {
                   let i = 0;
                   while( encryptedKey === "" &&  i<20)
                   {
-                      await sleep(5000);
+                      //await api.unlockable(item.tokenId, address);
+                      await sleep(10000);
                       encryptedKey = await getVirtuosoUnlockableContentKey(item.tokenId, address);
                       i++;
                       if(DEBUG)  console.log("View - unlockable key", i, ":",  encryptedKey);
@@ -654,7 +679,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
               }
               else
               {
-                  message.error({content: `Error loading unlockable content`, key: 'loadUnlockable', duration: 30});
+                  message.error({content: `Error loading unlockable content, please try later`, key: 'loadUnlockable', duration: 30});
                   await api.unlockable(item.tokenId, address);
 
               };

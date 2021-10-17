@@ -26,6 +26,7 @@
     "crypto": "^1.0.1",
     "crypto-js": "^4.1.1",
     "d3-scale": "^3.2.3",
+    "defender-relay-client": "^1.11.1",
     "draftjs-to-html": "^0.9.1",
     "eth-crypto": "^2.1.0",
     "eth-sig-util": "^3.0.1",
