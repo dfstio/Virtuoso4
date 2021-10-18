@@ -918,7 +918,7 @@ function sleep(ms) {
         }
 
 
-        <div className="gx-mt-4">
+        <div className="gx-mt-4" style={{"white-space": "pre-wrap"}}>
             {item.description}
         </div>
         <Attachments attachments={attachments}/>
