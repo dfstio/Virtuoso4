@@ -20,7 +20,7 @@ const interForwarder = new ethers.utils.Interface(ForwarderAbi);
 //const fetch = require('node-fetch');
 //const axios = require("axios");
 //const {  dbWriteToken, dbReadToken } = require("./dynamodb");
-const {  alWriteToken, alDeleteToken } = require("./algolia");
+const {  alWriteToken, alDeleteToken, alReadToken } = require("./algolia");
 const TOKEN_JSON = { isLoading: false, isTokenLoaded: false, isPriceLoaded: false, owner: "", name: "", onSale: false };
 const DEBUG = true;
 const URL = process.env.URL;
@@ -123,19 +123,29 @@ async function initAlgoliaTokens(force)
 	    const tokenId = await virtuoso.tokenByIndex(i);
       //if(DEBUG) console.log("initTokens Loading token ", tokenId.toString(), " i = ", i);
 
-
-      let result = await loadAlgoliaToken(tokenId, contract, chainId);
-      await sleep(1000);
-
-      if( result == false)
+      let load = true;
+      if( force === false)
       {
-        console.error("initAlgoliaTokens Warning: token No ", tokenId, " is not loaded: ");
-        await sleep(10000);
-        result = await loadAlgoliaToken(tokenId, contract, chainId);
-        if( result == false)
-        {
-          console.error("initAlgoliaTokens Error: token No ", tokenId, " is not loaded: ");
-        };
+          const readToken = await alReadToken(tokenId, contract, chainId);
+          if( readToken.success === true ) load = false;
+
+      };
+
+      if( load )
+      {
+             let result = await loadAlgoliaToken(tokenId, contract, chainId);
+             await sleep(1000);
+
+             if( result == false)
+             {
+               console.error("initAlgoliaTokens Warning: token No ", tokenId, " is not loaded: ");
+               await sleep(10000);
+               result = await loadAlgoliaToken(tokenId, contract, chainId);
+               if( result == false)
+               {
+                 console.error("initAlgoliaTokens Error: token No ", tokenId, " is not loaded: ");
+               };
+             };
       };
 
 	  }
@@ -608,7 +618,7 @@ async function loadTransaction(hash, chainId)
             )
           {
             if( DEBUG) console.log("loadTransaction initTokens on ", name); //, " with args ", args );
-            await initAlgoliaTokens(true);
+            await initAlgoliaTokens(false);
 
           };
 

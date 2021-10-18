@@ -75,9 +75,30 @@ async function alDeleteToken(tokenId, token, contract, chainId)
 
 }
 
+async function alReadToken(tokenId, contract, chainId)
+{
+        const contractAddress = contract.toString();
+        const lowerContractAddress = contractAddress.toLowerCase();
+        const objectID = chainId.toString()+"."+lowerContractAddress+"."+tokenId.toString();
 
+
+   try {
+
+        const result = await index.getObject(objectID);
+        return {item: result, success: true};
+
+
+
+    } catch (error) {
+
+       console.log(" alReadToken error: ", error);
+       return {error: error, success: false};
+    }
+
+}
 
 module.exports = {
     alWriteToken,
     alDeleteToken,
+    alReadToken
 }

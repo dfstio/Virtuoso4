@@ -21,7 +21,7 @@ exports.handler = async(event, context) => {
         const body = JSON.parse(event.body);
         console.log("algolia-init-background body:", body)
         let force = true;
-        if( body.force != undefined && body.force == false) force = false;
+        if( body.force !== undefined && body.force === false) force = false;
 
         let result = await initAlgoliaTokens(force);
         console.log("algolia-init-background: ", result.toString(), " tokens");
