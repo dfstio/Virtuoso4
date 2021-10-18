@@ -475,6 +475,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
 
               const qrURL = "https://nftvirtuoso.io/token/"+  REACT_APP_CHAIN_ID  + "/" + REACT_APP_CONTRACT_ADDRESS + "/" + item.tokenId.toString();
               setQRCodeURL(qrURL);
+              if(DEBUG) console.log("Token window ", window.url, process.env.URL, window);
               let newMedia = [];
               let newAudio = [];
 
@@ -804,7 +805,7 @@ function sleep(ms) {
        <div className="gx-product-item" >
        <Row>
        <Col xl={8} lg={8} md={24} sm={24} xs={24}>
-        <div className="gx-product-image"  style={{"marginTop": "25px", "marginLeft": "25px"}}>
+        <div className="gx-product-image"  style={{"marginTop": "25px", "marginLeft": "15px"}}>
         {showQRCode?(
          <QRCode
             value={qrCodeURL}

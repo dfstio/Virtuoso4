@@ -11,8 +11,9 @@ const ethers = require("ethers");
 const VirtuosoNFTJSON = require("../contract/mumbai_VirtuosoNFT.json");
 
 const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
-const URL = process.env.URL;
+//const URL = process.env.URL;
 const rpcUrlMetaMask = process.env.REACT_APP_RPCURL_METAMASK;
+const {REACT_APP_CONTRACT_ADDRESS, REACT_APP_CHAIN_ID, REACT_APP_RPCURL_METAMASK} = process.env;
 
 
 var provider = window.ethereum && new ethers.providers.Web3Provider(window.ethereum);
@@ -377,7 +378,11 @@ export async function metamaskLogin( openlink = true )
      }
      else
      {
-        if( openlink ) window.open("https://metamask.app.link/dapp/nftvirtuoso.io");
+        if( openlink )
+        {
+              const linkURL = "https://metamask.app.link/dapp/nftvirtuoso.io" + window.location.pathname ;
+              window.open(linkURL);
+        };
      }
 
      if(DEBUG) console.log("metamaskLogin: connected with address: ", address );

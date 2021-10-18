@@ -14,6 +14,7 @@ import {switchLanguage, toggleCollapsedSideNav} from "../../../appRedux/actions"
 import IntlMessages from "../../../util/IntlMessages";
 import {TAB_SIZE} from "../../../constants/ThemeSetting";
 import MetaMaskAccount from "../../../blockchain/account";
+import {isMobile, isDesktop, isChrome} from 'react-device-detect';
 
 
 const {Header} = Layout;
@@ -72,14 +73,15 @@ const HorizontalDefault = () => {
 
         <div className="gx-container">
           <div className="gx-header-horizontal-top-flex">
-
+            {isDesktop?(
             <div className="gx-header-horizontal-top-left">
 
               <i className="icon icon-alert gx-mr-3"/>
+
               <p className="gx-mb-0 gx-text-truncate"><IntlMessages id="app.announced"/></p>
 
 
-            </div>
+            </div> ):("")}
           <MetaMaskAccount/>
 
         </div>
