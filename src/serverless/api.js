@@ -77,6 +77,7 @@ const hello = (txRequest) => {
 const txSent = (txData, chainId) => {
   const data = {"txData": txData, "chainId": chainId};
   if(DEBUG) console.log("txSent api: ", data);
+  if( txData === undefined || txData === 0) return "txSent error - wrong hash";
   return fetch('/api/tx-background', {
     body: JSON.stringify(data),
     method: 'POST'

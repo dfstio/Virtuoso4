@@ -1,5 +1,6 @@
 import React from "react";
 import api from "../../serverless/api";
+import {isMobile, isDesktop, isChrome} from 'react-device-detect';
 //import {submitPublicKey from "../../relay/relayclient";
 
 import {Button, message} from "antd";
@@ -108,6 +109,7 @@ const Settings = () => {
       <div className="gx-d-flex justify-content-center">
         <h4>Your Public Key {pb}</h4>
       </div>
+      {(isChrome && isDesktop && (address!==""))?(
         <div className="gx-d-flex justify-content-center">
         <Button
         type="primary"
@@ -116,7 +118,7 @@ const Settings = () => {
         >
         Register public key
         </Button>
-      </div>
+      </div>):("")}
 
       </div>
       )}

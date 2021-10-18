@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
+import {isMobile, isDesktop, isChrome} from 'react-device-detect';
 import api from "../../serverless/api";
 import {Button, Row, Col, Form, Input, Radio, Card, Upload, Select } from "antd";
 import TokenItem from '../token/Token';
@@ -385,6 +386,8 @@ const MintPrivate = () => {
 
     async function allowUnlockableContent()
     {
+        if(isChrome===false || isDesktop===false)  { message.error("Please use desktop version of Chrome with MetaMask to add unlockable content"); return; }
+
         if( address !== undefined && address !== "")
         {
             let allow = false;

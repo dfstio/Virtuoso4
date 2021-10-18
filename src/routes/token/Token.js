@@ -1,5 +1,6 @@
 import React, {useState, useEffect } from "react";
 import {useDispatch, useSelector} from "react-redux";
+import {isMobile, isDesktop, isChrome} from 'react-device-detect';
 import {message} from 'antd';
 import {updateAddress, updateVirtuosoBalance, updatePublicKey} from "../../appRedux/actions";
 import {Button, Row, Col, Alert, Card, Progress, Skeleton} from "antd";
@@ -19,6 +20,8 @@ import api from "../../serverless/api";
 //import '../../styles/token/audio-player.less';
 
 const { getFromIPFS, decryptUnlockableToken, getEncryptedFileFromIPFS } = require("../../blockchain/ipfs");
+const {REACT_APP_CONTRACT_ADDRESS, REACT_APP_CHAIN_ID} = process.env;
+var QRCode = require('qrcode.react');
 
 const DEBUG = true;
 
@@ -449,6 +452,11 @@ const TokenItem = ({item, small=false, preview=false}) => {
   const [audio, setAudio] = useState([]);
   const [uaudio, setUAudio] = useState([]);
   const [counter, setCounter] = useState(0);
+  const [showQRCode, setShowQRCode] = useState(false);
+  const [qrCodeURL, setQRCodeURL] = useState("https://nftvirtuoso.io");
+
+  function showQRCodeFunction() { setShowQRCode(true); }
+  function hideQRCodeFunction() { setShowQRCode(false); }
 
   const [currentMedia, setCurrentMedia] = useState(null);
 
@@ -464,6 +472,9 @@ const TokenItem = ({item, small=false, preview=false}) => {
 
   useEffect(() => {
             async function loadMedia() {
+
+              const qrURL = "https://nftvirtuoso.io/token/"+  REACT_APP_CHAIN_ID  + "/" + REACT_APP_CONTRACT_ADDRESS + "/" + item.tokenId.toString();
+              setQRCodeURL(qrURL);
               let newMedia = [];
               let newAudio = [];
 
@@ -528,7 +539,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
                  }
 
                  const key = 'RegisterPublicKeyTokenItem';
-                 message.loading({content: `To view unlockable content please provide public key in Metamask and confirm transaction`, key, duration: 60});
+                 message.loading({content: `To view unlockable content please provide public key in Metamask and sign transaction`, key, duration: 60});
 
                 const result = await virtuosoRegisterPublicKey(address);
                 if( result.publicKey !== "" && result.hash !== "")
@@ -706,6 +717,7 @@ function sleep(ms) {
   async function showUnlockableContent()
   {
         if(DEBUG) console.log("showUnlockableContent", publicKey, address)
+        if(isChrome===false || isDesktop===false)  { message.error("Please use desktop version of Chrome with MetaMask to view unlockable content"); return; }
         if( address !== undefined && address !== "")
         {
             if( publicKey === undefined || publicKey === "" || publicKey === 'a' )
@@ -793,9 +805,27 @@ function sleep(ms) {
        <Row>
        <Col xl={8} lg={8} md={24} sm={24} xs={24}>
         <div className="gx-product-image"  style={{"marginTop": "25px", "marginLeft": "25px"}}>
-          <img src={`https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/${
+        {showQRCode?(
+         <QRCode
+            value={qrCodeURL}
+            size={300}
+            level='H'
+            includeMargin={true}
+            onClick={hideQRCodeFunction}
+            imageSettings={{src:`https://res.cloudinary.com/virtuoso/image/fetch/h_100,q_100,f_auto/${item.image}`,
+                            width: 100,
+                            height: 100
+                            }}
+            />
+         ):(
+          <img
+          src={`https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/${
             item.image
-            }`} alt={item.name}/>
+            }`}
+            alt={item.name}
+            onClick={showQRCodeFunction}
+            />
+        )}
          </div>
        </Col>
        <Col xl={16} lg={16} md={24} sm={24} xs={24}>

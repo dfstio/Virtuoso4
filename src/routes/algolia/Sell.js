@@ -1,5 +1,6 @@
 import React from "react";
 import {Button, Card, Modal, Form, InputNumber, Input, Radio} from "antd";
+import {isMobile, isDesktop, isChrome} from 'react-device-detect';
 import sell from "../../serverless/sell"
 
 const DEBUG = true;
@@ -44,11 +45,19 @@ class SellButton extends React.Component {
       confirmLoading: true,
     });
     const ipfsHash = await sell.ipfs(operatorData.sale);
-        this.setState({
-      ModalText: 'Writing unlockable information to IPFS...',
-      confirmLoading: true,
-    });
-    const unlockableIPFSHash = await sell.unlockable(sellData, operatorData, this.props.address);
+
+    let unlockableIPFSHash = "";
+    if( this.props.item.contains_unlockable_content === true)
+    {
+             this.setState({
+           ModalText: 'Writing unlockable information to IPFS...',
+           confirmLoading: true,
+         });
+
+          unlockableIPFSHash = await sell.unlockable(sellData, operatorData, this.props.address);
+
+    };
+
     this.setState({
       ModalText: 'Writing sale information to blockchain..',
       confirmLoading: true,
@@ -84,7 +93,9 @@ class SellButton extends React.Component {
 
     return (
         <span>
-        <Button type="primary" onClick={this.showModal}>Sell</Button>
+        {( (isChrome===true && isDesktop===true && this.props.address !== "") ||
+           (this.props.item.contains_unlockable_content === false && this.props.address !== "") )?(
+        <Button type="primary" onClick={this.showModal}>Sell</Button>):("")}
         <Modal title={title}
                visible={visible}
                onOk={this.handleOk}

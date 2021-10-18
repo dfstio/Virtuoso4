@@ -1,7 +1,7 @@
 // Server-side code for receiving meta-tx requests
 // The server validates the request, and if accepted, will send the meta-tx via a Defender Relayer
 const DEBUG = true;
-const {  RELAY_KEY, RELAY_SECRET, REACT_APP_FORWARDER_ADDRESS, CHAIN_ID, RPC_URL, MODERATOR_KEY} = process.env;
+const {  RELAY_KEY, RELAY_SECRET, REACT_APP_FORWARDER_ADDRESS, REACT_APP_CONTRACT_ADDRESS, CHAIN_ID, RPC_URL, REACT_APP_RELAY_KEY} = process.env;
 
 
 const { Relayer } = require('defender-relay-client');
@@ -50,18 +50,19 @@ const TypeHash = ethers.utils.id(TypeName);
 const DomainSeparator = bufferToHex(TypedDataUtils.hashStruct('EIP712Domain', TypedData.domain, TypedData.types));
 const SuffixData = '0x';
 
-async function relay(request) {
+async function relay(relayData) {
   // Unpack request
-  if(DEBUG) console.log("Relay request:", request);
-  const { to, from, value, gas, nonce, data, signature } = request;
+
+  const { to, from, value, gas, nonce, data} = relayData.request;
+  const signature = relayData.signature;
+  if(DEBUG) console.log("Relay request:", relayData.request);
 
   // Validate request
+  if( relayData.key === undefined || relayData.key !== REACT_APP_RELAY_KEY) { console.error("Relay: wrong key"); return {hash:0}; };
+  if( to === undefined || to !== REACT_APP_CONTRACT_ADDRESS) { console.error("Relay: wrong contract"); return {hash:0}; };
 
   const provider = new ethers.providers.StaticJsonRpcProvider(RPC_URL);
-  //const wallet = new ethers.Wallet(MODERATOR_KEY);
-  //const signer = wallet.connect(provider);
   const forwarder = new ethers.Contract(REACT_APP_FORWARDER_ADDRESS, ForwarderAbi, provider);
-  //if(DEBUG) console.log("Relay forwarder 2:", forwarder);
 
   const args = [
     { to, from, value, gas, nonce, data, validUntil: "0x0"  },
@@ -71,16 +72,12 @@ async function relay(request) {
     signature
   ];
 
-  //if(DEBUG) console.log("Relay forwarder 3:", args);
   const verifyResult = await forwarder.verify(...args);
-  //if(DEBUG) console.log("Relay forwarder 4:", verifyResult);
 
   // Send meta-tx through Defender
   //const forwardData = forwarder.interface.encodeFunctionData('execute', args);
   const forwarderInterface = new ethers.utils.Interface(ForwarderAbi);
   const forwardData = forwarderInterface.encodeFunctionData('execute', args);
-  //if(DEBUG) console.log("Relay forwarder 5:", forwardData);
-  //if(DEBUG) console.log("Relay forwarder 6:", RELAY_KEY, RELAY_SECRET);
   const relayer = new Relayer({apiKey: RELAY_KEY, apiSecret: RELAY_SECRET});
   const tx = await relayer.sendTransaction({
     speed: 'fast',
@@ -89,7 +86,7 @@ async function relay(request) {
     data: forwardData,
   });
 
-  console.log(`Sent meta-tx: ${tx.hash}`);
+  if(DEBUG) console.log(`Sent meta-tx: ${tx.hash}`);
   return tx;
 }
 

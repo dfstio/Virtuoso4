@@ -8,7 +8,7 @@ const VirtuosoNFTJSON = require("../contract/mumbai_VirtuosoNFT.json");
 const ForwarderAbi  = require('./IForwarder.json');
 
 
-const {REACT_APP_CONTRACT_ADDRESS, REACT_APP_FORWARDER_ADDRESS, REACT_APP_CHAIN_ID} = process.env;
+const {REACT_APP_CONTRACT_ADDRESS, REACT_APP_FORWARDER_ADDRESS, REACT_APP_CHAIN_ID, REACT_APP_RELAY_KEY} = process.env;
 const RelayUrl = '/api/relay';
 const DEBUG = true;
 
@@ -159,10 +159,12 @@ export async function relayFunction(name, args) {
 */
 
   // Send request to the server
+  const relayData = { request: request, signature: signature, key: REACT_APP_RELAY_KEY};
+
   const response = await fetch(RelayUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...request, signature })
+    body: JSON.stringify(relayData)
   }).then(r => r.json());
 
   return response;
