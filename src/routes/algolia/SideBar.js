@@ -19,6 +19,7 @@ const Sidebar = () => {
 
     const [filter, setFilter] = useState("uri.visibility:public OR onSale:true");
     const [disabled, setDisabled] = useState(true);
+    //const [visible, setVisible] = useState(false);
 
 
     function onChange(e) {
@@ -67,7 +68,7 @@ const Sidebar = () => {
   }, [address]);
 
 return (
-  <Sider className="gx-algolia-sidebar">
+  <Sider  className="gx-algolia-sidebar">
     <div className="gx-algolia-sidebar-content">
       <ClearRefinements
         translations={{

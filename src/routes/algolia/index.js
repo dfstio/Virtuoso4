@@ -1,5 +1,5 @@
-import React from 'react';
-import {Layout} from "antd";
+import React, {useState} from 'react';
+import {Layout, Drawer} from "antd";
 import {Configure, connectHits, connectStateResults, InstantSearch, Pagination, Stats,} from 'react-instantsearch-dom';
 import {withUrlSync} from './urlSync';
 import 'instantsearch.css/themes/algolia.css';
@@ -15,7 +15,17 @@ const {Content} = Layout;
 const {REACT_APP_ALGOLIA_KEY, REACT_APP_ALGOLIA_PROJECT} = process.env;
 const searchClient = algoliasearch(REACT_APP_ALGOLIA_PROJECT, REACT_APP_ALGOLIA_KEY);
 
-const App = props => (
+const App = props =>
+{
+    const [visible, setVisible] = useState(false);
+
+    function onCloseFunction()
+    {
+        setVisible(!visible);
+        console.log("OnClose");
+    }
+
+return (
   <InstantSearch className="gx-main-content"
                  indexName="virtuoso"
                  searchState={props.searchState}
@@ -26,9 +36,22 @@ const App = props => (
     <Configure hitsPerPage={15}/>
 
     <Layout className="gx-algolia-layout-has-sider">
-      <Sidebar/>
+        <div className="gx-d-block gx-d-lg-none">
+            <Drawer
+              placement="left"
+              closable={false}
+              visible={visible}
+              onClose={onCloseFunction}
+             >
+               <Sidebar />
+            </Drawer>
+          </div>
+
+      <div className="gx-d-none gx-d-lg-flex">
+      <Sidebar />
+      </div>
       <div className="gx-algolia-main">
-        <Header/>
+         <Header onCloseFunction={onCloseFunction}/>
         <Content className="gx-algolia-content">
           <CustomResults/>
         </Content>
@@ -39,7 +62,7 @@ const App = props => (
     </Layout>
   </InstantSearch>
 );
-
+};
 
 const CustomResults = connectStateResults(({searchState, searchResult}) => {
   if (searchResult && searchResult.nbHits === 0) {
@@ -56,7 +79,7 @@ const CustomResults = connectStateResults(({searchState, searchResult}) => {
     //console.log("CustomResults2", searchState, searchResult );
     return (
       <div className="gx-algolia-content-inner">
-        <Stats/>
+        <Stats />
         <ConnectedProducts/>
       </div>
     );

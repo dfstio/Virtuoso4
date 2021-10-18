@@ -1,8 +1,18 @@
 import React from "react";
+import {Button} from "antd";
 import {connectSearchBox, SortBy} from "react-instantsearch-dom";
 
-const AlgoliaHeader = () => (
+
+const AlgoliaHeader = ({onCloseFunction}) => (
   <div className="gx-algolia-header">
+                   <span className="gx-drawer-btn gx-d-flex gx-d-lg-none" >
+                  <Button
+                    type="link"
+                    onClick={onCloseFunction}
+                    >
+                    Filter
+                    </Button>
+        </span>
     <ConnectedSearchBox/>
     <div className="gx-algolia-sort-by">
       <label>Sort by</label>
