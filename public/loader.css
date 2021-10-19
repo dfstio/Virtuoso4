@@ -35,6 +35,12 @@ body {
 
 .loading {
   width: 120px;
+  animation: loading 2s linear infinite;
+}
+
+@keyframes loading {
+    0% { transform: rotate(0deg); }
+    100% {  transform: rotate(359deg); }
 }
 
 /*# sourceMappingURL=loader.css.map */
