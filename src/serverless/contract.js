@@ -638,7 +638,7 @@ async function loadTransaction(hash, chainId, transactionId)
                   if( item.name === 'OnMint') tokenId = item.args._id;
               });*/
               const log = inter.parseLog(resultwait.logs[2]); // here you can add your own logic to find the correct log
-              if( DEBUG) console.log("loadTransaction parseLog ", log);
+              //if( DEBUG) console.log("loadTransaction parseLog ", log);
               if( log.name === 'OnMint')
               {
                  tokenId = log.args._id;

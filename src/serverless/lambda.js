@@ -42,6 +42,12 @@ async function lambdaSell(tokenId, data)
     return result;
 };
 
+async function lambdaContent(tokenId, data)
+{
+    let result = await lambdaHub("content", tokenId, data);
+    //if(DEBUG)  console.log("lambdaSell result",  result );
+    return result;
+};
 
 async function  lambdaTransferToken(tokenId, checkout_metadata, email_address)
 {
@@ -202,5 +208,6 @@ module.exports = {
     lambdaResend,
     encrypt,
     decrypt,
-    lambdaUnlockable
+    lambdaUnlockable,
+    lambdaContent
 }
