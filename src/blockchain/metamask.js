@@ -199,14 +199,16 @@ export async function virtuosoSell(tokenId, ipfsHash, operatorAddress, unlockabl
                   if( balance < MINIMUM_BALANCE )
                   {
                        txresult = await relayFunction('sell', [tokenId, ipfsHash, operatorAddress, unlockableIPFSHash]);
+                       await api.txSent(txresult.hash, network.chainId, txresult.transactionId);
                   }
                   else
                   {
                         const writeVirtuoso = signer && new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
                         if(DEBUG) console.log("virtuosoSell writeVirtuoso", writeVirtuoso);
                         txresult = await writeVirtuoso.sell(tokenId, ipfsHash, operatorAddress, unlockableIPFSHash);
+                        await api.txSent(txresult.hash, network.chainId);
                     };
-                    await api.txSent(txresult.hash, network.chainId);
+
 
            } else console.error("virtuosoSell error - wrong chain or address");
     };
@@ -248,15 +250,17 @@ export async function virtuosoMint(address, ipfsHash, unlockableIPFSHash, onEscr
                   if( balance < MINIMUM_BALANCE )
                   {
                        txresult = await relayFunction('mintItem', [address, ipfsHash, unlockableIPFSHash, onEscrow]);
+                       await api.txSent(txresult.hash, network.chainId, txresult.transactionId);
                   }
                   else
                   {
                        const writeVirtuoso = signer && new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
                        if(DEBUG) console.log("virtuosoMint writeVirtuoso", writeVirtuoso);
                        txresult = await writeVirtuoso.mintItem(address, ipfsHash, unlockableIPFSHash, onEscrow);
+                       await api.txSent(txresult.hash, network.chainId);
                   };
                        // Send tx to server
-                await api.txSent(txresult.hash, network.chainId);
+
 
            } else console.error("virtuosoMint error - wrong chain or address");
     };
@@ -303,7 +307,7 @@ export async function virtuosoRegisterPublicKey(address)
                        //const relayresult = await submitPublicKey(publicKey);
                        const relayresult = await relayFunction('setPublicKey', [publicKey]);
                        result.hash = relayresult.hash;
-                       await api.txSent(relayresult.hash, network.chainId);
+                       await api.txSent(relayresult.hash, network.chainId, relayresult.transactionId);
                   }
                   else
                   {

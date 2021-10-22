@@ -124,30 +124,32 @@ async function initAlgoliaTokens(force)
 	    const tokenId = await virtuoso.tokenByIndex(i);
       //if(DEBUG) console.log("initTokens Loading token ", tokenId.toString(), " i = ", i);
 
-      let load = true;
-      if( force === false)
+     if( force === false)
       {
           const readToken = await alReadToken(tokenId, contract, chainId);
-          if( readToken.success === true ) load = false;
+          if( readToken.success === true )
+          {
+            if(DEBUG) console.log("initAlgoliaTokens finished, totalSupply: ", totalSupply.toString());
+            return totalSupply;
+          };
 
       };
 
-      if( load )
-      {
-             let result = await loadAlgoliaToken(tokenId, contract, chainId);
-             await sleep(1000);
 
-             if( result == false)
-             {
-               console.error("initAlgoliaTokens Warning: token No ", tokenId, " is not loaded: ");
-               await sleep(10000);
-               result = await loadAlgoliaToken(tokenId, contract, chainId);
-               if( result == false)
-               {
-                 console.error("initAlgoliaTokens Error: token No ", tokenId, " is not loaded: ");
-               };
-             };
-      };
+       let result = await loadAlgoliaToken(tokenId, contract, chainId);
+       await sleep(1000);
+
+       if( result == false)
+       {
+         console.error("initAlgoliaTokens Warning: token No ", tokenId, " is not loaded: ");
+         await sleep(10000);
+         result = await loadAlgoliaToken(tokenId, contract, chainId);
+         if( result == false)
+         {
+           console.error("initAlgoliaTokens Error: token No ", tokenId, " is not loaded: ");
+         };
+       };
+
 
 	  }
 
@@ -547,7 +549,7 @@ async function txBackground(body)
 
     if( body.chainId == CHAIN_ID)
     {
-          await loadTransaction(body.txData, body.chainId);
+          await loadTransaction(body.txData, body.chainId, body.transactionId);
     }
     else
     {
@@ -556,33 +558,40 @@ async function txBackground(body)
 
 }
 
-async function loadTransaction(hash, chainId)
+async function loadTransaction(hash, chainId, transactionId)
 {
 
-      const tx = await provider.getTransaction(hash);
-      if( DEBUG) console.log("txBackground loadTransaction with hash ", hash, " tx ", tx, "chainId", chainId );
+      let tx = await provider.getTransaction(hash);
+      if( DEBUG) console.log("txBackground loadTransaction with hash ", hash,
+                             " tx.to ", tx.to, "chainId", chainId, "transactionId", transactionId);
       let resultwait = await tx.wait(6);
+      //if( DEBUG) console.log("txBackground loadTransaction with result ",  resultwait);
       let contract = tx.to.toString();
       let name = "";
       let args = "";
+      let tokenId = 0;
 
 
-      if(tx.to == virtuoso.address)
-      {
+       if(tx.to == virtuoso.address)
+       {
 
              const decodedInput = inter.parseTransaction({ data: tx.data, value: tx.value});
              name = decodedInput.name;
              args = decodedInput.args;
-             if( DEBUG) console.log("txBackground loadTransaction confirmations: ", resultwait.confirmations, " function: ", name); //, " args: ", args );
       	};
 
       	if(tx.to == forwarder.address)
         {
-
-             const relayer = new Relayer({apiKey: RELAY_KEY, apiSecret: RELAY_SECRET});
-             const txRelayer = await relayer.query(tx.transactionId);
-             if( DEBUG) console.log("txBackground loadTransaction txRelayer ",  txRelayer);
-             const decodedInput1 = interForwarder.parseTransaction({ data: txRelayer.data, value: txRelayer.value});
+             if( transactionId !== "")
+             {
+                const relayer = new Relayer({apiKey: RELAY_KEY, apiSecret: RELAY_SECRET});
+                txRelay = await relayer.query(transactionId);
+                //if( DEBUG) console.log("txBackground loadTransaction txRelay ",  txRelay);
+                let tx = await provider.getTransaction(txRelay.hash);
+                resultwait = await tx.wait(6);
+                //if( DEBUG) console.log("txBackground loadTransaction Relayer ",  tx, "result", resultwait.logs);
+             };
+             const decodedInput1 = interForwarder.parseTransaction({ data: tx.data, value: tx.value});
              const name1 = decodedInput1.name;
              const args1 = decodedInput1.args;
 
@@ -611,7 +620,7 @@ async function loadTransaction(hash, chainId)
             name == "virtuosoSafeTransferFrom"
             )
           {
-            const tokenId = args.tokenId;
+            tokenId = args.tokenId;
             if( DEBUG) console.log("txBackground loadToken ", tokenId.toString(), " on ", name); //, " with args ", args );
             await loadAlgoliaToken(tokenId, contract, chainId)
 
@@ -621,8 +630,23 @@ async function loadTransaction(hash, chainId)
             name == "mintChildItem"
             )
           {
-            if( DEBUG) console.log("loadTransaction initTokens on ", name); //, " with args ", args );
-            await initAlgoliaTokens(false);
+              /*const topics = ["0xdbb46a548b5ad93085f682859c3fd4fd70691a90732eb1eaaed4e0ff37a2fdee"];
+              resultwait.logs.map(function(log)
+                  {
+                  const item = inter.parseLog(log);
+                  if( DEBUG) console.log("loadTransaction parseLog ", item);
+                  if( item.name === 'OnMint') tokenId = item.args._id;
+              });*/
+              const log = inter.parseLog(resultwait.logs[2]); // here you can add your own logic to find the correct log
+              if( DEBUG) console.log("loadTransaction parseLog ", log);
+              if( log.name === 'OnMint')
+              {
+                 tokenId = log.args._id;
+              }
+              else console.error("Wrong log entry on Mint", log, "with hash", hash);
+
+              if( DEBUG) console.log("loadTransaction initTokens on ", name,  "tokenId", tokenId.toString()); //, " with args ", args );
+              await initAlgoliaTokens(false);
 
           };
 
