@@ -1,10 +1,11 @@
 const { getFromIPFS } = require("./ipfs");
 const ethers = require("ethers");
+const { Relayer } = require('defender-relay-client');
 const EthCrypto = require('eth-crypto');
 const VirtuosoNFTJSON = require("../contract/mumbai_VirtuosoNFT.json");
 const ForwarderAbi = require('../relay/IForwarder.json');
 
-const {CHAIN_ID, CONTRACT_ADDRESS, REACT_APP_FORWARDER_ADDRESS, RPC_URL } = process.env;
+const {RELAY_KEY, RELAY_SECRET, CHAIN_ID, CONTRACT_ADDRESS, REACT_APP_FORWARDER_ADDRESS, RPC_URL } = process.env;
 const address= "0xbc356b91e24e0f3809fd1E455fc974995eF124dF";
 
 const provider = new ethers.providers.StaticJsonRpcProvider(RPC_URL);
@@ -559,7 +560,7 @@ async function loadTransaction(hash, chainId)
 {
 
       const tx = await provider.getTransaction(hash);
-      if( DEBUG) console.log("txBackground loadTransaction with hash ", hash, " to ", tx.to, "chainId", chainId );
+      if( DEBUG) console.log("txBackground loadTransaction with hash ", hash, " tx ", tx, "chainId", chainId );
       let resultwait = await tx.wait(6);
       let contract = tx.to.toString();
       let name = "";
@@ -578,7 +579,10 @@ async function loadTransaction(hash, chainId)
       	if(tx.to == forwarder.address)
         {
 
-             const decodedInput1 = interForwarder.parseTransaction({ data: tx.data, value: tx.value});
+             const relayer = new Relayer({apiKey: RELAY_KEY, apiSecret: RELAY_SECRET});
+             const txRelayer = await relayer.query(tx.transactionId);
+             if( DEBUG) console.log("txBackground loadTransaction txRelayer ",  txRelayer);
+             const decodedInput1 = interForwarder.parseTransaction({ data: txRelayer.data, value: txRelayer.value});
              const name1 = decodedInput1.name;
              const args1 = decodedInput1.args;
 

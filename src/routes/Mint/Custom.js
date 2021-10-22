@@ -329,7 +329,7 @@ const MintPrivate = () => {
         let key = publicKey;
         if (key === "") key = await register();
         const encryptedContent = await encryptUnlockableToken(token, key);
-        if( encryptedContent.key != "") unlockableResult = await addToIPFS(JSON.stringify(encryptedContent));
+        if( encryptedContent.key !== "") unlockableResult = await addToIPFS(JSON.stringify(encryptedContent));
     };
 
     const mintJSON = await writeToken(token);
