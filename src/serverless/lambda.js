@@ -45,7 +45,7 @@ async function lambdaSell(tokenId, data)
 async function lambdaContent(tokenId, data)
 {
     let result = await lambdaHub("content", tokenId, data);
-    //if(DEBUG)  console.log("lambdaSell result",  result );
+    if(DEBUG)  console.log("lambdaContent result",  result );
     return result;
 };
 

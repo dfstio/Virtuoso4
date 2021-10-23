@@ -1,5 +1,5 @@
 /* Api methods to call /functions */
-
+const { REACT_APP_RELAY_KEY} = process.env;
 const DEBUG = true;
 
 const add = (address, amount, description) => {
@@ -17,6 +17,17 @@ const sell = (tokenId, sellData) => {
   const data = {"tokenId": tokenId, "data": sellData };
   if(DEBUG) console.log("sell api: ", data);
   return fetch('/api/sell', {
+    body: JSON.stringify(data),
+    method: 'POST'
+  }).then(response => {
+    return response.json()
+  })
+}
+
+const content = (tokenId, contentData) => {
+  const data = {"tokenId": tokenId, "data": contentData, "key": REACT_APP_RELAY_KEY };
+  if(DEBUG) console.log("content api: ", data);
+  return fetch('/api/content', {
     body: JSON.stringify(data),
     method: 'POST'
   }).then(response => {
@@ -106,5 +117,6 @@ export default {
   sell: sell,
   encrypt: encrypt,
   add: add,
-  unlockable: unlockable
+  unlockable: unlockable,
+  content: content
 }

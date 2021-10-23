@@ -1,4 +1,6 @@
 const { lambdaContent} = require("../serverless/lambda");
+const {   REACT_APP_RELAY_KEY} = process.env;
+
 
 exports.handler = async(event, context) => {
 
@@ -14,6 +16,15 @@ exports.handler = async(event, context) => {
     try {
         // parse form data
         const body = JSON.parse(event.body);
+        if( body.key === undefined || body.key !== REACT_APP_RELAY_KEY)
+        {
+              console.error("Content: wrong key");
+              return {
+                  statusCode: 200,
+                  body: JSON.stringify({ success: false })
+             };
+        };
+
 	      const result = await lambdaContent(body.tokenId, body.data);
         //console.log("Sell API: ", result);
 

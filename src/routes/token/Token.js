@@ -17,6 +17,7 @@ import "./style.css";
 import Markdown from 'markdown-to-jsx';
 import fileSaver from 'file-saver';
 import api from "../../serverless/api";
+import {getOnLoad} from "../../serverless/content"
 //import '../../styles/token/audio-player.less';
 
 const { getFromIPFS, decryptUnlockableToken, getEncryptedFileFromIPFS } = require("../../blockchain/ipfs");
@@ -33,11 +34,11 @@ const MediaList = ({hits, onSelect, pdfPages, counter, onLoadMedia}) => {
     <div id="medialistid">
       <Row key={"medialistrow"}>
         {hits.map(media => (
-          <Col xl={12} lg={12} md={12} sm={24} xs={24} key={"medialistcol"+media.data.IPFShash}>
+          <Col xl={12} lg={12} md={12} sm={24} xs={24} key={"medialistcol"+media.id}>
             <TokenMedia
               media={media.data}
               onSelect={onSelect}
-              key={"TokenMediaMediaList"+media.data.IPFShash}
+              key={"TokenMediaMediaList"+media.id}
               mediaId={media.id}
               pdfPages={pdfPages}
               counter1={counter}
@@ -449,6 +450,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
   const [media, setMedia] = useState([]);
   const [attachments, setAttachments] = useState([]);
   const [uattachments, setUAttachments] = useState([]);
+  const [description, setDescription] = useState("");
   const [audio, setAudio] = useState([]);
   const [uaudio, setUAudio] = useState([]);
   const [counter, setCounter] = useState(0);
@@ -460,19 +462,12 @@ const TokenItem = ({item, small=false, preview=false}) => {
 
   const [currentMedia, setCurrentMedia] = useState(null);
 
-  useEffect(() => {
-            function checkAddress() {
-            let show = false;
-            if( address === item.owner) show = true;
-            if( show !== showUnlockableButton) setShowUnlockableButton(show);
-          }
-      checkAddress()
-      },[address]);
 
 
   useEffect(() => {
             async function loadMedia() {
 
+              setDescription(item.description);
               const qrURL = "https://nftvirtuoso.io/token/"+  REACT_APP_CHAIN_ID  + "/" + REACT_APP_CONTRACT_ADDRESS + "/" + item.tokenId.toString();
               setQRCodeURL(qrURL);
               if(DEBUG) console.log("Token window ", window.url, process.env.URL, window);
@@ -486,7 +481,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
                    if( type === 'video') { const id = newMedia.length; newMedia.push({data:item.uri.properties.animation, id:id});};
                    if( type === 'audio') newAudio.push(item.uri.properties.animation);
               };
-              const count  = (item.uri.media_count === undefined)? 0 : item.uri.media_count;
+              let count  = (item.uri.media_count === undefined)? 0 : item.uri.media_count;
 
               if( count > 0)
               {
@@ -506,15 +501,50 @@ const TokenItem = ({item, small=false, preview=false}) => {
                       };
 
               };
-              setMedia(newMedia);
-              setAudio(newAudio);
+
               if(DEBUG) console.log(`TokenItem media ${count}:`, newMedia, newAudio);
 
-              const acount  = (item.uri.attachments_count === undefined)? 0 : item.uri.attachments_count;
+              let acount  = (item.uri.attachments_count === undefined)? 0 : item.uri.attachments_count;
               if( acount > 0) setAttachments(item.uri.attachments);
+
+              let show = false;
+              if( address === item.owner) show = true;
+              if( show !== showUnlockableButton) setShowUnlockableButton(show);
+              const timedContent = await getOnLoad(item.tokenId);
+              if(DEBUG) console.log(`TokenItem content`, timedContent);
+              let newDescription = item.description;
+              if( timedContent.success)
+              {
+                   if( timedContent.content.description !== "") newDescription = timedContent.content.description;
+                   count  = (timedContent.content.media_count === undefined)? 0 : timedContent.content.media_count;
+
+                   if( count > 0)
+                   {
+                           let i;
+
+                           for(i = 0; i<count; i++)
+                           {
+                                const type = timedContent.content.media[i].filetype.replace(/\/[^/.]+$/, "");
+                                const id = newMedia.length;
+                                if( type === 'video') newMedia.push({data:timedContent.content.media[i], id:id});
+                                if( type === 'image') newMedia.push({data:timedContent.content.media[i], id:id});
+                                if( type === 'audio') newAudio.push(timedContent.content.media[i]);
+                                if( type === "application")
+                                {
+                                    if( timedContent.content.media[i].filetype === "application/pdf" ) newMedia.push({data:timedContent.content.media[i], id:id});
+                                };
+                           };
+                   };
+              };
+
+
+              setDescription(newDescription);
+              setMedia(newMedia);
+              setAudio(newAudio);
+
         }
       loadMedia()
-      },[item]);
+      },[item, address]);
 
 
   let buttonId = "sidebar.algolia.buy";
@@ -919,7 +949,7 @@ function sleep(ms) {
 
 
         <div className="gx-mt-4" style={{"white-space": "pre-wrap"}}>
-            {item.description}
+            {description}
         </div>
         <Attachments attachments={attachments}/>
 
