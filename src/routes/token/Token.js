@@ -169,7 +169,7 @@ const TokenMedia = ({media, onSelect, mediaId, pdfPages, counter1, onLoadMedia})
                     //light={true}
                     width='100%'
                     height='100%'
-                    key={"VideoPlayer"+media.IPFShash}
+                    key={"VideoPlayer"+media.id}
                     />):("")}
          {(loading && filesize!=="")?(
         <div style={{height:"300px", }}>
@@ -241,10 +241,20 @@ if(DEBUG) console.log("TokenAudio: ", media.length, media);
       const [audioList, setAudioList] = useState([]);
       const [visible, setVisible] = useState(false);
       const [length, setLength] = useState(0);
+      const [responsive, setResponsive] = useState(false);
       //const [purl, setPURL] = useState();
 
       if(media.length!==length) setLength(media.length);
 
+      function onAudioPlay()
+      {
+          setResponsive(true);
+      }
+
+      function onAudioPause()
+      {
+          setResponsive(false);
+      }
 
       useEffect(() => {
             async function fetchMedia() {
@@ -284,7 +294,8 @@ if(DEBUG) console.log("TokenAudio: ", media.length, media);
 
                             let track = {
                                    name: media[i].name,
-                                   musicSrc: url
+                                   musicSrc: url,
+                                   singer: (media[i].artist === undefined)?"":media[i].artist
                                    };
                            if( image !== "") track.cover = `https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/${image}`;
                            newAudio.push(track);
@@ -319,16 +330,22 @@ if(DEBUG) console.log("TokenAudio: ", media.length, media);
                     clearPriorAudioLists={true}
                     mode='full'
                     theme= 'light'
-                    toggleMode= {false}
+                    toggleMode= {true}
                     showReload= {false}
                     showDestroy= {false}
                     showDownload= {false}
                     showThemeSwitch= {false}
+                    showMiniModeCover= {false}
                     autoHiddenCover= {true}
-                    responsive= {false}
+                    responsive= {responsive}
                     autoPlay= {false}
+                    remove= {false}
+                    glassBg={true}
+                    showPlayMode={true}
                     showProgressLoadBar={true}
                     showMiniProcessBar={true}
+                    onAudioPlay={onAudioPlay}
+                    onAudioPause={onAudioPause}
               />:""}
             </div>
 
@@ -361,7 +378,7 @@ const Attachments = ({attachments}) => {
 
       <Row key={"attachmentrow"}>
         {attachments.map(attachment => (
-          <Col xl={24} lg={24} md={24} sm={24} xs={24} key={"attachmentcol"+attachment.IPFShash}>
+          <Col xl={24} lg={24} md={24} sm={24} xs={24} key={"attachmentcol"+attachment.filename}>
             <Attachment
               attachment={attachment}
               key={"attachment"+attachment.IPFShash}
@@ -380,9 +397,23 @@ const Attachment = ({attachment}) => {
 
    const [loading, setLoading] = useState(false);
    const [percent, setPercent] = useState(0);
+   const [name, setName ] = useState("");
+   const [size, setSize ] = useState("");
 
-   const size1 = formatBytes( attachment.size);
-   const size = " ("+size1+")";
+
+
+      useEffect(() => {
+            async function setText() {
+
+                 const size1 = formatBytes( attachment.size);
+                 setSize(" ("+size1+")");
+                 const splitName = attachment.filename.split('/');
+                 setName(splitName[splitName.length-1]);
+
+        }
+      setText()
+      },[attachment]);
+
 
    function loadPercent(loadedSize) {
 
@@ -401,7 +432,7 @@ const Attachment = ({attachment}) => {
       {
           url =  await getEncryptedFileFromIPFS(attachment.IPFShash, attachment.password, attachment.filetype, loadPercent);
       };
-      if( url !== "") fileSaver.saveAs(url, attachment.filename);
+      if( url !== "") fileSaver.saveAs(url, name);
       setLoading(false);
    };
 
@@ -419,7 +450,7 @@ const Attachment = ({attachment}) => {
               type="link"
               loading={loading}
          >
-              {attachment.filename} {size}
+              {name} {size}
         </Button>
         </span>
             </div>
@@ -468,6 +499,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
             async function loadMedia() {
 
               setDescription(item.description);
+              const timedContent = await getOnLoad(item.tokenId);
               const qrURL = "https://nftvirtuoso.io/token/"+  REACT_APP_CHAIN_ID  + "/" + REACT_APP_CONTRACT_ADDRESS + "/" + item.tokenId.toString();
               setQRCodeURL(qrURL);
               if(DEBUG) console.log("Token window ", window.url, process.env.URL, window);
@@ -505,17 +537,18 @@ const TokenItem = ({item, small=false, preview=false}) => {
               if(DEBUG) console.log(`TokenItem media ${count}:`, newMedia, newAudio);
 
               let acount  = (item.uri.attachments_count === undefined)? 0 : item.uri.attachments_count;
-              if( acount > 0) setAttachments(item.uri.attachments);
+              let newAttachments = [];
+              if( acount > 0) newAttachments = item.uri.attachments;
 
               let show = false;
               if( address === item.owner) show = true;
               if( show !== showUnlockableButton) setShowUnlockableButton(show);
-              const timedContent = await getOnLoad(item.tokenId);
+
               if(DEBUG) console.log(`TokenItem content`, timedContent);
               let newDescription = item.description;
-              if( timedContent.success)
+              if( timedContent.success && timedContent.content !== undefined  )
               {
-                   if( timedContent.content.description !== "") newDescription = timedContent.content.description;
+                   if( timedContent.content.description !== undefined && timedContent.content.description !== "") newDescription = timedContent.content.description;
                    count  = (timedContent.content.media_count === undefined)? 0 : timedContent.content.media_count;
 
                    if( count > 0)
@@ -535,12 +568,16 @@ const TokenItem = ({item, small=false, preview=false}) => {
                                 };
                            };
                    };
+
+                   acount = (timedContent.content.attachments_count === undefined)? 0 : timedContent.content.attachments_count;
+                   if( acount > 0) newAttachments = [...newAttachments, ...timedContent.content.attachments];
               };
 
 
               setDescription(newDescription);
               setMedia(newMedia);
               setAudio(newAudio);
+              setAttachments(newAttachments);
 
         }
       loadMedia()
@@ -948,7 +985,7 @@ function sleep(ms) {
         }
 
 
-        <div className="gx-mt-4" style={{"white-space": "pre-wrap"}}>
+        <div className="gx-mt-4" style={{"whiteSpace": "pre-wrap"}}>
             {description}
         </div>
         <Attachments attachments={attachments}/>
