@@ -19,7 +19,7 @@ const Token = ({match}) => {
   const [item, setItem] = useState();
   const [messageText, setMessageText] = useState('Loading token');
 
-  if(DEBUG) console.log("Token match", match.params.chainId, match.params.contract, match.params.tokenId);
+  if(DEBUG) console.log("Token match", match.params.chainId, match.params.contract, match.params.tokenId, "match", match);
   if(DEBUG) console.log("Token item", item);
 
     useEffect(() => {

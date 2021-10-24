@@ -1,9 +1,8 @@
 import React, {useState, useEffect } from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {isMobile, isDesktop, isChrome} from 'react-device-detect';
-import {message} from 'antd';
 import {updateAddress, updateVirtuosoBalance, updatePublicKey} from "../../appRedux/actions";
-import {Button, Row, Col, Alert, Card, Progress, Skeleton} from "antd";
+import {message, Button, Row, Col, Alert, Card, Progress, Skeleton} from "antd";
 import {LoadingOutlined, ExpandOutlined, CloseCircleFilled, CaretUpFilled, CaretDownFilled } from '@ant-design/icons';
 import IntlMessages from "util/IntlMessages";
 import { metamaskLogin, virtuosoRegisterPublicKey, getVirtuosoUnlockableContentKey, getVirtuosoPublicKey, metamaskDecrypt, waitForHash } from "../../blockchain/metamask";
@@ -73,7 +72,7 @@ const TokenMedia = ({media, onSelect, mediaId, pdfPages, counter1, onLoadMedia})
 
       function onDocumentLoadSuccess({ numPages }) {
         setNumPages(numPages);
-        if(DEBUG) console.log("onDocumentLoadSuccess PDF pages", numPages);
+        //if(DEBUG) console.log("onDocumentLoadSuccess PDF pages", numPages);
         pdfPages(mediaId, numPages, pageNumber);
       }
 
@@ -259,7 +258,7 @@ if(DEBUG) console.log("TokenAudio: ", media.length, media);
       useEffect(() => {
             async function fetchMedia() {
 
-              if(DEBUG) console.log("TokenAudio useEffect start: ", media.length, length, media);
+              //if(DEBUG) console.log("TokenAudio useEffect start: ", media.length, length, media);
               let newAudio = [];
               //let newMedia = media;
               const count = media.length;
@@ -282,7 +281,7 @@ if(DEBUG) console.log("TokenAudio: ", media.length, media);
                                 //  vm.feed = getFeed().then(function(data) {return data.data ;});
                                 let url2 =  getEncryptedFileFromIPFS(media[i].IPFShash, media[i].password, media[i].filetype).then(function(data) {return data;});
                                 //setPURL(url2);
-                                if(DEBUG) console.log("url2", url2);
+                                //if(DEBUG) console.log("url2", url2);
                                 url = () => { if(DEBUG) console.log("musicSrc url2", url2); return url2; };
                                 //musicSrc: () => {
                                 //  return Promise.resolve("http://res.cloudinary.com/alick/video/upload/v1502689683/Luis_Fonsi_-_Despacito_ft._Daddy_Yankee_uyvqw9.mp3")
@@ -313,7 +312,7 @@ if(DEBUG) console.log("TokenAudio: ", media.length, media);
               };
 
 
-              if(DEBUG) console.log(`TokenAudio: useEffect ${count}:`, newAudio);
+              //if(DEBUG) console.log(`TokenAudio: useEffect ${count}:`, newAudio);
         }
       fetchMedia()
       },[media, length]);
@@ -487,6 +486,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
   const [counter, setCounter] = useState(0);
   const [showQRCode, setShowQRCode] = useState(false);
   const [qrCodeURL, setQRCodeURL] = useState("https://nftvirtuoso.io");
+  const [checkout, setCheckout] = useState("");
 
   function showQRCodeFunction() { setShowQRCode(true); }
   function hideQRCodeFunction() { setShowQRCode(false); }
@@ -502,7 +502,13 @@ const TokenItem = ({item, small=false, preview=false}) => {
               const timedContent = await getOnLoad(item.tokenId);
               const qrURL = "https://nftvirtuoso.io/token/"+  REACT_APP_CHAIN_ID  + "/" + REACT_APP_CONTRACT_ADDRESS + "/" + item.tokenId.toString();
               setQRCodeURL(qrURL);
-              if(DEBUG) console.log("Token window ", window.url, process.env.URL, window);
+              if(DEBUG) console.log("Token window ", window.location.pathname);
+              const path=window.location.pathname.split("/");
+              if( path[path.length-2] === "checkout")
+              {
+                  if( path[path.length-1] === "success") setCheckout("You've successfully bought this NFT token. Order confirmation will be sent by e-mail");
+                  if( path[path.length-1] === "failure") setCheckout("Your payment was cancelled. Please try again later");
+              }
               let newMedia = [];
               let newAudio = [];
 
@@ -838,6 +844,11 @@ function sleep(ms) {
 
   return (
     <div className="gx-algolia-content-inner" >
+    <div>
+    <Card title="Checkout result">
+    {checkout}
+    </Card>
+    </div>
     <TokenAudio
         media={audio}
         onLoadAudio={onLoadAudio}

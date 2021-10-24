@@ -1,5 +1,5 @@
-const STRIPE_KEY = process.env.STRIPE_TEST;
-const STRIPE_ENDPOINT_SECRET =  process.env.STRIPE_ENDPOINT_SECRET;
+const { STRIPE_KEY, STRIPE_ENDPOINT_SECRET, CHAIN_ID, CONTRACT_ADDRESS } = process.env;
+
 const stripe = require('stripe')(STRIPE_KEY);
 const URL = process.env.URL;
 const delayMS = 1000;
@@ -16,7 +16,7 @@ async function checkoutCompleted(body, headers)
         //if(DEBUG) console.log("checkoutCompleted ", body, headers, STRIPE_ENDPOINT_SECRET, STRIPE_KEY);
         const sig = headers['stripe-signature'];
         let endpointSecret = STRIPE_ENDPOINT_SECRET;
-        if( (process.env.CONTEXT != undefined) && (process.env.CONTEXT == 'dev') ) endpointSecret  = "whsec_z15BzPOir0nXvUcGGsavF2FuTr1diPQT";
+        if( (process.env.CONTEXT !== undefined) && (process.env.CONTEXT === 'dev') ) endpointSecret  = "whsec_z15BzPOir0nXvUcGGsavF2FuTr1diPQT";
         let event;
          if(DEBUG) console.log("checkoutCompleted start", endpointSecret, process.env.CONTEXT );
 
@@ -118,8 +118,8 @@ async function createCheckoutSession(body)
 {
   if(DEBUG) console.log("createCheckoutSession body", body);
 
-  const success_url = URL + "/checkout/success";
-	const cancel_url = URL + "/checkout/cancel";
+  const success_url = URL + "/token/" + CHAIN_ID + "/" + CONTRACT_ADDRESS + "/" + body.tokenId.toString() + "/checkout/success";
+	const cancel_url  = URL + "/token/" + CHAIN_ID + "/" + CONTRACT_ADDRESS + "/" + body.tokenId.toString() + "/checkout/cancel";
 
   if( body.type == "buy")
   {
