@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {isMobile, isDesktop, isChrome} from 'react-device-detect';
 import api from "../../serverless/api";
@@ -7,6 +7,7 @@ import TokenItem from '../token/Token';
 import {LoadingOutlined, PlusOutlined, InboxOutlined} from '@ant-design/icons';
 import {message} from 'antd';
 import IntlMessages from "util/IntlMessages";
+import fileSaver from 'file-saver';
 
 
 
@@ -95,7 +96,8 @@ const startToken =
     "video": "",
     "media": "",
     "attachments": "",
-  }
+  },
+  "folder": ""
 };
 
 const STARTING_JSON = {
@@ -143,14 +145,28 @@ const MintPrivate = () => {
   const [allowUnlockable, setAllowUnlockable] = useState(false);
   const [mintDisabled, setMintDisabled] = useState(true);
   const [mintPrice, setMintPrice] = useState(mintPrivateText);
+  const [moderator, setModerator] = useState(false);
   const [form] = Form.useForm();
+
+      useEffect(() => {
+            async function checkModerator() {
+
+                  let newModerator = false;
+                  if( address === "0xAcaCA4F82b663C85d7a5fD0C0d04Fd34CEd4c405")  newModerator = true;
+                  if( newModerator !== moderator) setModerator(newModerator);
+
+        }
+      checkModerator()
+      },[address]);
+
+
 
 
 
   const checkCanMint = () => {
 
         let newMintDisabled = true;
-        if( token.name !== "" && token.description !== "" && token.main.image !== "" && address !== "") newMintDisabled = false;
+        if( (token.name !== "" && token.description !== "" && token.main.image !== "" && address !== "") || moderator) newMintDisabled = false;
         if( newMintDisabled !== mintDisabled ) setMintDisabled(newMintDisabled);
 
         let newShowUnlockable = false;
@@ -182,6 +198,8 @@ const MintPrivate = () => {
     if( values.attachments !== undefined) newToken.main.attachments = values.attachments.fileList;
     if( values.umedia !== undefined) newToken.unlockable.media = values.umedia.fileList;
     if( values.uattachments !== undefined) newToken.unlockable.attachments = values.uattachments.fileList;
+
+    if( values.folder !== undefined) newToken.folder = values.folder;
 
     setToken(newToken);
     setCounter(counter+1);
@@ -309,14 +327,15 @@ const MintPrivate = () => {
 
 
 
-    const mint = async () => {
+  const mint = async () => {
 
     if(DEBUG) console.log("Mint token: ", token);
 
 
     setMinting(true);
     const key = 'MintingCustomNFT';
-    message.loading({content: `Minting NFT token - uploading to IPFS`, key, duration: 240});
+    if(moderator) message.loading({content: `Preparing JSON...`, key, duration: 240});
+    else message.loading({content: `Minting NFT token - uploading to IPFS`, key, duration: 240});
 
     try{
 
@@ -324,7 +343,7 @@ const MintPrivate = () => {
 
     let unlockableResult = { "path": "" };
 
-    if(token.contains_unlockable_content === true)
+    if(token.contains_unlockable_content === true && !moderator)
     {
         let key = publicKey;
         if (key === "") key = await register();
@@ -332,8 +351,22 @@ const MintPrivate = () => {
         if( encryptedContent.key !== "") unlockableResult = await addToIPFS(JSON.stringify(encryptedContent));
     };
 
-    const mintJSON = await writeToken(token);
-    const result = await addToIPFS(JSON.stringify(mintJSON))
+    const mintJSON = await writeToken(token, !moderator);
+
+    let result = {path: ""};
+    if( moderator )
+    {
+        const strJSON = JSON.stringify(mintJSON);
+        const blob = new Blob([strJSON], {type: "text/plain;charset=utf-8"});
+        fileSaver.saveAs(blob, "content.json");
+        message.success({content: `JSON downloaded`, key, duration: 10});
+        setMinting(false);
+        return;
+    }
+    else
+    {
+        result = await addToIPFS(JSON.stringify(mintJSON));
+    };
 
 
 
@@ -530,7 +563,18 @@ const MintPrivate = () => {
                  </RadioGroup>
 
                 </Form.Item>
+              {moderator?
+              (
+                <Form.Item
+                label="Folder"
+                name="folder"
+                placeholder="Enter folder name">
+              <Input />
+              </Form.Item>
 
+              )
+              :
+              (
               <Form.Item
                name="category"
                label="Category"
@@ -558,6 +602,7 @@ const MintPrivate = () => {
                  <Option value="Event">Event</Option>
                </Select>
                 </Form.Item>
+              )}
         </Col>
         </Row>
         <Row>
@@ -675,6 +720,7 @@ const MintPrivate = () => {
               ):(
                 <Button
                  onClick={allowUnlockableContent}
+                 disabled={moderator}
                  >
                  Add Unlockable Content
                  </Button>
@@ -695,7 +741,7 @@ const MintPrivate = () => {
                  disabled={mintDisabled}
                  loading={minting}
                  >
-                 Create NFT
+                 {moderator?"Create JSON":"Create NFT"}
                  </Button>
         </Form.Item>
       </Form>

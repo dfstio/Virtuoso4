@@ -6,7 +6,7 @@ const CryptoJS = require('crypto-js');
 const sigUtil = require("eth-sig-util");
 
 
-const DEBUG = false;
+const DEBUG = true;
 
 const ipfsClient = require('ipfs-http-client');
 
@@ -314,7 +314,7 @@ export async function encryptUnlockableToken(token, key)
 
 
 
-export async function writeToken(token)
+export async function writeToken(token, writeToIPFS = true)
 {
 
     let content = {
@@ -345,14 +345,16 @@ export async function writeToken(token)
 
            if( token.main.image !== "")
            {
-                      content.properties.image = await addFileHashToIPFS(token.main.image);
-                      content.image = content.properties.image.url;
+                      content.properties.image = await addFileHashToIPFS(token.main.image, writeToIPFS, token.folder);
+                      if( writeToIPFS ) content.image = content.properties.image.url;
+                      else content.image = content.properties.image.filename;
            };
 
            if( token.main.video !== "")
            {
-                      content.properties.animation = await addFileHashToIPFS(token.main.video);
-                      content.animation_url = content.properties.animation.url;
+                      content.properties.animation = await addFileHashToIPFS(token.main.video, writeToIPFS, token.folder);
+                      if( writeToIPFS ) content.animation_url = content.properties.animation.url;
+                      else content.animation_url = content.properties.animation.filename;
            };
 
 
@@ -363,7 +365,7 @@ export async function writeToken(token)
                    let filesJSON = [];
                    for(i = 0; i<length; i++)
                    {
-                        const newFile = await addFileHashToIPFS(token.main.media[i].originFileObj);
+                        const newFile = await addFileHashToIPFS(token.main.media[i].originFileObj, writeToIPFS, token.folder);
                         filesJSON.push(newFile);
                    };
                    content.media_count = length;
@@ -379,7 +381,7 @@ export async function writeToken(token)
                    let filesJSON = [];
                    for(i = 0; i<length; i++)
                    {
-                        const newFile = await addFileHashToIPFS(token.main.attachments[i].originFileObj);
+                        const newFile = await addFileHashToIPFS(token.main.attachments[i].originFileObj, writeToIPFS, token.folder);
                         filesJSON.push(newFile);
                    };
                    content.attachments_count = length;
@@ -393,8 +395,9 @@ export async function writeToken(token)
 
       } catch (error) {console.error("writeToken error:", error)}
 
-
       return content ;
+
+
 };
 
 
@@ -476,10 +479,10 @@ export async function decryptUnlockableToken(data, password)
 
 };
 
-export async function addFileHashToIPFS(file)
+export async function addFileHashToIPFS(file, writeToIPFS = true, folder = "")
 {
 
-     if(DEBUG) console.log("addFileHashToIPFS file: ", file);
+     if(DEBUG) console.log("addFileHashToIPFS file: ", file, writeToIPFS, folder);
 
      try {
      var binaryWA;
@@ -499,28 +502,33 @@ export async function addFileHashToIPFS(file)
         };
 
 
-      var reader = new FileReader();
-      reader.onload = async function(event) {
-          const binary = event.target.result;
-          binaryWA = CryptoJS.lib.WordArray.create(binary);
 
-          md5Hash = CryptoJS.MD5(binaryWA).toString();
-          sha256Hash = CryptoJS.SHA256(binaryWA).toString();
-          result.MD5_Hash = md5Hash;
-          result.SHA256_Hash = sha256Hash;
-          result.filename = file.name;
-          result.name=file.name.replace(/\.[^/.]+$/, "");
-          result.description="";
-          result.filetype = file.type;
-          result.lastModified = file.lastModified;
-          result.size = file.size;
-          //if(DEBUG) console.log("addFileHashToIPFS onload result: ", result);
-     };
+      const binary = await readFileAsync(file);
+      binaryWA = CryptoJS.lib.WordArray.create(binary);
 
-      await reader.readAsArrayBuffer(file);
-      const hash = await ipfs.add(file, {pin: true});
-      result.IPFShash = hash.path;
-      result.url = `https://ipfs.io/ipfs/${hash.path}`;
+      md5Hash = CryptoJS.MD5(binaryWA).toString();
+      sha256Hash = CryptoJS.SHA256(binaryWA).toString();
+      result.MD5_Hash = md5Hash;
+      result.SHA256_Hash = sha256Hash;
+      result.filename = (folder==="")? file.name : (folder + "/" + file.name);
+      result.name=file.name.replace(/\.[^/.]+$/, "");
+      result.description="";
+      result.filetype = file.type;
+      result.lastModified = file.lastModified;
+      result.size = file.size;
+
+
+      if( writeToIPFS )
+      {
+        const hash = await ipfs.add(file, {pin: true});
+        result.IPFShash = hash.path;
+        result.url = `https://ipfs.io/ipfs/${hash.path}`;
+      }
+      else
+      {
+            result.IPFShash = "";
+            result.url = "";
+      };
 
       if(DEBUG) console.log("addFileHashToIPFS result: ", result);
       return result;

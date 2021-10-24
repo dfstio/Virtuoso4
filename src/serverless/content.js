@@ -6,7 +6,7 @@ const {REACT_APP_CONTRACT_ADDRESS,  REACT_APP_CHAIN_ID, REACT_APP_RELAY_KEY} = p
 const DEBUG = true;
 
 
-export async function getOnLoad(tokenId)
+export async function getOnLoad(tokenId, signature, time)
 {
          //if (DEBUG) console.log('sellToken - received values of form: ', values);
     const address = await getAddress();
@@ -14,10 +14,29 @@ export async function getOnLoad(tokenId)
                tokenId: tokenId,
                type: "onload",
                address: address,
+               signature: signature,
+               time: time
                };
 
 		 const result = await api.content(tokenId, contentJSON);
 		 if (DEBUG) console.log('Content - result ', result);
+		 if( result.success === true && result.data.success === true) return result.data;
+		 else return {success: false};
+};
+
+export async function getContentMessage(tokenId)
+{
+         //if (DEBUG) console.log('sellToken - received values of form: ', values);
+    const address = await getAddress();
+    let contentJSON = {
+               tokenId: tokenId,
+               type: "signature",
+               address: address,
+               signature: ""
+               };
+
+		 const result = await api.content(tokenId, contentJSON);
+		 if (DEBUG) console.log('Signature - result ', result);
 		 if( result.success === true && result.data.success === true) return result.data;
 		 else return {success: false};
 };

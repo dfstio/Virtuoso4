@@ -5,7 +5,8 @@ import {updateAddress, updateVirtuosoBalance, updatePublicKey} from "../../appRe
 import {message, Button, Row, Col, Alert, Card, Progress, Skeleton} from "antd";
 import {LoadingOutlined, ExpandOutlined, CloseCircleFilled, CaretUpFilled, CaretDownFilled } from '@ant-design/icons';
 import IntlMessages from "util/IntlMessages";
-import { metamaskLogin, virtuosoRegisterPublicKey, getVirtuosoUnlockableContentKey, getVirtuosoPublicKey, metamaskDecrypt, waitForHash } from "../../blockchain/metamask";
+import { metamaskLogin, virtuosoRegisterPublicKey, getVirtuosoUnlockableContentKey,
+        getVirtuosoPublicKey, metamaskDecrypt, waitForHash, getSignature } from "../../blockchain/metamask";
 import  SellButton  from "../algolia/Sell";
 import ReactPlayer from 'react-player';
 import ReactJkMusicPlayer from 'react-jinke-music-player'
@@ -16,7 +17,7 @@ import "./style.css";
 import Markdown from 'markdown-to-jsx';
 import fileSaver from 'file-saver';
 import api from "../../serverless/api";
-import {getOnLoad} from "../../serverless/content"
+import {getOnLoad, getContentMessage} from "../../serverless/content"
 //import '../../styles/token/audio-player.less';
 
 const { getFromIPFS, decryptUnlockableToken, getEncryptedFileFromIPFS } = require("../../blockchain/ipfs");
@@ -475,12 +476,23 @@ const TokenItem = ({item, small=false, preview=false}) => {
   const dispatch = useDispatch();
   const [unlockable, setUnlockable] = useState(content);
   const [loadingUnlockable, setLoadingUnlockable] = useState(false);
+
+  const [streamingContent, setStreamingContent] = useState(false);
+  const [loadingStreaming, setLoadingStreaming] = useState(false);
+  const [streamingContentLoaded, setStreamingContentLoaded] = useState(false);
+  const [signature, setSignature] = useState("");
+  const [signatureTime, setSignatureTime] = useState("");
+
   const [showUnlockableButton, setShowUnlockableButton] = useState(false);
 
   const [media, setMedia] = useState([]);
   const [attachments, setAttachments] = useState([]);
   const [uattachments, setUAttachments] = useState([]);
+
   const [description, setDescription] = useState("");
+  const [name, setName] = useState("");
+  const [image, setImage] = useState("");
+
   const [audio, setAudio] = useState([]);
   const [uaudio, setUAudio] = useState([]);
   const [counter, setCounter] = useState(0);
@@ -499,7 +511,9 @@ const TokenItem = ({item, small=false, preview=false}) => {
             async function loadMedia() {
 
               setDescription(item.description);
-              const timedContent = await getOnLoad(item.tokenId);
+              setName(item.name);
+              setImage(item.image);
+              const timedContent = await getOnLoad(item.tokenId, signature, signatureTime);
               const qrURL = "https://nftvirtuoso.io/token/"+  REACT_APP_CHAIN_ID  + "/" + REACT_APP_CONTRACT_ADDRESS + "/" + item.tokenId.toString();
               setQRCodeURL(qrURL);
               if(DEBUG) console.log("Token window ", window.location.pathname);
@@ -551,10 +565,22 @@ const TokenItem = ({item, small=false, preview=false}) => {
               if( show !== showUnlockableButton) setShowUnlockableButton(show);
 
               if(DEBUG) console.log(`TokenItem content`, timedContent);
+
               let newDescription = item.description;
+              let newName = item.name;
+              let newImage = item.image;
+              let newAnimation = item.animation_url; // USE IT LATER!!!
+
               if( timedContent.success && timedContent.content !== undefined  )
               {
+                   if( timedContent.signed ) setStreamingContent(true);
+
                    if( timedContent.content.description !== undefined && timedContent.content.description !== "") newDescription = timedContent.content.description;
+                   if( timedContent.content.name !== undefined && timedContent.content.name !== "") newName = timedContent.content.name;
+                   if( timedContent.content.image !== undefined && timedContent.content.image !== "") newImage = timedContent.content.image;
+                   if( timedContent.content.animation_url !== undefined && timedContent.content.animation_url !== "") newAnimation = timedContent.content.animation_url;
+
+
                    count  = (timedContent.content.media_count === undefined)? 0 : timedContent.content.media_count;
 
                    if( count > 0)
@@ -580,14 +606,23 @@ const TokenItem = ({item, small=false, preview=false}) => {
               };
 
 
-              setDescription(newDescription);
+              if( description !== newDescription) setDescription(newDescription);
+              if( name !== newName) setName(newName);
+              if( image !== newImage) setImage(newImage);
               setMedia(newMedia);
               setAudio(newAudio);
               setAttachments(newAttachments);
+              if( loadingStreaming )
+              {
+                  setStreamingContentLoaded(true);
+                  setLoadingStreaming(false);
+                  message.success({content: `Secret content has loaded`,key: 'loadSecret', duration: 30});
+              };
+
 
         }
       loadMedia()
-      },[item, address]);
+      },[item, address, signature]);
 
 
   let buttonId = "sidebar.algolia.buy";
@@ -813,6 +848,44 @@ function sleep(ms) {
         } else message.error("Please connect with MetaMask")
   }
 
+
+
+  async function showStreamingContent()
+  {
+
+        if( address !== undefined && address !== "")
+        {
+              setLoadingStreaming(true);
+              message.loading({content: `Loading secret content`, key: 'loadSecret', duration: 6000});
+              if(DEBUG) console.log("showStreamingContent", address);
+              const result = await getContentMessage(tokenId);
+              if( result.success )
+              {
+                    setSignatureTime(result.time);
+                    message.loading({content: `Please sign request to open secret content`, key: 'loadSecret', duration: 6000});
+                    const signature  = await getSignature(result.message);
+                    if( signature !== "")
+                      setSignature(signature);
+                    else
+                    {
+                            setLoadingStreaming(false);
+                            message.error({content: `Error opening secret content`,key: 'loadSecret', duration: 30});
+                            return;
+                    };
+              }
+              else
+              {
+                  setLoadingStreaming(false);
+                  message.error({content: `Error opening secret content`,key: 'loadSecret', duration: 30});
+                  return;
+              }
+
+
+
+
+        } else message.error("Please connect with MetaMask")
+  }
+
  function onSelect(id)
   {
         if(DEBUG) console.log("onSelect current", currentMedia, "selected", id);
@@ -844,15 +917,16 @@ function sleep(ms) {
 
   return (
     <div className="gx-algolia-content-inner" >
+    {(checkout!=="")?(
     <div>
     <Card title="Checkout result">
     {checkout}
     </Card>
-    </div>
+    </div>):("")}
     <TokenAudio
         media={audio}
         onLoadAudio={onLoadAudio}
-        image={item.image}
+        image={image}
         key="tokenaudioplayer"
     />
 
@@ -891,7 +965,7 @@ function sleep(ms) {
             level='H'
             includeMargin={true}
             onClick={hideQRCodeFunction}
-            imageSettings={{src:`https://res.cloudinary.com/virtuoso/image/fetch/h_100,q_100,f_auto/${item.image}`,
+            imageSettings={{src:`https://res.cloudinary.com/virtuoso/image/fetch/h_100,q_100,f_auto/${image}`,
                             width: 100,
                             height: 100
                             }}
@@ -899,9 +973,9 @@ function sleep(ms) {
          ):(
           <img
           src={`https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/${
-            item.image
+            image
             }`}
-            alt={item.name}
+            alt={name}
             onClick={showQRCodeFunction}
             />
         )}
@@ -913,7 +987,7 @@ function sleep(ms) {
 
         <div className="gx-product-name">
         <span style={{"fontSize":22, "color":"#038fde"}}>
-          {item.name}
+          {name}
         </span>
         {canSell?(
         <span style={{ float: "right"}}>
@@ -1051,6 +1125,23 @@ function sleep(ms) {
      (
        ""
      )}
+     {(showUnlockableButton && small===false && preview === false && streamingContent === true && streamingContentLoaded === false)?
+    (
+        <div className="gx-product-image" style={{"marginTop": "25px"}} >
+                <Button
+                 onClick={showStreamingContent}
+                 loading={loadingStreaming}
+                 >
+                 Show Secret Content
+                 </Button>
+
+        </div>
+     )
+     :
+     (
+       ""
+     )}
+
       </div>
       </Col>
       </Row>

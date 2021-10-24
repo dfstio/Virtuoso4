@@ -1,7 +1,6 @@
-const { STRIPE_KEY, STRIPE_ENDPOINT_SECRET, CHAIN_ID, CONTRACT_ADDRESS } = process.env;
+const { URL,  STRIPE_KEY, STRIPE_ENDPOINT_SECRET, CHAIN_ID, CONTRACT_ADDRESS } = process.env;
 
 const stripe = require('stripe')(STRIPE_KEY);
-const URL = process.env.URL;
 const delayMS = 1000;
 
 
