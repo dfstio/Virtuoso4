@@ -105,7 +105,7 @@ const handleAccountsChanged = useCallback( async (accounts) => {
     const newAddress = convertAddress(accounts[0]);
     if ( newAddress!== address)
     {
-         if( isMobile ) window.location.reload(false);
+         if( isMobile ) window.location.reload(true);
          dispatch(updateAddress(newAddress));
          const newVirtuosoBalance = await getVirtuosoBalance(newAddress);
          const newPublicKey = await getVirtuosoPublicKey(newAddress);
