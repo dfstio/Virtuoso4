@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback } from "react";
+import {isMobile} from 'react-device-detect';
 import {useDispatch, useSelector} from "react-redux";
 import {message} from 'antd';
 import {updateAddress, updateVirtuosoBalance, updatePublicKey} from "../appRedux/actions";
@@ -101,9 +102,10 @@ const handleAccountsChanged = useCallback( async (accounts) => {
     dispatch(updateAddress(""));
   } else
   {
-    const newAddress = await getAddress(true);
+    const newAddress = convertAddress(accounts[0]);
     if ( newAddress!== address)
     {
+         if( isMobile ) window.location.reload(false);
          dispatch(updateAddress(newAddress));
          const newVirtuosoBalance = await getVirtuosoBalance(newAddress);
          const newPublicKey = await getVirtuosoPublicKey(newAddress);
