@@ -12,7 +12,7 @@ import { metamaskLogin,
          getAddress,
          initVirtuoso  } from "./metamask";
 
-
+const {URL} = process.env;
 const DEBUG = true;
 
 
@@ -105,7 +105,19 @@ const handleAccountsChanged = useCallback( async (accounts) => {
     const newAddress = convertAddress(accounts[0]);
     if ( newAddress!== address)
     {
-         if( isMobile ) window.location.reload(true);
+         if( isMobile )
+         { /*
+            let form = document.createElement('form');
+                         form.action = URL;
+                         form.method = 'POST';
+
+                         // the form must be in the document to submit it
+                         document.body.append(form);
+
+                         form.submit();
+             */
+              window.location.reload(true);
+         };
          dispatch(updateAddress(newAddress));
          const newVirtuosoBalance = await getVirtuosoBalance(newAddress);
          const newPublicKey = await getVirtuosoPublicKey(newAddress);
