@@ -512,7 +512,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
 
               setDescription(item.description);
               setName(item.name);
-              setImage(item.image);
+              setImage("https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/" + item.image);
               const timedContent = await getOnLoad(item.tokenId, signature, signatureTime);
               const qrURL = "https://nftvirtuoso.io/token/"+  REACT_APP_CHAIN_ID  + "/" + REACT_APP_CONTRACT_ADDRESS + "/" + item.tokenId.toString();
               setQRCodeURL(qrURL);
@@ -858,7 +858,7 @@ function sleep(ms) {
               setLoadingStreaming(true);
               message.loading({content: `Loading secret content`, key: 'loadSecret', duration: 6000});
               if(DEBUG) console.log("showStreamingContent", address);
-              const result = await getContentMessage(tokenId);
+              const result = await getContentMessage(item.tokenId);
               if( result.success )
               {
                     setSignatureTime(result.time);
@@ -965,16 +965,14 @@ function sleep(ms) {
             level='H'
             includeMargin={true}
             onClick={hideQRCodeFunction}
-            imageSettings={{src:`https://res.cloudinary.com/virtuoso/image/fetch/h_100,q_100,f_auto/${image}`,
+            imageSettings={{src:`https://res.cloudinary.com/virtuoso/image/fetch/h_100,q_100,f_auto/${item.image}`,
                             width: 100,
                             height: 100
                             }}
             />
          ):(
           <img
-          src={`https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/${
-            image
-            }`}
+          src={image}
             alt={name}
             onClick={showQRCodeFunction}
             />

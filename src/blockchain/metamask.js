@@ -330,7 +330,7 @@ export async function virtuosoRegisterPublicKey(address)
 
 };
 
-export function getSignature(message)
+export async function getSignature(message)
 {
       let signature = "";
 
@@ -340,7 +340,9 @@ export function getSignature(message)
           const signerAddress = await signer.getAddress();
           // Directly call the JSON RPC interface, since ethers does not support signTypedDataV4 yet
           // See https://github.com/ethers-io/ethers.js/issues/830
-          signature = await signer.send('eth_signTypedData_v4', [signerAddress, message]);
+          if(DEBUG) console.log("getSignature:", message, signerAddress);
+          signature = await window.ethereum.request({method: 'eth_signTypedData_v4', params: [signerAddress, message]});
+          //signer.send('eth_signTypedData_v4', [signerAddress, message]);
 
         } catch (error) { console.error("getSignature error", error );};
 
