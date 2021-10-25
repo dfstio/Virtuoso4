@@ -335,7 +335,7 @@ if(DEBUG) console.log("TokenAudio: ", media.length, media);
                     showDestroy= {false}
                     showDownload= {false}
                     showThemeSwitch= {false}
-                    showMiniModeCover= {false}
+                    showMiniModeCover= {true}
                     autoHiddenCover= {true}
                     responsive= {responsive}
                     autoPlay= {false}
@@ -926,7 +926,7 @@ function sleep(ms) {
     <TokenAudio
         media={audio}
         onLoadAudio={onLoadAudio}
-        image={image}
+        image={item.image}
         key="tokenaudioplayer"
     />
 
