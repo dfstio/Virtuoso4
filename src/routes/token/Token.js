@@ -614,9 +614,17 @@ const TokenItem = ({item, small=false, preview=false}) => {
               setAttachments(newAttachments);
               if( loadingStreaming )
               {
-                  setStreamingContentLoaded(true);
                   setLoadingStreaming(false);
-                  message.success({content: `Secret content has loaded`,key: 'loadSecret', duration: 30});
+
+                  if(timedContent.good_signature !== undefined && timedContent.good_signature === true )
+                  {
+                    setStreamingContentLoaded(true);
+                    message.success({content: `Secret content was loaded`,key: 'loadSecret', duration: 30});
+                  }
+                  else
+                  {
+                    message.error({content: `Secret content was not loaded - bad signature`,key: 'loadSecret', duration: 30});
+                  };
               };
 
 
