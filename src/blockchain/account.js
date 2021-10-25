@@ -101,7 +101,7 @@ const handleAccountsChanged = useCallback( async (accounts) => {
     dispatch(updateAddress(""));
   } else
   {
-    const newAddress = convertAddress(accounts[0]);
+    const newAddress = getAddress();
     if ( newAddress!== address)
     {
          dispatch(updateAddress(newAddress));
