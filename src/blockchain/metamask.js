@@ -73,15 +73,16 @@ export async function initAccount(handleEvents, handleChainChanged, handleAccoun
      return address;
 };
 
-export async function getAddress()
+export async function getAddress(force = false)
 {
     if(DEBUG) console.log("getAddress called");
      let address = "";
      if( (window.ethereum !== undefined) && (window.ethereum.isMetaMask === true))
      {
         const chainId =  await window.ethereum.request({method: 'eth_chainId'});
-        const account =  await window.ethereum.request({method: 'eth_accounts'});
-
+        let account = [];
+        if( force ) account =  await window.ethereum.request({method: 'eth_requestAccounts'});
+        else account =  await window.ethereum.request({method: 'eth_accounts'});
         if(DEBUG) console.log("getAddress account", account, chainId);
 
 
