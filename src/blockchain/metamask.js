@@ -250,14 +250,14 @@ export async function virtuosoMint(address, ipfsHash, unlockableIPFSHash, onEscr
                   if(DEBUG) console.log("virtuosoMint balance", balance/1e18);
                   if( balance < MINIMUM_BALANCE )
                   {
-                       txresult = await relayFunction('mintItem', [address, ipfsHash, unlockableIPFSHash, onEscrow]);
+                       txresult = await relayFunction('mintItem', [address, ipfsHash, unlockableIPFSHash, onEscrow, ""]);
                        await api.txSent(txresult.hash, network.chainId, txresult.transactionId);
                   }
                   else
                   {
                        const writeVirtuoso = signer && new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
                        if(DEBUG) console.log("virtuosoMint writeVirtuoso", writeVirtuoso);
-                       txresult = await writeVirtuoso.mintItem(address, ipfsHash, unlockableIPFSHash, onEscrow);
+                       txresult = await writeVirtuoso.mintItem(address, ipfsHash, unlockableIPFSHash, onEscrow, "");
                        await api.txSent(txresult.hash, network.chainId);
                   };
                        // Send tx to server
