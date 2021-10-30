@@ -572,15 +572,13 @@ async function loadTransaction(hash, chainId, transactionId)
       let tokenId = 0;
 
 
-       if(tx.to == virtuoso.address)
+       if(ethers.utils.getAddress(tx.to) === ethers.utils.getAddress(virtuoso.address))
        {
 
              const decodedInput = inter.parseTransaction({ data: tx.data, value: tx.value});
              name = decodedInput.name;
              args = decodedInput.args;
-      	};
-
-      	if(tx.to == forwarder.address)
+      	} else if(ethers.utils.getAddress(tx.to) === ethers.utils.getAddress(forwarder.address))
         {
              if( transactionId !== "")
              {
@@ -609,7 +607,7 @@ async function loadTransaction(hash, chainId, transactionId)
                       contract = to.toString();
 
               };
-        };
+        } else console.error("Wrong contract address", tx.to);
 
         if( name == "approveSale" ||
             name == "cancelSale" ||
