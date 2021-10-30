@@ -12,12 +12,15 @@ import {
 } from "react-instantsearch-dom";
 import IntlMessages from "../../util/IntlMessages";
 
+const {REACT_APP_CONTRACT_ADDRESS, REACT_APP_CHAIN_ID} = process.env;
+const chainId = Number(REACT_APP_CHAIN_ID);
+
 const {Sider} = Layout;
 const Sidebar = () => {
 
     const address = useSelector(({blockchain}) => blockchain.address);
 
-    const [filter, setFilter] = useState("uri.visibility:public OR onSale:true");
+    const [filter, setFilter] = useState(`(uri.visibility:public OR onSale:true) AND chainId:${chainId} AND contract:${REACT_APP_CONTRACT_ADDRESS}`);
     const [disabled, setDisabled] = useState(true);
     //const [visible, setVisible] = useState(false);
 
@@ -30,13 +33,13 @@ const Sidebar = () => {
              if( e.target.checked === true )
              {
 
-               const filterStr = "owner:" + address;
+               const filterStr = `chainId:${chainId} AND contract:${REACT_APP_CONTRACT_ADDRESS} AND owner:${address}`;
                setFilter(filterStr);
                //console.log("On change", e.target.checked, filterStr);
              }
              else
              {
-               const filterStr = "uri.visibility:public OR onSale:true OR owner:" + address;
+               const filterStr = `chainId:${chainId} AND contract:${REACT_APP_CONTRACT_ADDRESS} AND (uri.visibility:public OR onSale:true OR owner:${address})`;
                setFilter( filterStr );
 
             }
@@ -53,13 +56,13 @@ const Sidebar = () => {
       if (address == "")
       {
           setDisabled(true);
-          setFilter( "uri.visibility:public OR onSale:true");
+          setFilter( `(uri.visibility:public OR onSale:true) AND chainId:${chainId} AND contract:${REACT_APP_CONTRACT_ADDRESS}`);
 
       }
       else
       {
             setDisabled(false);
-            const filterStr = "uri.visibility:public OR onSale:true OR owner:" + address;
+            const filterStr = `chainId:${chainId} AND contract:${REACT_APP_CONTRACT_ADDRESS} AND (uri.visibility:public OR onSale:true OR owner:${address})`;
             setFilter( filterStr );
 
       }
