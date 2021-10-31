@@ -149,7 +149,7 @@ export async function isModerator(address)
                 moderator = await readVirtuoso.moderator( address);
            };
     };
-    //if(DEBUG) console.log("isModerator result", moderator);
+
     return moderator;
 
 };
