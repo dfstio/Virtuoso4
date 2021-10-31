@@ -58,9 +58,9 @@ const TokenMedia = ({media, onSelect, mediaId, pdfPages, counter1, onLoadMedia})
       const [pageNumber, setPageNumber] = useState(1);
       const [counter, setCounter] = useState(0);
       const [url, setURL] = useState("");
-      const [image, setImage] = useState(false);
-      const [video, setVideo] = useState(false);
-      const [pdf, setPDF] = useState(false);
+      const [type, setType] = useState("");
+      //const [video, setVideo] = useState(false);
+      //const [pdf, setPDF] = useState(false);
       const [filesize, setFileSize] = useState("");
       const [percent, setPercent] = useState(0);
 
@@ -106,6 +106,8 @@ const TokenMedia = ({media, onSelect, mediaId, pdfPages, counter1, onLoadMedia})
 
       useEffect(() => {
             async function fetchMedia() {
+                 setLoading(true);
+                 setURL("");
                  const size1 = formatBytes( media.size);
                  setFileSize(size1 + "  ");
 
@@ -113,11 +115,11 @@ const TokenMedia = ({media, onSelect, mediaId, pdfPages, counter1, onLoadMedia})
 
                  switch(type)
                  {
-                     case "image": setImage(true);  break;
-                     case "video": setVideo(true);  break;
+                     case "image": setType("image");  break;
+                     case "video": setType("video");  break;
 
                       case "application":
-                         if( media.filetype === "application/pdf" )  setPDF(true);  break;
+                         if( media.filetype === "application/pdf" )  setType("pdf");  break;
 
                  };
 
@@ -136,12 +138,12 @@ const TokenMedia = ({media, onSelect, mediaId, pdfPages, counter1, onLoadMedia})
 
         }
       fetchMedia()
-      },[media, counter1]);
+      },[media, counter1, mediaId]);
 
   return (
     <div className="gx-product-item gx-product-vertical" >
       <div className="gx-product-image">
-      {(loading === false && pdf)?
+      {(loading === false && type==="pdf")?
       (
             <div>
             <Document
@@ -162,8 +164,8 @@ const TokenMedia = ({media, onSelect, mediaId, pdfPages, counter1, onLoadMedia})
       :
       (
         <div>
-        {image?(<img src={url} alt={media.name}/>):("")}
-        {video?( <ReactPlayer
+        {(type==="image")?(<img src={url} alt={media.name}/>):("")}
+        {(type==="video")?( <ReactPlayer
                     url={url}
                     controls={true}
                     //light={true}
@@ -193,7 +195,7 @@ const TokenMedia = ({media, onSelect, mediaId, pdfPages, counter1, onLoadMedia})
           <span>{media.name}</span>
 
          <span style={{ float: "right"}}>
-            {(loading === false && pdf)?
+            {(loading === false && type==="pdf")?
             (
                 <span style={{"marginRight":"20px"}}>
                 Page {pageNumber} of {numPages} {"     "}
@@ -641,7 +643,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
                     message.error({content: `Secret content was not loaded - bad signature`,key: 'loadSecret', duration: 30});
                   };
               };
-
+              setCounter(counter+1);
 
         }
       loadMedia()
