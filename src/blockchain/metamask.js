@@ -138,6 +138,23 @@ export async function getVirtuosoBalance(address)
 
 };
 
+export async function isModerator(address)
+{
+    let moderator = false;
+    if( readVirtuoso  && (address !== ""))
+    {
+           const chainId =  await window.ethereum.request({method: 'eth_chainId'});
+           if(DEBUG) console.log("isModerator called on chain", chainId, "and address", address);
+
+           if(chainId === network.hexChainId)
+           {
+                moderator = await readVirtuoso.moderator( address);
+           };
+    };
+
+    return moderator;
+
+};
 
 
 export async function getVirtuosoPublicKey(address)

@@ -14,7 +14,8 @@ import fileSaver from 'file-saver';
 import {updateAddress, updateVirtuosoBalance, updatePublicKey} from "../../appRedux/actions";
 import { metamaskLogin,
          virtuosoRegisterPublicKey,
-         virtuosoMint
+         virtuosoMint,
+         isModerator
          } from "../../blockchain/metamask";
 
 const { addFileHashToIPFS, addToIPFS, encryptUnlockableToken, writeToken } = require("../../blockchain/ipfs");
@@ -151,8 +152,7 @@ const MintPrivate = () => {
       useEffect(() => {
             async function checkModerator() {
 
-                  let newModerator = false;
-                  if( address === "0xAcaCA4F82b663C85d7a5fD0C0d04Fd34CEd4c405")  newModerator = true;
+                  let newModerator = isModerator(address);
                   if( newModerator !== moderator) setModerator(newModerator);
 
         }
