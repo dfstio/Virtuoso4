@@ -122,7 +122,7 @@ const ProductItem = ({item}) => {
             </div>
           )
         }
-        <div className="gx-mt-4" style={{"white-space": "pre-wrap"}}>
+        <div className="gx-mt-4" style={{"whiteSpace": "pre-wrap"}}>
           <Highlight attribute="shortdescription" hit={item}/>
         </div>
       </div>
