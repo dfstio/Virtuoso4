@@ -109,16 +109,6 @@ const TokenMedia = ({media, onSelect, mediaId, pdfPages, counter1, onLoadMedia})
                  const size1 = formatBytes( media.size);
                  setFileSize(size1 + "  ");
 
-                 if( media.url === undefined && media.password !== undefined)
-                 {
-                       const newURL = await getEncryptedFileFromIPFS(media.IPFShash, media.password, media.filetype, loadPercent);
-                       setURL(newURL);
-                       onLoadMedia(mediaId, newURL);
-                       if(DEBUG) console.log("TokenMedia useEffect url: ", media.name, newURL);
-
-                 }
-                 else setURL(media.url);
-
                  const type = media.filetype.replace(/\/[^/.]+$/, "");
 
                  switch(type)
@@ -130,6 +120,16 @@ const TokenMedia = ({media, onSelect, mediaId, pdfPages, counter1, onLoadMedia})
                          if( media.filetype === "application/pdf" )  setPDF(true);  break;
 
                  };
+
+                 if( media.url === undefined && media.password !== undefined)
+                 {
+                       const newURL = await getEncryptedFileFromIPFS(media.IPFShash, media.password, media.filetype, loadPercent);
+                       setURL(newURL);
+                       onLoadMedia(mediaId, newURL);
+                       if(DEBUG) console.log("TokenMedia useEffect url: ", media.name, newURL);
+
+                 }
+                 else setURL(media.url);
                  setLoading(false);
                  //if(DEBUG) console.log("TokenMedia useEffect percent: ", percent);
 
