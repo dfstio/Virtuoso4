@@ -8,7 +8,7 @@ const MINIMUM_BALANCE  = 1e17; // to switch to relay
 
 const ethers = require("ethers");
 //const MetaMaskOnboarding = require('@metamask/onboarding');
-const VirtuosoNFTJSON = require("../contract/mumbai_VirtuosoNFT.json");
+const VirtuosoNFTJSON = require("../contract/NFTVirtuoso.json");
 
 const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
 //const URL = process.env.URL;

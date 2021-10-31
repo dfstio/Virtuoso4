@@ -2,7 +2,7 @@ const { getFromIPFS } = require("./ipfs");
 const ethers = require("ethers");
 const { Relayer } = require('defender-relay-client');
 const EthCrypto = require('eth-crypto');
-const VirtuosoNFTJSON = require("../contract/mumbai_VirtuosoNFT.json");
+const VirtuosoNFTJSON = require("../contract/NFTVirtuoso.json");
 const ForwarderAbi = require('../relay/IForwarder.json');
 
 const {RELAY_KEY, RELAY_SECRET, CHAIN_ID, CONTRACT_ADDRESS, REACT_APP_FORWARDER_ADDRESS, RPC_URL } = process.env;

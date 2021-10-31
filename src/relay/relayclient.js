@@ -4,7 +4,7 @@
 
 
 const ethers = require("ethers");
-const VirtuosoNFTJSON = require("../contract/mumbai_VirtuosoNFT.json");
+const VirtuosoNFTJSON = require("../contract/NFTVirtuoso.json");
 const ForwarderAbi  = require('./IForwarder.json');
 
 
