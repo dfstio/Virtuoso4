@@ -7,11 +7,9 @@ export const network = NETWORKS.mumbai; // IMPORTANT
 const MINIMUM_BALANCE  = 1e17; // to switch to relay
 
 const ethers = require("ethers");
-//const MetaMaskOnboarding = require('@metamask/onboarding');
 const VirtuosoNFTJSON = require("../contract/NFTVirtuoso.json");
 
 const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
-//const URL = process.env.URL;
 const rpcUrlMetaMask = process.env.REACT_APP_RPCURL_METAMASK;
 const {REACT_APP_CONTRACT_ADDRESS, REACT_APP_CHAIN_ID, REACT_APP_RPCURL_METAMASK} = process.env;
 
@@ -151,7 +149,7 @@ export async function isModerator(address)
                 moderator = await readVirtuoso.moderator( address);
            };
     };
-
+    if(DEBUG) console.log("isModerator result", moderator);
     return moderator;
 
 };

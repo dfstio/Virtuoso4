@@ -152,7 +152,8 @@ const MintPrivate = () => {
       useEffect(() => {
             async function checkModerator() {
 
-                  let newModerator = isModerator(address);
+                  const newModerator = await isModerator(address);
+                  if(DEBUG) console.log("MintPrivate moderator", newModerator, moderator);
                   if( newModerator !== moderator) setModerator(newModerator);
 
         }
