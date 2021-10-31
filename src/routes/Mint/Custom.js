@@ -153,7 +153,6 @@ const MintPrivate = () => {
             async function checkModerator() {
 
                   const newModerator = await isModerator(address);
-                  if(DEBUG) console.log("MintPrivate moderator", newModerator, moderator);
                   if( newModerator !== moderator) setModerator(newModerator);
 
         }

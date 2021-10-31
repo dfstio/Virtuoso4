@@ -1,20 +1,20 @@
 const { getFromIPFS } = require("./ipfs");
 const ethers = require("ethers");
 const { Relayer } = require('defender-relay-client');
-const EthCrypto = require('eth-crypto');
+//const EthCrypto = require('eth-crypto');
 const VirtuosoNFTJSON = require("../contract/NFTVirtuoso.json");
 const ForwarderAbi = require('../relay/IForwarder.json');
 
-const {RELAY_KEY, RELAY_SECRET, CHAIN_ID, CONTRACT_ADDRESS, REACT_APP_FORWARDER_ADDRESS, RPC_URL } = process.env;
-const address= "0xbc356b91e24e0f3809fd1E455fc974995eF124dF";
+const {RELAY_KEY, RELAY_SECRET, CHAIN_ID, CONTRACT_ADDRESS, REACT_APP_FORWARDER_ADDRESS, RPC_URL, URL } = process.env;
+//const address= "0xbc356b91e24e0f3809fd1E455fc974995eF124dF";
 
 const provider = new ethers.providers.StaticJsonRpcProvider(RPC_URL);
-const moderatorKey = process.env.MODERATOR_KEY;
+//const moderatorKey = process.env.MODERATOR_KEY;
 const REFRESH_INTERVAL_SEC = process.env.REFRESH_INTERVAL_SEC;
-const wallet = new ethers.Wallet(moderatorKey);
-const signer = wallet.connect(provider);
-const virtuoso = new ethers.Contract(CONTRACT_ADDRESS, VirtuosoNFTJSON, signer);
-const forwarder = new ethers.Contract(REACT_APP_FORWARDER_ADDRESS, ForwarderAbi, signer);
+//const wallet = new ethers.Wallet(moderatorKey);
+//const signer = wallet.connect(provider);
+const virtuoso = new ethers.Contract(CONTRACT_ADDRESS, VirtuosoNFTJSON, provider);
+const forwarder = new ethers.Contract(REACT_APP_FORWARDER_ADDRESS, ForwarderAbi, provider);
 const inter = new ethers.utils.Interface(VirtuosoNFTJSON);
 const interForwarder = new ethers.utils.Interface(ForwarderAbi);
 
@@ -24,10 +24,9 @@ const interForwarder = new ethers.utils.Interface(ForwarderAbi);
 const {  alWriteToken, alDeleteToken, alReadToken } = require("./algolia");
 const TOKEN_JSON = { isLoading: false, isTokenLoaded: false, isPriceLoaded: false, owner: "", name: "", onSale: false };
 const DEBUG = true;
-const URL = process.env.URL;
 const delayMS = 1000;
 
-
+/*
 async function testEthCrypto()
 {
 
@@ -59,6 +58,7 @@ async function testEthCrypto()
 
 
 };
+*/
 		//console.log("getTokenIndex ", tokenId);
 
 /*
@@ -566,19 +566,19 @@ async function loadTransaction(hash, chainId, transactionId)
                              " tx.to ", tx.to, "chainId", chainId, "transactionId", transactionId);
       let resultwait = await tx.wait(6);
       //if( DEBUG) console.log("txBackground loadTransaction with result ",  resultwait);
-      let contract = tx.to.toString();
+      let contract = ethers.utils.getAddress(tx.to);
       let name = "";
       let args = "";
       let tokenId = 0;
 
 
-       if(ethers.utils.getAddress(tx.to) === ethers.utils.getAddress(virtuoso.address))
+       if(contract === ethers.utils.getAddress(virtuoso.address))
        {
 
              const decodedInput = inter.parseTransaction({ data: tx.data, value: tx.value});
              name = decodedInput.name;
              args = decodedInput.args;
-      	} else if(ethers.utils.getAddress(tx.to) === ethers.utils.getAddress(forwarder.address))
+      	} else if(contract === ethers.utils.getAddress(forwarder.address))
         {
              if( transactionId !== "")
              {
@@ -620,7 +620,7 @@ async function loadTransaction(hash, chainId, transactionId)
           {
             tokenId = args.tokenId;
             if( DEBUG) console.log("txBackground loadToken ", tokenId.toString(), " on ", name); //, " with args ", args );
-            await loadAlgoliaToken(tokenId, contract, chainId)
+            await loadAlgoliaToken(tokenId, contract.toString(), chainId)
 
           };
 
@@ -715,10 +715,9 @@ module.exports = {
     RPC_URL,
     virtuoso,
     provider,
-    signer,
+//    signer,
     getBalance,
     getTokenPrice,
     txBackground,
-    initAlgoliaTokens,
-    testEthCrypto
+    initAlgoliaTokens
 }
