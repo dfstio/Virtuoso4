@@ -492,6 +492,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
   const [image, setImage] = useState("");
+  const [firstRun, setFirstRun] = useState(true);
 
   const [audio, setAudio] = useState([]);
   const [uaudio, setUAudio] = useState([]);
@@ -510,13 +511,18 @@ const TokenItem = ({item, small=false, preview=false}) => {
   useEffect(() => {
             async function loadMedia() {
 
-              setDescription(item.description);
-              setName(item.name);
-              setImage("https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/" + item.image);
-              const timedContent = await getOnLoad(item.tokenId, signature, signatureTime);
+              if( firstRun )
+              {
+                setName(item.name);
+                setDescription(item.description);
+                setImage("https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/" + item.image);
+                setFirstRun(false);
+              };
+
               const qrURL = "https://nftvirtuoso.io/token/"+  REACT_APP_CHAIN_ID  + "/" + REACT_APP_CONTRACT_ADDRESS + "/" + item.tokenId.toString();
               setQRCodeURL(qrURL);
-              if(DEBUG) console.log("Token window ", window.location.pathname);
+
+              //if(DEBUG) console.log("Token window ", window.location.pathname);
               const path=window.location.pathname.split("/");
               if( path[path.length-2] === "checkout")
               {
@@ -525,40 +531,49 @@ const TokenItem = ({item, small=false, preview=false}) => {
               }
               let newMedia = [];
               let newAudio = [];
-
-              //if( item.uri.properties.image!== "") { const id = newMedia.length; newMedia.push({data:item.uri.properties.image, id:id}); };
-              if( item.uri.properties.animation!== "")
-              {
-                   const type = item.uri.properties.animation.filetype.replace(/\/[^/.]+$/, "");
-                   if( type === 'video') { const id = newMedia.length; newMedia.push({data:item.uri.properties.animation, id:id});};
-                   if( type === 'audio') newAudio.push(item.uri.properties.animation);
-              };
-              let count  = (item.uri.media_count === undefined)? 0 : item.uri.media_count;
-
-              if( count > 0)
-              {
-                      let i;
-
-                      for(i = 0; i<count; i++)
-                      {
-                           const type = item.uri.media[i].filetype.replace(/\/[^/.]+$/, "");
-                           const id = newMedia.length;
-                           if( type === 'video') newMedia.push({data:item.uri.media[i], id:id});
-                           if( type === 'image') newMedia.push({data:item.uri.media[i], id:id});
-                           if( type === 'audio') newAudio.push(item.uri.media[i]);
-                           if( type === "application")
-                           {
-                               if( item.uri.media[i].filetype === "application/pdf" ) newMedia.push({data:item.uri.media[i], id:id});
-                           };
-                      };
-
-              };
-
-              if(DEBUG) console.log(`TokenItem media ${count}:`, newMedia, newAudio);
-
-              let acount  = (item.uri.attachments_count === undefined)? 0 : item.uri.attachments_count;
               let newAttachments = [];
-              if( acount > 0) newAttachments = item.uri.attachments;
+              const timedContent = await getOnLoad(item.tokenId, signature, signatureTime);
+
+              if( !timedContent.success ||  timedContent.content === undefined ||
+                  (timedContent.content.replace_media === undefined) || (timedContent.content.replace_media === false) )
+              {
+                     if( item.uri.properties.animation!== "")
+                     {
+                          const type = item.uri.properties.animation.filetype.replace(/\/[^/.]+$/, "");
+                          if( type === 'video') { const id = newMedia.length; newMedia.push({data:item.uri.properties.animation, id:id});};
+                          if( type === 'audio') newAudio.push(item.uri.properties.animation);
+                     };
+                     let count  = (item.uri.media_count === undefined)? 0 : item.uri.media_count;
+
+                     if( count > 0)
+                     {
+                             let i;
+
+                             for(i = 0; i<count; i++)
+                             {
+                                  const type = item.uri.media[i].filetype.replace(/\/[^/.]+$/, "");
+                                  const id = newMedia.length;
+                                  if( type === 'video') newMedia.push({data:item.uri.media[i], id:id});
+                                  if( type === 'image') newMedia.push({data:item.uri.media[i], id:id});
+                                  if( type === 'audio') newAudio.push(item.uri.media[i]);
+                                  if( type === "application")
+                                  {
+                                      if( item.uri.media[i].filetype === "application/pdf" ) newMedia.push({data:item.uri.media[i], id:id});
+                                  };
+                             };
+
+                     };
+
+                     if(DEBUG) console.log(`TokenItem media ${count}:`, newMedia, newAudio);
+              };
+
+              if( !timedContent.success ||  timedContent.content === undefined ||
+                  (timedContent.content.replace_attachments === undefined) || (timedContent.content.replace_attachments === false) )
+              {
+
+                    let acount  = (item.uri.attachments_count === undefined)? 0 : item.uri.attachments_count;
+                    if( acount > 0) newAttachments = item.uri.attachments;
+              };
 
               let show = false;
               if( address === item.owner) show = true;
@@ -581,7 +596,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
                    if( timedContent.content.animation_url !== undefined && timedContent.content.animation_url !== "") newAnimation = timedContent.content.animation_url;
 
 
-                   count  = (timedContent.content.media_count === undefined)? 0 : timedContent.content.media_count;
+                   let count  = (timedContent.content.media_count === undefined)? 0 : timedContent.content.media_count;
 
                    if( count > 0)
                    {
@@ -601,7 +616,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
                            };
                    };
 
-                   acount = (timedContent.content.attachments_count === undefined)? 0 : timedContent.content.attachments_count;
+                   let acount = (timedContent.content.attachments_count === undefined)? 0 : timedContent.content.attachments_count;
                    if( acount > 0) newAttachments = [...newAttachments, ...timedContent.content.attachments];
               };
 
@@ -619,7 +634,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
                   if(timedContent.good_signature !== undefined && timedContent.good_signature === true )
                   {
                     setStreamingContentLoaded(true);
-                    message.success({content: `Secret content was loaded`,key: 'loadSecret', duration: 30});
+                    message.success({content: `Secret content was loaded`,key: 'loadSecret', duration: 10});
                   }
                   else
                   {
