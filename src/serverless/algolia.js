@@ -4,7 +4,7 @@ const index = client.initIndex('virtuoso');
 
 async function alWriteToken(tokenId, token, contract, chainId)
 {
-        console.log("alWriteToken tokenId",  tokenId, "contract", contract, "chain",  chainId);
+        console.log("alWriteToken tokenId",  tokenId.toString(), "contract", contract, "chain",  chainId);
         const contractAddress = contract.toString();
         const lowerContractAddress = contractAddress.toLowerCase();
         const objectID = chainId.toString()+"."+lowerContractAddress+"."+tokenId.toString();
@@ -91,7 +91,7 @@ async function alReadToken(tokenId, contract, chainId)
 
     } catch (error) {
 
-       console.log(" alReadToken error: ", error);
+       console.log(" alReadToken error: ", error.message);
        return {error: error, success: false};
     }
 

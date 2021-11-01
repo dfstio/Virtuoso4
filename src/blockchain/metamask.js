@@ -267,6 +267,7 @@ export async function virtuosoMint(address, ipfsHash, unlockableIPFSHash, onEscr
                   if( balance < MINIMUM_BALANCE )
                   {
                        txresult = await relayFunction('mintItem', [address, ipfsHash, unlockableIPFSHash, onEscrow, ""]);
+                       if(DEBUG) console.log("virtuosoMint result", txresult);
                        await api.txSent(txresult.hash, network.chainId, txresult.transactionId);
                   }
                   else

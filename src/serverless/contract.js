@@ -587,7 +587,7 @@ async function loadTransaction(hash, chainId, transactionId)
                 //if( DEBUG) console.log("txBackground loadTransaction txRelay ",  txRelay);
                 let tx = await provider.getTransaction(txRelay.hash);
                 resultwait = await tx.wait(6);
-                //if( DEBUG) console.log("txBackground loadTransaction Relayer ",  tx, "result", resultwait.logs);
+                //if( DEBUG) console.log("txBackground loadTransaction Relayer ",  tx, "result", resultwait);
              };
              const decodedInput1 = interForwarder.parseTransaction({ data: tx.data, value: tx.value});
              const name1 = decodedInput1.name;
@@ -635,17 +635,19 @@ async function loadTransaction(hash, chainId, transactionId)
                   if( DEBUG) console.log("loadTransaction parseLog ", item);
                   if( item.name === 'OnMint') tokenId = item.args._id;
               });*/
-              const log = inter.parseLog(resultwait.logs[2]); // here you can add your own logic to find the correct log
-              //if( DEBUG) console.log("loadTransaction parseLog ", log);
-              if( log.name === 'OnMint')
+
+              if(resultwait.logs[2] !== undefined )
               {
-                 tokenId = log.args._id;
-              }
-              else console.error("Wrong log entry on Mint", log, "with hash", hash);
+                     const log = inter.parseLog(resultwait.logs[2]); // here you can add your own logic to find the correct log
+                     //if( DEBUG) console.log("loadTransaction parseLog ", log);
+                     if( log.name === 'OnMint')
+                     {
+                        tokenId = log.args._id;
+                        if( DEBUG) console.log("loadTransaction initTokens on ", name,  "tokenId", tokenId.toString()); //, " with args ", args );
+                        await initAlgoliaTokens(false);
 
-              if( DEBUG) console.log("loadTransaction initTokens on ", name,  "tokenId", tokenId.toString()); //, " with args ", args );
-              await initAlgoliaTokens(false);
-
+                     } else console.error("Wrong log entry on Mint", log, "with hash", hash);
+              } else console.error("Wrong log entry on Mint", resultwait.logs, "with hash", hash);
           };
 
 
