@@ -1,5 +1,6 @@
 import api from "../serverless/api";
 import {relayFunction} from "../relay/relayclient";
+import {message} from 'antd';
 // SET TARGET NETWORK
 const {NETWORKS} = require("../constants/Blockchain.js");
 
@@ -18,7 +19,7 @@ var provider = window.ethereum && new ethers.providers.Web3Provider(window.ether
 var signer = provider && provider.getSigner();
 var readVirtuoso = provider && new ethers.Contract(contractAddress, VirtuosoNFTJSON, provider);
 const DEBUG = true;
-
+const DEBUGM = true;
 
 
 
@@ -377,12 +378,15 @@ export async function metamaskLogin( openlink = true )
 {
      let address = "";
      if(DEBUG) console.log("metamaskLogin called: ", window.ethereum); //, " with virtuosoBalance", virtuosoBalance);
+     if(DEBUGM) message.info(`metamaskLogin called ${window.ethereum}`, 60);
+
      if( (window.ethereum !== undefined) && (window.ethereum.isMetaMask === true))
      {
         await initVirtuoso();
         const account =  await window.ethereum.request({method: 'eth_requestAccounts'});
         const chainId =  await window.ethereum.request({method: 'eth_chainId'});
         if(DEBUG) console.log("metamaskLogin account", account, chainId);
+        if(DEBUGM) message.info(`metamaskLogin account ${account} chain ${chainId}`, 60);
 
         //window.ethereum.on('chainChanged', handleChainChanged);
         //window.ethereum.on('accountsChanged', handleAccountsChanged);
@@ -395,6 +399,7 @@ export async function metamaskLogin( openlink = true )
               address = ethers.utils.getAddress(account[0]);
            } else
            {
+                if(DEBUGM) message.info(`metamaskLogin switchchain`, 60);
                 await switchChain();
                 const chainIdNew =  await window.ethereum.request({method: 'eth_chainId'});
 
@@ -466,11 +471,13 @@ async function switchChain()
                 } catch (addError)
                 {
                     console.error("switchChain: Adding chain failed:", addError);
+                    if(DEBUGM) message.error(`switchChain: Adding chain failed:`, 60);
                 }
              }
              else
              {
                 console.error("switchChain: Switching chain failed:", error);
+                 if(DEBUGM) message.error(`switchChain: Switching chain failed:`, 60);
              }
 
       }
