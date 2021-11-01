@@ -94,7 +94,7 @@ class SellButton extends React.Component {
     return (
         <span>
         {( (isChrome===true && isDesktop===true && this.props.address !== "") ||
-           (this.props.item.contains_unlockable_content === false && this.props.address !== "") )?(
+           (this.props.item.uri.contains_unlockable_content === false && this.props.address !== "") )?(
         <Button type="primary" onClick={this.showModal}>Sell</Button>):("")}
         <Modal title={title}
                visible={visible}
