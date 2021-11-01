@@ -112,7 +112,7 @@ async function apiInitBackground(force)
 async function initAlgoliaTokens(force)
 {
 	  const totalSupply = await virtuoso.totalSupply();
-	  const chainId = await signer.getChainId();
+	  //const chainId = await provider.getChainId();
     const contract = virtuoso.address.toString();
 
 	  if(DEBUG) console.log("initAlgoliaTokens totalSupply: ", totalSupply.toString(), "contract:", contract);
@@ -126,7 +126,7 @@ async function initAlgoliaTokens(force)
 
      if( force === false)
       {
-          const readToken = await alReadToken(tokenId, contract, chainId);
+          const readToken = await alReadToken(tokenId, contract, CHAIN_ID);
           if( readToken.success === true )
           {
             if(DEBUG) console.log("initAlgoliaTokens finished, totalSupply: ", totalSupply.toString());
@@ -136,14 +136,14 @@ async function initAlgoliaTokens(force)
       };
 
 
-       let result = await loadAlgoliaToken(tokenId, contract, chainId);
+       let result = await loadAlgoliaToken(tokenId, contract, CHAIN_ID);
        await sleep(1000);
 
        if( result == false)
        {
          console.error("initAlgoliaTokens Warning: token No ", tokenId, " is not loaded: ");
          await sleep(10000);
-         result = await loadAlgoliaToken(tokenId, contract, chainId);
+         result = await loadAlgoliaToken(tokenId, contract, CHAIN_ID);
          if( result == false)
          {
            console.error("initAlgoliaTokens Error: token No ", tokenId, " is not loaded: ");
