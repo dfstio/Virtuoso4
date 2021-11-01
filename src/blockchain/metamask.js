@@ -378,7 +378,7 @@ export async function metamaskLogin( openlink = true )
 {
      let address = "";
      if(DEBUG) console.log("metamaskLogin called: ", window.ethereum); //, " with virtuosoBalance", virtuosoBalance);
-     if(DEBUGM) message.info(`metamaskLogin called ${window.ethereum}`, 60);
+     //if(DEBUGM) message.info(`metamaskLogin called ${window.ethereum}`, 60);
 
      if( (window.ethereum !== undefined) && (window.ethereum.isMetaMask === true))
      {
@@ -386,7 +386,7 @@ export async function metamaskLogin( openlink = true )
         const account =  await window.ethereum.request({method: 'eth_requestAccounts'});
         const chainId =  await window.ethereum.request({method: 'eth_chainId'});
         if(DEBUG) console.log("metamaskLogin account", account, chainId);
-        if(DEBUGM) message.info(`metamaskLogin account ${account} chain ${chainId}`, 60);
+        //if(DEBUGM) message.info(`metamaskLogin account ${account} chain ${chainId}`, 60);
 
         //window.ethereum.on('chainChanged', handleChainChanged);
         //window.ethereum.on('accountsChanged', handleAccountsChanged);
@@ -447,10 +447,10 @@ async function switchChain()
 
      } catch (error) {
            // This error code indicates that the chain has not been added to MetaMask.
-           if (error.code === 4902)
-           {
-                console.error("switchChain: Switching chain failed with code 4902, trying to add chain", network.name);
-
+           //if (error.code === 4902)
+           //{
+           //     console.error("switchChain: Switching chain failed with code 4902, trying to add chain", network.name);
+              //if(DEBUGM) message.error(`switchChain: Switching chain failed: ${error.code} ${error.message}`, 60);
                 try {
                 await window.ethereum.request(
                 { method: "wallet_addEthereumChain",
@@ -471,14 +471,15 @@ async function switchChain()
                 } catch (addError)
                 {
                     console.error("switchChain: Adding chain failed:", addError);
-                    if(DEBUGM) message.error(`switchChain: Adding chain failed:`, 60);
+                    message.error(`Adding chain failed: ${addError.code} ${addError.message}`, 60);
                 }
+             /*
              }
              else
              {
                 console.error("switchChain: Switching chain failed:", error);
-                 if(DEBUGM) message.error(`switchChain: Switching chain failed:`, 60);
-             }
+                 if(DEBUGM) message.error(`switchChain: Switching chain failed: ${error.code} ${error.message}`, 60);
+             } */
 
       }
 };
