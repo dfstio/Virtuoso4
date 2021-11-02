@@ -122,11 +122,16 @@ class SellButton extends React.Component {
             },
           ]}
         >
-          <InputNumber min={5}/>
+          <InputNumber
+            defaultValue={100}
+            min={5}
+          />
         </Form.Item>
+        {/*}
         <Form.Item name="comment" label="Comment">
           <Input type="textarea" />
         </Form.Item>
+        */}
         <Form.Item name="currency" className="currency-sell-form_last-form-item">
           <Radio.Group>
             <Radio value="usd"  >USD</Radio>
