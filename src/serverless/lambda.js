@@ -57,6 +57,16 @@ async function  lambdaTransferToken(tokenId, checkout_metadata, email_address)
     return result.success;
 };
 
+
+
+async function  lambdaMintItem(checkout_metadata, email_address)
+{
+    const data = { checkout_metadata: checkout_metadata, email_address: email_address };
+    let result = await lambdaHub("mintItem", 0, data);
+    if(DEBUG)  console.log("lambdaMintItem result",  result );
+    return result.success;
+};
+
 async function  lambdaAddBalance( address, amount, description)
 {
     const data = { address: address, amount: amount, description: description };
@@ -204,6 +214,7 @@ module.exports = {
     lambdaGetOperator,
     lambdaSell,
     lambdaTransferToken,
+    lambdaMintItem,
     lambdaAddBalance,
     lambdaResend,
     encrypt,

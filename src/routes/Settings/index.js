@@ -39,7 +39,8 @@ const Settings = () => {
   {
 
             if(DEBUG) console.log("Add balance clicked", address);
-            if( address !== "") api.add( address, 1000, "Added $10 ");
+            //if( address !== "") api.add( address, 1000, "Added $10 ");
+            if( address !== "") api.hello({ address:address, type: "mint", tokenId: 1});
   }
 
   async function register()

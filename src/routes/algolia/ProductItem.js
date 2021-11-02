@@ -7,6 +7,7 @@ import {Button} from "antd";
 import IntlMessages from "util/IntlMessages";
 import { metamaskLogin } from "../../blockchain/metamask";
 import  SellButton  from "./Sell";
+import  BuyButton  from "./Buy";
 const DEBUG = true;
 
 const ProductItem = ({item}) => {
@@ -56,6 +57,8 @@ const ProductItem = ({item}) => {
         <span>
         {item.onSale?(
         <span style={{ float: "right"}}>
+        <BuyButton item={item} />
+        {/*
           <Button
           type="primary"
           onClick={ async () => {
@@ -95,6 +98,7 @@ const ProductItem = ({item}) => {
           >
             <IntlMessages id={buttonId}/>
             </Button>
+          */}
         </span>
         ):("")}
          </span>

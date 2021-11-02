@@ -5,7 +5,7 @@ const delayMS = 1000;
 
 
 const { addBalance, getTokenPrice } = require("./contract");
-const { lambdaTransferToken, lambdaAddBalance } = require("../serverless/lambda");
+const { lambdaTransferToken, lambdaAddBalance, lambdaMintItem } = require("../serverless/lambda");
 const DEBUG = true;
 
 
@@ -98,7 +98,7 @@ async function handleCheckoutCompleted(checkout )
        }
        else if( checkout.payment_status == 'unpaid' && checkout.metadata.type == 'buy' && paymentIntent.status == 'requires_capture')
        {
-         console.log("Checkout require capture");
+         console.log("Checkout require capture - buy");
          const id = parseInt(checkout.metadata.tokenId);
          const status = await lambdaTransferToken(id, checkout.metadata,  checkout.customer_details.email );
          if( status)
@@ -107,7 +107,19 @@ async function handleCheckoutCompleted(checkout )
            console.log("Payment captured: ", intent.status);
          } else console.error("Payment NOT captured - token transfer failed");
 
+       }
+       else if( checkout.payment_status == 'unpaid' && checkout.metadata.type == 'mintItem' && paymentIntent.status == 'requires_capture')
+       {
+         console.log("Checkout require capture - mintItem", checkout, "payment_intent", paymentIntent);
+         const status = true; //await lambdaMintItem(checkout.metadata,  checkout.customer_details.email );
+         if( status)
+         {
+           const intent = await stripe.paymentIntents.capture(paymentIntent.id);
+           console.log("Payment captured: ", intent.status);
+         } else console.error("Payment NOT captured - token minting failed");
+
        };
+
        console.log("Checkout status: ", checkout.payment_status);
 
 
@@ -117,8 +129,8 @@ async function createCheckoutSession(body)
 {
   if(DEBUG) console.log("createCheckoutSession body", body);
 
-  const success_url = URL + "/token/" + CHAIN_ID + "/" + CONTRACT_ADDRESS + "/" + body.tokenId.toString() + "/checkout/success";
-	const cancel_url  = URL + "/token/" + CHAIN_ID + "/" + CONTRACT_ADDRESS + "/" + body.tokenId.toString() + "/checkout/cancel";
+  let success_url = URL + "/token/" + CHAIN_ID + "/" + CONTRACT_ADDRESS + "/" + body.tokenId.toString() + "/checkout/success";
+	let cancel_url  = URL + "/token/" + CHAIN_ID + "/" + CONTRACT_ADDRESS + "/" + body.tokenId.toString() + "/checkout/cancel";
 
   if( body.type == "buy")
   {
@@ -199,9 +211,37 @@ async function createCheckoutSession(body)
 	   });
 
 	   return  session.url;
-	};
-
-
+	}
+	else if(body.type == "mintItem" )
+	{
+	    	 console.log("MintItem order received", body);
+	       const session = await stripe.checkout.sessions.create({
+                payment_method_types: [
+                'card',
+                ],
+                line_items: [
+                {
+                price_data: {
+                  currency: body.currency,
+                  product_data: {
+                  name: "Creation of the Virtuoso NFT token",
+                  description: body.name,
+                  images: ["https://nftvirtuoso.io/mintimages/public.jpg"]
+                  },
+                  unit_amount: body.price * 100,
+                },
+                  quantity: 1,
+                },
+                ],
+                mode: 'payment',
+                success_url: URL + "/marketplace",
+                cancel_url: URL + "/marketplace",
+                client_reference_id: body.address,
+                payment_intent_data: { capture_method: 'manual'},
+                metadata: body
+              });
+			 return  session.url;
+	  };
 
 }
 

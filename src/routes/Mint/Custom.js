@@ -15,7 +15,8 @@ import {updateAddress, updateVirtuosoBalance, updatePublicKey} from "../../appRe
 import { metamaskLogin,
          virtuosoRegisterPublicKey,
          virtuosoMint,
-         isModerator
+         isModerator,
+         getVirtuosoBalance
          } from "../../blockchain/metamask";
 
 const { addFileHashToIPFS, addToIPFS, encryptUnlockableToken, writeToken } = require("../../blockchain/ipfs");
@@ -128,7 +129,7 @@ const STARTING_JSON = {
 
 
 const DEBUG = true;
-const mintPrivateText = '$10 to create 10 Private NFT tokens. Private NFT token will not be visible on NFT Virtuoso marketplace except for sale';
+const mintPrivateText = '$10 to create one Private NFT token. Private NFT token will not be visible on NFT Virtuoso marketplace except for sale';
 const mintPublicText = '$100 to create one Public NFT token. Public NFT token will always be visible on NFT Virtuoso marketplace';
 
 const MintPrivate = () => {
@@ -353,6 +354,7 @@ const MintPrivate = () => {
 
     const mintJSON = await writeToken(token, !moderator);
 
+
     let result = {path: ""};
     if( moderator )
     {
@@ -373,13 +375,48 @@ const MintPrivate = () => {
     if(DEBUG) console.log("ipfsHash uploaded - uri: ", result.path); //, " unlockable: ", unlockableResult.path);
     if(DEBUG) console.log("Minting NFT with IPFS hashes ", result.path, unlockableResult.path )
 
-    message.loading({content: `Minting NFT token - sending transaction to blockchain with IPFS hash ${result.path}`, key, duration: 240});
+    const myaddress = await metamaskLogin(false);
+    const mybalance = await getVirtuosoBalance(myaddress);
 
-    //const txresult = await virtuosoMint(address, result.path, unlockableResult.path, false, "");
-    const txresult = await api.mint(address, result.path, unlockableResult.path, false, "");
-    if(DEBUG) console.log("Mint  tx: ", txresult );
-    if( txresult.success ) message.success({content: `NFT token minted successfully with transaction hash ${txresult.data.hash}`, key, duration: 10});
-    else message.error({content: `Error: NFT token was not minted`, key, duration: 10});
+    if( token.visibility === 'private' && mybalance >= 100)
+    {
+            message.loading({content: `Minting NFT token - sending transaction to blockchain with IPFS hash ${result.path}`, key, duration: 240});
+
+            const txresult = await virtuosoMint(myaddress, result.path, unlockableResult.path, false, "");
+            if(DEBUG) console.log("Mint  tx: ", txresult );
+            message.success({content: `NFT token minted successfully with transaction hash ${txresult.hash}`, key, duration: 10});
+
+    }
+    else
+    {
+           message.loading({content: `Minting NFT token - preparing checkout session`, key, duration: 240});
+
+           const data = {
+                                type:    "mintItem",
+                                tokenId: 0,
+                                price: (token.visibility === 'private')?10:100,
+                                currency: "usd",
+                                image: mintJSON.image,
+                                name: token.name,
+                                address:  (myaddress==="")?"generate":myaddress,
+                                newTokenURI: result.path,
+                                unlockableContentKey: unlockableResult.path,
+                                onEscrow: false,
+                                dynamicUri: ""
+                              };
+
+            let form = document.createElement('form');
+            form.action =  "/api/create-checkout-session?item=" + encodeURIComponent(JSON.stringify(data));
+            form.method = 'POST';
+            document.body.append(form);
+            form.submit();
+    };
+
+
+    //const txresult = await api.mint(address, result.path, unlockableResult.path, false, "");
+    //if(DEBUG) console.log("Mint  tx: ", txresult );
+    //if( txresult.success ) message.success({content: `NFT token minted successfully with transaction hash ${txresult.data.hash}`, key, duration: 10});
+    //else message.error({content: `Error: NFT token was not minted`, key, duration: 10});
 
     //message.success({content: `NFT token minted successfully with transaction hash ${txresult.hash}`, key, duration: 10});
     setToken(startToken);

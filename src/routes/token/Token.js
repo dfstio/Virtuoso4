@@ -8,6 +8,7 @@ import IntlMessages from "util/IntlMessages";
 import { metamaskLogin, virtuosoRegisterPublicKey, getVirtuosoUnlockableContentKey,
         getVirtuosoPublicKey, metamaskDecrypt, getSignature } from "../../blockchain/metamask";
 import  SellButton  from "../algolia/Sell";
+import  BuyButton  from "../algolia/Buy";
 import ReactPlayer from 'react-player';
 import ReactJkMusicPlayer from 'react-jinke-music-player'
 import 'react-jinke-music-player/assets/index.css'
@@ -1025,45 +1026,7 @@ function sleep(ms) {
         <span>
         {item.onSale?(
         <span style={{ float: "right"}}>
-          <Button
-          type="primary"
-          onClick={ async () => {
-                    if(DEBUG) console.log("Buy clicked");
-
-                    message.loading("Preparing checkout page", 10);
-                    const myaddress = await metamaskLogin(false);
-                    dispatch(updateAddress(myaddress));
-
-                    if( myaddress !== item.owner)
-                    {
-                           let buyTokenPath = "/api/create-checkout-session?type=buy&address=" + "generate" +
-                            "&tokenId=" + item.tokenId.toString() + "&saleID=" + item.saleID.toString();
-                           if( myaddress !== "")
-                           {
-                               buyTokenPath = "/api/create-checkout-session?type=buy&address=" + myaddress +
-                                 "&tokenId=" + item.tokenId.toString() + "&saleID=" + item.saleID.toString();;
-                           };
-
-                           let form = document.createElement('form');
-
-                           form.action = buyTokenPath;
-                           form.method = 'POST';
-
-                           // the form must be in the document to submit it
-                           document.body.append(form);
-
-                           form.submit();
-                    }
-                    else
-                    {
-                          message.error("You already own this NFT token", 10);
-                    };
-
-                }}
-
-          >
-            <IntlMessages id={buttonId}/>
-            </Button>
+          <BuyButton item={item} />
         </span>
         ):("")}
          </span>
