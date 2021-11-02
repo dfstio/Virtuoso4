@@ -19,12 +19,42 @@ const inter = new ethers.utils.Interface(VirtuosoNFTJSON);
 const interForwarder = new ethers.utils.Interface(ForwarderAbi);
 
 //const fetch = require('node-fetch');
-//const axios = require("axios");
+const axios = require("axios");
 //const {  dbWriteToken, dbReadToken } = require("./dynamodb");
 const {  alWriteToken, alDeleteToken, alReadToken } = require("./algolia");
 const TOKEN_JSON = { isLoading: false, isTokenLoaded: false, isPriceLoaded: false, owner: "", name: "", onSale: false };
 const DEBUG = true;
 const delayMS = 1000;
+
+async function txSent(hash, chainId, transactionId)
+{
+  const data = {"txData": hash, "chainId": chainId, "transactionId": transactionId};
+  if(DEBUG) console.log("contract txSent: ", data);
+  const response = await axios.post('https://nftvirtuoso.io/api/tx-background', data);
+  return response;
+};
+
+async function relayCall(functionName, args)
+{
+
+  if(DEBUG) console.log("Relay call:", functionName, args);
+
+  const virtuosoInterface = new ethers.utils.Interface(VirtuosoNFTJSON);
+  const data = virtuosoInterface.encodeFunctionData(functionName, args);
+  const relayer = new Relayer({apiKey: RELAY_KEY, apiSecret: RELAY_SECRET});
+   if(DEBUG) console.log("Relay call:", functionName, args);
+  const tx = await relayer.sendTransaction({
+    speed: 'fast',
+    to: CONTRACT_ADDRESS,
+    gasLimit: 1e6,
+    data: data,
+  });
+
+  if(DEBUG) console.log(`Sent relay-tx: ${tx.hash}`);
+  await txSent(tx.hash, CHAIN_ID, tx.transactionId);
+  return tx;
+};
+
 
 /*
 async function testEthCrypto()
@@ -714,12 +744,11 @@ async function transferToken(tokenId, address, credit)
 */
 
 module.exports = {
-    RPC_URL,
-    virtuoso,
-    provider,
-//    signer,
+//    virtuoso,
+//    provider,
     getBalance,
     getTokenPrice,
     txBackground,
-    initAlgoliaTokens
+    initAlgoliaTokens,
+    relayCall
 }

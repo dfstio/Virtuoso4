@@ -35,6 +35,17 @@ const content = (tokenId, contentData) => {
   })
 }
 
+const mint = (to, newTokenURI, unlockableContentKey, onEscrow, dynamicUri) => {
+  const data = { "data": {to, newTokenURI, unlockableContentKey, onEscrow, dynamicUri}, "key": REACT_APP_RELAY_KEY };
+  if(DEBUG) console.log("mint api: ", data);
+  return fetch('/api/mint', {
+    body: JSON.stringify(data),
+    method: 'POST'
+  }).then(response => {
+    return response.json()
+  })
+}
+
 const unlockable = (tokenId, address) => {
   const data = {"tokenId": tokenId, "address": address };
   if(DEBUG) console.log("unlockable api: ", data);
@@ -118,5 +129,6 @@ export default {
   encrypt: encrypt,
   add: add,
   unlockable: unlockable,
-  content: content
+  content: content,
+  mint: mint
 }

@@ -243,7 +243,7 @@ export async function waitForHash(txresult)
     else return false;
 };
 
-export async function virtuosoMint(address, ipfsHash, unlockableIPFSHash, onEscrow)
+export async function virtuosoMint(address, ipfsHash, unlockableIPFSHash, onEscrow, dynamicUri)
 {
     if(DEBUG) console.log("virtuosoMint called:", address, ipfsHash, unlockableIPFSHash, onEscrow);
 
@@ -268,7 +268,7 @@ export async function virtuosoMint(address, ipfsHash, unlockableIPFSHash, onEscr
                   if(DEBUG) console.log("virtuosoMint balance", balance/1e18);
                   if( balance < MINIMUM_BALANCE )
                   {
-                       txresult = await relayFunction('mintItem', [address, ipfsHash, unlockableIPFSHash, onEscrow, ""]);
+                       txresult = await relayFunction('mintItem', [address, ipfsHash, unlockableIPFSHash, onEscrow, dynamicUri]);
                        if(DEBUG) console.log("virtuosoMint result", txresult);
                        await api.txSent(txresult.hash, REACT_APP_CHAIN_ID, txresult.transactionId);
                   }
@@ -276,7 +276,7 @@ export async function virtuosoMint(address, ipfsHash, unlockableIPFSHash, onEscr
                   {
                        const writeVirtuoso = signer && new ethers.Contract(REACT_APP_CONTRACT_ADDRESS, VirtuosoNFTJSON, signer);
                        if(DEBUG) console.log("virtuosoMint writeVirtuoso", writeVirtuoso);
-                       txresult = await writeVirtuoso.mintItem(address, ipfsHash, unlockableIPFSHash, onEscrow, "");
+                       txresult = await writeVirtuoso.mintItem(address, ipfsHash, unlockableIPFSHash, onEscrow, dynamicUri);
                        await api.txSent(txresult.hash, REACT_APP_CHAIN_ID);
                   };
                        // Send tx to server

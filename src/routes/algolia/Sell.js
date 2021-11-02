@@ -123,7 +123,6 @@ class SellButton extends React.Component {
           ]}
         >
           <InputNumber
-            defaultValue={100}
             min={5}
           />
         </Form.Item>

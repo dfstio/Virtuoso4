@@ -374,10 +374,14 @@ const MintPrivate = () => {
     if(DEBUG) console.log("Minting NFT with IPFS hashes ", result.path, unlockableResult.path )
 
     message.loading({content: `Minting NFT token - sending transaction to blockchain with IPFS hash ${result.path}`, key, duration: 240});
-    //tx(writeContracts.VirtuosoNFT.mintItem(address, result.path, unlockableResult.path, false, {gasLimit:1000000}));
-    const txresult = await virtuosoMint(address, result.path, unlockableResult.path, false);
+
+    //const txresult = await virtuosoMint(address, result.path, unlockableResult.path, false, "");
+    const txresult = await api.mint(address, result.path, unlockableResult.path, false, "");
     if(DEBUG) console.log("Mint  tx: ", txresult );
-    message.success({content: `NFT token minted successfully with transaction hash ${txresult.hash}`, key, duration: 10});
+    if( txresult.success ) message.success({content: `NFT token minted successfully with transaction hash ${txresult.data.hash}`, key, duration: 10});
+    else message.error({content: `Error: NFT token was not minted`, key, duration: 10});
+
+    //message.success({content: `NFT token minted successfully with transaction hash ${txresult.hash}`, key, duration: 10});
     setToken(startToken);
     setMinting(false);
 
@@ -557,7 +561,7 @@ const MintPrivate = () => {
                ]}
 
               >
-                 <RadioGroup defaultValue="private">
+                 <RadioGroup >
                    <RadioButton value="private">Private</RadioButton>
                    <RadioButton value="public">Public</RadioButton>
                  </RadioGroup>
@@ -590,7 +594,7 @@ const MintPrivate = () => {
                <Select
                   placeholder="Please select a category"
                   onChange={categoryChange}
-                  defaultValue="Music"
+
                   >
                  <Option value="Music">Music</Option>
                  <Option value="Video">Video</Option>
