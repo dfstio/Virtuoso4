@@ -1,8 +1,7 @@
 import api from "./api";
 import { getAddress } from "../blockchain/metamask";
 
-//const EthCrypto = require('eth-crypto');
-const {REACT_APP_CONTRACT_ADDRESS,  REACT_APP_CHAIN_ID, REACT_APP_RELAY_KEY} = process.env;
+
 const DEBUG = true;
 
 

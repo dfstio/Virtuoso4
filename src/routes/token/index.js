@@ -1,10 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { useSelector} from "react-redux";
-import api from "../../serverless/api";
-import {Button} from "antd";
-
-import IntlMessages from "util/IntlMessages";
 import TokenItem from './Token';
 import algoliasearch from 'algoliasearch';
 const {REACT_APP_ALGOLIA_KEY, REACT_APP_ALGOLIA_PROJECT} = process.env;
@@ -14,7 +8,7 @@ const DEBUG = true;
 
 const Token = ({match}) => {
 
-  const address = useSelector(({blockchain}) => blockchain.address);
+
 
   const [item, setItem] = useState();
   const [messageText, setMessageText] = useState('Loading token');

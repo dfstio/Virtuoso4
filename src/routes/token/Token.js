@@ -1,12 +1,12 @@
 import React, {useState, useEffect } from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {isMobile, isDesktop, isChrome} from 'react-device-detect';
-import {updateAddress, updateVirtuosoBalance, updatePublicKey} from "../../appRedux/actions";
-import {message, Button, Row, Col, Alert, Card, Progress, Skeleton} from "antd";
-import {LoadingOutlined, ExpandOutlined, CloseCircleFilled, CaretUpFilled, CaretDownFilled } from '@ant-design/icons';
+import { isDesktop, isChrome} from 'react-device-detect';
+import {updateAddress, updatePublicKey} from "../../appRedux/actions";
+import {message, Button, Row, Col, Card, Progress} from "antd";
+import { ExpandOutlined, CaretUpFilled, CaretDownFilled } from '@ant-design/icons';
 import IntlMessages from "util/IntlMessages";
 import { metamaskLogin, virtuosoRegisterPublicKey, getVirtuosoUnlockableContentKey,
-        getVirtuosoPublicKey, metamaskDecrypt, waitForHash, getSignature } from "../../blockchain/metamask";
+        getVirtuosoPublicKey, metamaskDecrypt, getSignature } from "../../blockchain/metamask";
 import  SellButton  from "../algolia/Sell";
 import ReactPlayer from 'react-player';
 import ReactJkMusicPlayer from 'react-jinke-music-player'
@@ -120,6 +120,7 @@ const TokenMedia = ({media, onSelect, mediaId, pdfPages, counter1, onLoadMedia})
 
                       case "application":
                          if( media.filetype === "application/pdf" )  setType("pdf");  break;
+
 
                  };
 
@@ -736,8 +737,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
 
               let newMedia = media;
               let newAudio = audio;
-              const initial_count = newMedia.length;
-              let newCount = 0;
+
 
 
               if( count > 0)
@@ -748,13 +748,13 @@ const TokenItem = ({item, small=false, preview=false}) => {
                       {
                            const type = media1[i].filetype.replace(/\/[^/.]+$/, "");
                            const id = newMedia.length;
-                           if( type === 'video') { newMedia.push({data:media1[i], id:id}); newCount++; setMedia(newMedia);setCounter(counter+1);};
-                           if( type === 'image') { newMedia.push({data:media1[i], id:id}); newCount++; setMedia(newMedia);setCounter(counter+1);};
+                           if( type === 'video') { newMedia.push({data:media1[i], id:id}); setMedia(newMedia);setCounter(counter+1);};
+                           if( type === 'image') { newMedia.push({data:media1[i], id:id}); setMedia(newMedia);setCounter(counter+1);};
                            if( type === 'audio')  newAudio.push(media1[i]);
 
                            if( type === "application")
                            {
-                               if( media1[i].filetype === "application/pdf" ) { newMedia.push({data:media1[i], id:id}); newCount++; setMedia(newMedia);setCounter(counter+1);};
+                               if( media1[i].filetype === "application/pdf" ) { newMedia.push({data:media1[i], id:id}); setMedia(newMedia);setCounter(counter+1);};
                            };
                       };
 

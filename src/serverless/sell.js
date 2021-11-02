@@ -1,5 +1,5 @@
 import api from "./api";
-import { getFromIPFS, addToIPFS, getEncryptedFileFromIPFS } from "../blockchain/ipfs";
+import { getFromIPFS, addToIPFS} from "../blockchain/ipfs";
 import { getVirtuosoUnlockableContentKey, metamaskDecrypt, virtuosoSell } from "../blockchain/metamask";
 
 const EthCrypto = require('eth-crypto');
@@ -44,7 +44,7 @@ async function ethEncrypt(toEncrypt, publicKey)
       return EthCrypto.cipher.stringify(encrypted);
 };
 
-
+/*
 async function ethDecrypt(toDecrypt, privateKey)
 {
     const data = EthCrypto.cipher.parse(toDecrypt);
@@ -52,6 +52,7 @@ async function ethDecrypt(toDecrypt, privateKey)
     return decrypted;
 
 };
+*/
 
 const unlockable = async (sellData, operatorData, address) => {
          let newSellKey = "";
@@ -79,7 +80,7 @@ const unlockable = async (sellData, operatorData, address) => {
 		 return newSellKey ;
 };
 
-const blockchain = async (tokenId, ipfsHash, operatorAddress, unlockableIPFSHash, address) => {
+const  blockchain = async (tokenId, ipfsHash, operatorAddress, unlockableIPFSHash, address) => {
 	     const txresult = await virtuosoSell(tokenId, ipfsHash, operatorAddress, unlockableIPFSHash, address);
          if(DEBUG) console.log("sell.blockchain tx: ", txresult );
          return txresult.hash;
