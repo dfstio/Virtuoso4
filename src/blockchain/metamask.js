@@ -1,18 +1,20 @@
 import api from "../serverless/api";
 import {relayFunction} from "../relay/relayclient";
 import {message} from 'antd';
+import {isMobile} from 'react-device-detect';
 // SET TARGET NETWORK
-const {NETWORKS} = require("../constants/Blockchain.js");
+//const {NETWORKS} = require("../constants/Blockchain.js");
 
-export const network = NETWORKS.mumbai; // IMPORTANT
+//export const network = NETWORKS.mumbai; // IMPORTANT
 const MINIMUM_BALANCE  = 1e17; // to switch to relay
 
 const ethers = require("ethers");
 const VirtuosoNFTJSON = require("../contract/NFTVirtuoso.json");
 
-const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
-const rpcUrlMetaMask = process.env.REACT_APP_RPCURL_METAMASK;
-const {REACT_APP_CONTRACT_ADDRESS, REACT_APP_CHAIN_ID, REACT_APP_RPCURL_METAMASK} = process.env;
+//const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
+//const rpcUrlMetaMask = process.env.REACT_APP_RPCURL_METAMASK;
+const {REACT_APP_CONTRACT_ADDRESS, REACT_APP_CHAIN_ID, REACT_APP_RPCURL_METAMASK, REACT_APP_NETWORK_TOKEN,
+      REACT_APP_NETWORK_NAME, REACT_APP_NETWORK_HEXCHAIN_ID, REACT_APP_NETWORK_EXPLORER} = process.env;
 
 
 var provider = window.ethereum && new ethers.providers.Web3Provider(window.ethereum);
@@ -29,7 +31,7 @@ export async function initVirtuoso(handleEvents )
         const chainId =  await window.ethereum.request({method: 'eth_chainId'});
         if(DEBUG) console.log("initVirtuoso called on chain", chainId);
 
-         if(chainId === network.hexChainId)
+         if(chainId === REACT_APP_NETWORK_HEXCHAIN_ID)
          {
            provider = window.ethereum && new ethers.providers.Web3Provider(window.ethereum);
            readVirtuoso = provider && new ethers.Contract(contractAddress, VirtuosoNFTJSON, provider);
@@ -39,7 +41,7 @@ export async function initVirtuoso(handleEvents )
               //readVirtuoso.on({}, handleEvents);
               if(DEBUG) console.log("initVirtuoso success on chain", chainId);
            };
-         } else console.log("Cannot init virtuoso - wrong chain", chainId, ",needs to be", network.name, network.hexChainId );
+         } else console.log("Cannot init virtuoso - wrong chain", chainId, ",needs to be", REACT_APP_NETWORK_NAME, REACT_APP_NETWORK_HEXCHAIN_ID);
 
 };
 
@@ -59,7 +61,7 @@ export async function initAccount(handleEvents, handleChainChanged, handleAccoun
         if(DEBUG) console.log("initAccount account", account, chainId);
 
 
-         if((account.length > 0) && (chainId === network.hexChainId))
+         if((account.length > 0) && (chainId === REACT_APP_NETWORK_HEXCHAIN_ID))
          {
            address = ethers.utils.getAddress(account[0]);
 
@@ -85,7 +87,7 @@ export async function getAddress(force = false)
         if(DEBUG) console.log("getAddress account", account, chainId);
 
 
-         if((account.length > 0 ) && (chainId === network.hexChainId))
+         if((account.length > 0 ) && (chainId === REACT_APP_NETWORK_HEXCHAIN_ID))
          {
            address = ethers.utils.getAddress(account[0]);
 
@@ -127,7 +129,7 @@ export async function getVirtuosoBalance(address)
            const chainId =  await window.ethereum.request({method: 'eth_chainId'});
            if(DEBUG) console.log("getVirtuosoBalance called on chain", chainId, "and address", address);
 
-           if(chainId === network.hexChainId)
+           if(chainId === REACT_APP_NETWORK_HEXCHAIN_ID)
            {
                 virtuosoBalance = await readVirtuoso.virtuosoBalances( address);
            };
@@ -145,7 +147,7 @@ export async function isModerator(address)
            const chainId =  await window.ethereum.request({method: 'eth_chainId'});
            if(DEBUG) console.log("isModerator called on chain", chainId, "and address", address);
 
-           if(chainId === network.hexChainId)
+           if(chainId === REACT_APP_NETWORK_HEXCHAIN_ID)
            {
                 moderator = await readVirtuoso.moderator( address);
            };
@@ -164,7 +166,7 @@ export async function getVirtuosoPublicKey(address)
            const chainId =  await window.ethereum.request({method: 'eth_chainId'});
            if(DEBUG) console.log("getVirtuosoPublicKey called on chain", chainId, "and address", address);
 
-           if(chainId === network.hexChainId)
+           if(chainId === REACT_APP_NETWORK_HEXCHAIN_ID)
            {
                 publicKey = await readVirtuoso.publicKeys( address);
            };
@@ -182,7 +184,7 @@ export async function getVirtuosoUnlockableContentKey(tokenId, address)
            const chainId =  await window.ethereum.request({method: 'eth_chainId'});
            if(DEBUG) console.log("getVirtuosoUnlockableContentKey called on chain", chainId, "and address", address);
 
-           if(chainId === network.hexChainId)
+           if(chainId === REACT_APP_NETWORK_HEXCHAIN_ID)
            {
                 key = await readVirtuoso.getUnlockableContentKey(tokenId, address);
            };
@@ -205,7 +207,7 @@ export async function virtuosoSell(tokenId, ipfsHash, operatorAddress, unlockabl
            const signerAddress = await signer.getAddress();
            if(DEBUG) console.log("virtuosoSell called on chain", chainId, "and address", address, "signer address", signerAddress);
 
-           if((chainId === network.hexChainId) && (address == signerAddress))
+           if((chainId === REACT_APP_NETWORK_HEXCHAIN_ID) && (address == signerAddress))
            {
 
                   const balance = await window.ethereum.request(
@@ -216,14 +218,14 @@ export async function virtuosoSell(tokenId, ipfsHash, operatorAddress, unlockabl
                   if( balance < MINIMUM_BALANCE )
                   {
                        txresult = await relayFunction('sell', [tokenId, ipfsHash, operatorAddress, unlockableIPFSHash]);
-                       await api.txSent(txresult.hash, network.chainId, txresult.transactionId);
+                       await api.txSent(txresult.hash, REACT_APP_CHAIN_ID, txresult.transactionId);
                   }
                   else
                   {
                         const writeVirtuoso = signer && new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
                         if(DEBUG) console.log("virtuosoSell writeVirtuoso", writeVirtuoso);
                         txresult = await writeVirtuoso.sell(tokenId, ipfsHash, operatorAddress, unlockableIPFSHash);
-                        await api.txSent(txresult.hash, network.chainId);
+                        await api.txSent(txresult.hash, REACT_APP_CHAIN_ID);
                     };
 
 
@@ -256,7 +258,7 @@ export async function virtuosoMint(address, ipfsHash, unlockableIPFSHash, onEscr
            const signerAddress = await signer.getAddress();
            if(DEBUG) console.log("virtuosoMint called on chain", chainId, "and address", address, "signer address", signerAddress);
 
-           if((chainId === network.hexChainId) && (address == signerAddress))
+           if((chainId === REACT_APP_NETWORK_HEXCHAIN_ID) && (address == signerAddress))
            {
 
                   const balance = await window.ethereum.request(
@@ -268,14 +270,14 @@ export async function virtuosoMint(address, ipfsHash, unlockableIPFSHash, onEscr
                   {
                        txresult = await relayFunction('mintItem', [address, ipfsHash, unlockableIPFSHash, onEscrow, ""]);
                        if(DEBUG) console.log("virtuosoMint result", txresult);
-                       await api.txSent(txresult.hash, network.chainId, txresult.transactionId);
+                       await api.txSent(txresult.hash, REACT_APP_CHAIN_ID, txresult.transactionId);
                   }
                   else
                   {
                        const writeVirtuoso = signer && new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
                        if(DEBUG) console.log("virtuosoMint writeVirtuoso", writeVirtuoso);
                        txresult = await writeVirtuoso.mintItem(address, ipfsHash, unlockableIPFSHash, onEscrow, "");
-                       await api.txSent(txresult.hash, network.chainId);
+                       await api.txSent(txresult.hash, REACT_APP_CHAIN_ID);
                   };
                        // Send tx to server
 
@@ -305,7 +307,7 @@ export async function virtuosoRegisterPublicKey(address)
            const signerAddress = await signer.getAddress();
            if(DEBUG) console.log("virtuosoRegisterPublicKey called on chain", chainId, "and address", address, "signer address", signerAddress);
 
-           if((chainId === network.hexChainId) && (address == signerAddress))
+           if((chainId === REACT_APP_NETWORK_HEXCHAIN_ID) && (address == signerAddress))
            {
                 const writeVirtuoso = signer && new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
                 if(DEBUG) console.log("virtuosoRegisterPublicKey writeVirtuoso", writeVirtuoso);
@@ -325,13 +327,13 @@ export async function virtuosoRegisterPublicKey(address)
                        //const relayresult = await submitPublicKey(publicKey);
                        const relayresult = await relayFunction('setPublicKey', [publicKey]);
                        result.hash = relayresult.hash;
-                       await api.txSent(relayresult.hash, network.chainId, relayresult.transactionId);
+                       await api.txSent(relayresult.hash, REACT_APP_CHAIN_ID, relayresult.transactionId);
                   }
                   else
                   {
                         const txresult = await writeVirtuoso.setPublicKey(publicKey);
                         // Send tx to server
-                        await api.txSent(txresult.hash, network.chainId);
+                        await api.txSent(txresult.hash, REACT_APP_CHAIN_ID);
                         result.hash = txresult.hash;
                         //txresult.wait(6);
                   }
@@ -395,7 +397,7 @@ export async function metamaskLogin( openlink = true )
 
          if(account.length > 0)
          {
-           if( chainId === network.hexChainId)
+           if( chainId === REACT_APP_NETWORK_HEXCHAIN_ID)
            {
               address = ethers.utils.getAddress(account[0]);
            } else
@@ -405,7 +407,7 @@ export async function metamaskLogin( openlink = true )
                 const chainIdNew =  await window.ethereum.request({method: 'eth_chainId'});
 
                 if(DEBUG) console.log("metamaskLogin chain switched ", chainIdNew );
-                if( chainIdNew === network.hexChainId)
+                if( chainIdNew === REACT_APP_NETWORK_HEXCHAIN_ID)
                 {
                     initVirtuoso();
                     const account1 =  await window.ethereum.request({method: 'eth_requestAccounts'});
@@ -416,7 +418,7 @@ export async function metamaskLogin( openlink = true )
                     };
                 };
            };
-         };
+         } else { if( isMobile ) window.location.reload(true); };
 
      }
      else
@@ -436,14 +438,14 @@ export async function metamaskLogin( openlink = true )
 
 async function switchChain()
 {
-  const chainHex = "0x" + network.chainId.toString(16);
-  if(DEBUG) console.log("switchChain: Switching chain to ", chainHex);
+
+  if(DEBUG) console.log("switchChain: Switching chain to ", REACT_APP_NETWORK_HEXCHAIN_ID);
 
 
      try {
      await window.ethereum.request(
           { method: 'wallet_switchEthereumChain',
-            params: [{chainId: chainHex}],
+            params: [{chainId: REACT_APP_NETWORK_HEXCHAIN_ID}],
           });
 
      } catch (error) {
@@ -457,15 +459,15 @@ async function switchChain()
                 { method: "wallet_addEthereumChain",
                   params:
                       [{
-                          chainId: chainHex,// A 0x-prefixed hexadecimal string
-                          chainName: network.name,
+                          chainId: REACT_APP_NETWORK_HEXCHAIN_ID,// A 0x-prefixed hexadecimal string
+                          chainName: REACT_APP_NETWORK_NAME,
                           nativeCurrency: {
-                            name: network.token,
-                            symbol: network.token, // 2-6 characters long
+                            name: REACT_APP_NETWORK_TOKEN,
+                            symbol: REACT_APP_NETWORK_TOKEN, // 2-6 characters long
                             decimals: 18
                            },
-                           rpcUrls: [rpcUrlMetaMask],
-                           blockExplorerUrls: [network.blockExplorer]
+                           rpcUrls: [REACT_APP_RPCURL_METAMASK],
+                           blockExplorerUrls: [REACT_APP_NETWORK_EXPLORER]
                         }]
                   });
 
