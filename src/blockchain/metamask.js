@@ -11,7 +11,7 @@ const MINIMUM_BALANCE  = 1e17; // to switch to relay
 const ethers = require("ethers");
 const VirtuosoNFTJSON = require("../contract/NFTVirtuoso.json");
 
-//const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
+//const REACT_APP_CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;
 //const rpcUrlMetaMask = process.env.REACT_APP_RPCURL_METAMASK;
 const {REACT_APP_CONTRACT_ADDRESS, REACT_APP_CHAIN_ID, REACT_APP_RPCURL_METAMASK, REACT_APP_NETWORK_TOKEN,
       REACT_APP_NETWORK_NAME, REACT_APP_NETWORK_HEXCHAIN_ID, REACT_APP_NETWORK_EXPLORER} = process.env;
@@ -19,7 +19,7 @@ const {REACT_APP_CONTRACT_ADDRESS, REACT_APP_CHAIN_ID, REACT_APP_RPCURL_METAMASK
 
 var provider = window.ethereum && new ethers.providers.Web3Provider(window.ethereum);
 var signer = provider && provider.getSigner();
-var readVirtuoso = provider && new ethers.Contract(contractAddress, VirtuosoNFTJSON, provider);
+var readVirtuoso = provider && new ethers.Contract(REACT_APP_CONTRACT_ADDRESS, VirtuosoNFTJSON, provider);
 const DEBUG = true;
 const DEBUGM = true;
 
@@ -34,7 +34,7 @@ export async function initVirtuoso(handleEvents )
          if(chainId === REACT_APP_NETWORK_HEXCHAIN_ID)
          {
            provider = window.ethereum && new ethers.providers.Web3Provider(window.ethereum);
-           readVirtuoso = provider && new ethers.Contract(contractAddress, VirtuosoNFTJSON, provider);
+           readVirtuoso = provider && new ethers.Contract(REACT_APP_CONTRACT_ADDRESS, VirtuosoNFTJSON, provider);
            if( readVirtuoso )
            {
               readVirtuoso.removeAllListeners();
@@ -222,7 +222,7 @@ export async function virtuosoSell(tokenId, ipfsHash, operatorAddress, unlockabl
                   }
                   else
                   {
-                        const writeVirtuoso = signer && new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
+                        const writeVirtuoso = signer && new ethers.Contract(REACT_APP_CONTRACT_ADDRESS, VirtuosoNFTJSON, signer);
                         if(DEBUG) console.log("virtuosoSell writeVirtuoso", writeVirtuoso);
                         txresult = await writeVirtuoso.sell(tokenId, ipfsHash, operatorAddress, unlockableIPFSHash);
                         await api.txSent(txresult.hash, REACT_APP_CHAIN_ID);
@@ -274,7 +274,7 @@ export async function virtuosoMint(address, ipfsHash, unlockableIPFSHash, onEscr
                   }
                   else
                   {
-                       const writeVirtuoso = signer && new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
+                       const writeVirtuoso = signer && new ethers.Contract(REACT_APP_CONTRACT_ADDRESS, VirtuosoNFTJSON, signer);
                        if(DEBUG) console.log("virtuosoMint writeVirtuoso", writeVirtuoso);
                        txresult = await writeVirtuoso.mintItem(address, ipfsHash, unlockableIPFSHash, onEscrow, "");
                        await api.txSent(txresult.hash, REACT_APP_CHAIN_ID);
@@ -309,7 +309,7 @@ export async function virtuosoRegisterPublicKey(address)
 
            if((chainId === REACT_APP_NETWORK_HEXCHAIN_ID) && (address == signerAddress))
            {
-                const writeVirtuoso = signer && new ethers.Contract(contractAddress, VirtuosoNFTJSON, signer);
+                const writeVirtuoso = signer && new ethers.Contract(REACT_APP_CONTRACT_ADDRESS, VirtuosoNFTJSON, signer);
                 if(DEBUG) console.log("virtuosoRegisterPublicKey writeVirtuoso", writeVirtuoso);
 
                 //const askForPublicKey = await injectedProvider.send("eth_getEncryptionPublicKey", [ address ]);

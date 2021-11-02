@@ -5,14 +5,13 @@ import {message} from 'antd';
 import {updateAddress, updateVirtuosoBalance, updatePublicKey} from "../appRedux/actions";
 import { metamaskLogin,
          initAccount,
-         network,
          getVirtuosoBalance,
          getVirtuosoPublicKey,
          convertAddress,
          getAddress,
          initVirtuoso  } from "./metamask";
 
-const {URL} = process.env;
+const {URL, REACT_APP_NETWORK_EXPLORER, REACT_APP_NETWORK_HEXCHAIN_ID, REACT_APP_NETWORK_NAME } = process.env;
 const DEBUG = true;
 
 
@@ -68,11 +67,11 @@ const handleEvents = useCallback( async (params) => {
 
 const handleChainChanged = useCallback( async (_chainId) => {
   if(DEBUG) console.log("handleChainChanged ", _chainId );
-  if( _chainId !== network.hexChainId)
+  if( _chainId !== REACT_APP_NETWORK_HEXCHAIN_ID)
   {
       dispatch(updateAddress(""));
-      if(DEBUG) console.log("handleChainChanged wrong chain", _chainId, "needs to be", network.hexChainId );
-      message.info(`You're on the wrong chain ${_chainId}, needs to be on ${network.name} ${network.hexChainId}`, 10);
+      if(DEBUG) console.log("handleChainChanged wrong chain", _chainId, "needs to be", REACT_APP_NETWORK_HEXCHAIN_ID );
+      message.info(`You're on the wrong chain ${_chainId}, needs to be on ${REACT_APP_NETWORK_NAME} ${REACT_APP_NETWORK_HEXCHAIN_ID}`, 10);
   }
   else
   {
@@ -87,7 +86,7 @@ const handleChainChanged = useCallback( async (_chainId) => {
       dispatch(updateAddress(newAddress1));
       dispatch(updateVirtuosoBalance(newVirtuosoBalance));
       dispatch(updatePublicKey(newPublicKey));
-      message.info(`You've switched to the right chain ${network.name} ${_chainId} with address ${newAddress1}`, 10);
+      message.info(`You've switched to the right chain ${REACT_APP_NETWORK_NAME} ${_chainId} with address ${newAddress1}`, 10);
 
 
   };
@@ -158,7 +157,7 @@ const handleAccountsChanged = useCallback( async (accounts) => {
       topupText = "$" + vb.toFixed(2);
       topup = "/api/create-checkout-session?type=mint&address=" + address.toString();
     };
-    blockExplorer = network.blockExplorer + "address/" + address;
+    blockExplorer = REACT_APP_NETWORK_EXPLORER + "address/" + address;
     result =
     (
             <ul className="gx-login-list" >
