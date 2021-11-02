@@ -111,7 +111,7 @@ async function handleCheckoutCompleted(checkout )
        else if( checkout.payment_status == 'unpaid' && checkout.metadata.type == 'mintItem' && paymentIntent.status == 'requires_capture')
        {
          console.log("Checkout require capture - mintItem", checkout, "payment_intent", paymentIntent);
-         const status = true; //await lambdaMintItem(checkout.metadata,  checkout.customer_details.email );
+         const status = await lambdaMintItem(checkout.id, checkout.metadata,  checkout.customer_details.email );
          if( status)
          {
            const intent = await stripe.paymentIntents.capture(paymentIntent.id);
