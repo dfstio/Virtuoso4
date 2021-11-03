@@ -77,7 +77,7 @@ async function handleCheckoutCompleted(checkout )
 
     	 const paymentIntent = await stripe.paymentIntents.retrieve( checkout.payment_intent );
 
-       if(DEBUG) console.log("handleCheckoutCompleted: ", checkout.metadata.type, checkout.payment_status, paymentIntent.status, checkout);
+       if(DEBUG) console.log("handleCheckoutCompleted: ", checkout.metadata.type, checkout.payment_status, paymentIntent.status);
        if( checkout.payment_status == 'paid')
        {
 
@@ -110,7 +110,7 @@ async function handleCheckoutCompleted(checkout )
        }
        else if( checkout.payment_status == 'unpaid' && checkout.metadata.type == 'mintItem' && paymentIntent.status == 'requires_capture')
        {
-         console.log("Checkout require capture - mintItem", checkout, "payment_intent", paymentIntent);
+         //console.log("Checkout require capture - mintItem", checkout, "payment_intent", paymentIntent);
          const status = await lambdaMintItem(checkout.id, checkout.metadata,  checkout.customer_details.email );
          if( status)
          {
@@ -120,7 +120,7 @@ async function handleCheckoutCompleted(checkout )
 
        };
 
-       console.log("Checkout status: ", checkout.payment_status);
+       //console.log("Checkout status: ", checkout.payment_status);
 
 
 }
@@ -136,7 +136,7 @@ async function createCheckoutSession(body)
   {
 
 		const token =  await getTokenPrice(body.tokenId);
-		if(DEBUG) console.log("createCheckoutSession token:", token);
+		//if(DEBUG) console.log("createCheckoutSession token:", token);
 
 
 		if( token.onSale && (token.saleID === body.saleID))

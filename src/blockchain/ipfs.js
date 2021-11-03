@@ -4,6 +4,7 @@ const { REACT_APP_INFURA_IPFS_PROJECT_ID, REACT_APP_INFURA_IPFS_PROJECT_SECRET }
 const { BufferList } = require("bl");
 const CryptoJS = require('crypto-js');
 const sigUtil = require("eth-sig-util");
+const { v4: uuidv4 } = require('uuid');
 
 
 const DEBUG = true;
@@ -334,6 +335,8 @@ export async function writeToken(token, writeToIPFS = true)
       "license_id": "0",
       "license_url": "https://arweave.net/wCPAjAJISEeHgrFCkX1xKML1ZF9A4pKT0ij0SmrQyJU",
       "contains_unlockable_content": token.contains_unlockable_content,
+      "id": uuidv4(),
+      "time": Date.now(),
       "properties": token.uri.properties,
       "attributes": [
       {"trait_type": "Category", "value": token.category},

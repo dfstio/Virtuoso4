@@ -167,7 +167,7 @@ const MintPrivate = () => {
   const checkCanMint = () => {
 
         let newMintDisabled = true;
-        if( (token.name !== "" && token.description !== "" && token.main.image !== "" && address !== "") || moderator) newMintDisabled = false;
+        if( (token.name !== "" && token.description !== "" && token.main.image !== "" ) || moderator) newMintDisabled = false;
         if( newMintDisabled !== mintDisabled ) setMintDisabled(newMintDisabled);
 
         let newShowUnlockable = false;
@@ -393,6 +393,9 @@ const MintPrivate = () => {
 
            const data = {
                                 type:    "mintItem",
+                                minttype: "custom",
+                                id: mintJSON.id,
+                                time: mintJSON.time,
                                 tokenId: 0,
                                 price: (token.visibility === 'private')?10:100,
                                 currency: "usd",
