@@ -607,7 +607,7 @@ async function loadTransaction(hashOriginal, chainId, transactionId)
 
       };
 
-      let tx = await provider.getTransaction(hash);
+      tx = await provider.getTransaction(hash);
       try
       {
            resultwait = await txresult.wait(6);
