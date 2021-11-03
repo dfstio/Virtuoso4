@@ -613,7 +613,7 @@ async function loadTransaction(hashOriginal, chainId, transactionId)
            resultwait = await txresult.wait(6);
       } catch (error)
       {
-            console.error(`loadTransaction error waiting`, error, txresult);
+            console.error(`loadTransaction error waiting`, error, tx);
             if( transactionId !== "" )
             {
                   await sleep(70000);
