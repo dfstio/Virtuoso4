@@ -17,7 +17,7 @@ async function checkoutCompleted(body, headers)
         let endpointSecret = STRIPE_ENDPOINT_SECRET;
         if( (process.env.CONTEXT !== undefined) && (process.env.CONTEXT === 'dev') ) endpointSecret  = "whsec_z15BzPOir0nXvUcGGsavF2FuTr1diPQT";
         let event;
-         if(DEBUG) console.log("checkoutCompleted start", endpointSecret, process.env.CONTEXT );
+        // if(DEBUG) console.log("checkoutCompleted start", endpointSecret, process.env.CONTEXT );
 
          try {
            event = stripe.webhooks.constructEvent(body, sig, endpointSecret);
@@ -37,7 +37,7 @@ async function checkoutCompleted(body, headers)
              break;
            case 'checkout.session.completed':
              const checkout1 = event.data.object;
-             console.log(`Webhook: checkout.session.completed`);
+             //console.log(`Webhook: checkout.session.completed`);
              await handleCheckoutCompleted(checkout1);
              // Then define and call a method to handle the successful payment intent.
              // handlePaymentIntentSucceeded(paymentIntent);

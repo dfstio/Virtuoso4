@@ -591,8 +591,8 @@ async function txBackground(body)
 async function loadTransaction(hashOriginal, chainId, transactionId)
 {
 
-      if( DEBUG) console.log("txBackground loadTransaction with hash ", hash,
-                             " tx.to ", tx.to, "chainId", chainId, "transactionId", transactionId);
+      if( DEBUG) console.log("txBackground loadTransaction with hash ", hashOriginal,
+                              "chainId", chainId, "transactionId", transactionId);
       let relayer;
       let tx;
       let txRelay;
@@ -644,15 +644,15 @@ async function loadTransaction(hashOriginal, chainId, transactionId)
              const name1 = decodedInput1.name;
              const args1 = decodedInput1.args;
 
-             if( DEBUG) console.log("relay txBackground loadTransaction confirmations: ", resultwait.confirmations, " function: ", name1); //, " args: ", args1 );
+             //if( DEBUG) console.log("relay txBackground loadTransaction confirmations: ", resultwait.confirmations, " function: ", name1); //, " args: ", args1 );
               if( name1 === 'execute')
               {
                       const from = decodedInput1.args.forwardRequest.from;
                       const to = decodedInput1.args.forwardRequest.to;
                       //const data = decodedInput1.args.forwardRequest.data;
-                      if( DEBUG) console.log("relay txBackground execute from", from, "to", to );
+                      //if( DEBUG) console.log("relay txBackground execute from", from, "to", to );
                       const decodedInput2 = inter.parseTransaction({ data: decodedInput1.args.forwardRequest.data, value: decodedInput1.args.forwardRequest.value});
-                      if( DEBUG) console.log("relay txBackground virtuoso: ", decodedInput2.name, "from", from, "to", to );
+                      if( DEBUG) console.log("txBackground gasless: ", decodedInput2.name, "from", from, "to", to );
                       name = decodedInput2.name;
                       args = decodedInput2.args;
                       contract = to.toString();
