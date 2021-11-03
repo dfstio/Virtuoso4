@@ -588,13 +588,43 @@ async function txBackground(body)
 
 }
 
-async function loadTransaction(hash, chainId, transactionId)
+async function loadTransaction(hashOriginal, chainId, transactionId)
 {
 
-      let tx = await provider.getTransaction(hash);
       if( DEBUG) console.log("txBackground loadTransaction with hash ", hash,
                              " tx.to ", tx.to, "chainId", chainId, "transactionId", transactionId);
-      let resultwait = await tx.wait(6);
+      let relayer;
+      let tx;
+      let txRelay;
+      let hash = hashOriginal;
+      let resultwait;
+      if( transactionId !== "")
+      {
+
+          relayer = new Relayer({apiKey: RELAY_KEY, apiSecret: RELAY_SECRET});
+          txRelay = await relayer.query(transactionId);
+          hash = txRelay.hash;
+
+      };
+
+      let tx = await provider.getTransaction(hash);
+      try
+      {
+           resultwait = await txresult.wait(6);
+      } catch (error)
+      {
+            console.error(`loadTransaction error waiting`, error, txresult);
+            if( transactionId !== "" )
+            {
+                  await sleep(70000);
+                  txRelay = await relayer.query(transactionId);
+                  hash = txRelay.hash;
+                  tx = await provider.getTransaction(hash);
+                  resultwait = await tx.wait(6);
+            } else return;
+      };
+
+
       //if( DEBUG) console.log("txBackground loadTransaction with result ",  resultwait);
       let contract = ethers.utils.getAddress(tx.to);
       let name = "";
@@ -610,15 +640,6 @@ async function loadTransaction(hash, chainId, transactionId)
              args = decodedInput.args;
       	} else if(contract === ethers.utils.getAddress(forwarder.address))
         {
-             if( transactionId !== "")
-             {
-                const relayer = new Relayer({apiKey: RELAY_KEY, apiSecret: RELAY_SECRET});
-                txRelay = await relayer.query(transactionId);
-                //if( DEBUG) console.log("txBackground loadTransaction txRelay ",  txRelay);
-                let tx = await provider.getTransaction(txRelay.hash);
-                resultwait = await tx.wait(6);
-                //if( DEBUG) console.log("txBackground loadTransaction Relayer ",  tx, "result", resultwait);
-             };
              const decodedInput1 = interForwarder.parseTransaction({ data: tx.data, value: tx.value});
              const name1 = decodedInput1.name;
              const args1 = decodedInput1.args;
