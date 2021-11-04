@@ -164,6 +164,12 @@ const SellButton = ({item, address}) => {
           />
         </Form.Item>
         <Form.Item
+            name="commission"
+            >
+        NFT Virtuoso commission on this sale is 30%
+        </Form.Item>
+
+        <Form.Item
             name="sendEmail"
             valuePropName="checked"
             >
