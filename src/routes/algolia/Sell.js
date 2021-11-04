@@ -1,115 +1,148 @@
-import React from "react";
-import {Button, Card, Modal, Form, InputNumber, Input, Radio} from "antd";
+import React, {useState, useEffect} from "react";
+import {Button, Card, Modal, Form, InputNumber, Input, Radio, Checkbox} from "antd";
 import {isMobile, isDesktop, isChrome} from 'react-device-detect';
 import sell from "../../serverless/sell"
+import {footerAgreement, footerAgreementLink } from "../../util/config";
 
 const DEBUG = true;
 
+const SellButton = ({item, address}) => {
+//class SellButton extends React.Component {
 
-class SellButton extends React.Component {
-  state = {
+  const [modalText, setModalText] = useState('Please specify the price of the NFT token');
+  const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [title, setTitle] = useState("Sell NFT token " + item.vrtTokenId);
+  const [price, setPrice] = useState(100);
+  const [currency, setCurrency] = useState('usd');
+  const [sendEmail, setSendEmail] = useState(false);
+  const [email, setEmail] = useState('');
+  const [comment, setComment] = useState('');
+  const [accepted, setAccepted] = useState(false);
+  const [okDisabled, setOkDisabled] = useState(true);
+
+/*  state = {
     ModalText: 'Sell text',
     visible: false,
     confirmLoading: false,
     title: "Sell NFT token " + this.props.item.vrtTokenId,
     price: 0,
     currency: 'usd',
-    comment: ""
+    comment: "",
+    email: "",
+    agreementAccepted: false,
+    sendEmail: false,
+    okDisabled: true
   };
-  showModal = () => {
-    this.setState({
-      visible: true,
-      ModalText: 'Please specify the price of the NFT token',
-      confirmLoading: false,
-    });
+*/
+  const showModal = () => {
+
+      setVisible(true);
+      setModalText('Please specify the price of the NFT token');
+      setAccepted(false);
+      setLoading(false);
+
   };
-  handleOk = async () => {
-    this.setState({
-      ModalText: 'Preparing sale information...',
-      confirmLoading: true,
-    });
-    if(DEBUG) console.log("Sell", this.props.item.tokenId, this.state);
+
+      useEffect(() => {
+            async function checkOkButton() {
+
+                const newOkDisabled = (Number(price)>= 5 && accepted===true)? false : true;
+                if( newOkDisabled !== okDisabled) setOkDisabled(newOkDisabled);
+                if( DEBUG) console.log("Sell okDisabled: ", newOkDisabled, price, accepted);
+
+        }
+      checkOkButton()
+      },[price, accepted]);
+
+
+  const handleOk = async () => {
+
+      setModalText('Preparing sale information...');
+      setLoading( true );
+
+    if(DEBUG) console.log("Sell token", item.tokenId.toString());
+
     const sellData =
     {
-        tokenId: this.props.item.tokenId,
-        price: this.state.price,
-        currency: this.state.currency,
-        comment: this.state.comment,
-        item: this.props.item
-
+        tokenId: item.tokenId,
+        price: price,
+        currency: currency,
+        comment: comment,
+        item: item,
+        email: email,
+        address: address
     };
+
     const operatorData = await sell.operator(sellData);
     if(DEBUG) console.log("Sell 2", operatorData);
-    this.setState({
-      ModalText: 'Writing sale information to IPFS...',
-      confirmLoading: true,
-    });
+
+    setModalText('Writing sale information to IPFS...');
+
     const ipfsHash = await sell.ipfs(operatorData.sale);
 
     let unlockableIPFSHash = "";
-    if( this.props.item.contains_unlockable_content === true)
+    if( item.contains_unlockable_content === true)
     {
-             this.setState({
-           ModalText: 'Writing unlockable information to IPFS...',
-           confirmLoading: true,
-         });
-
-          unlockableIPFSHash = await sell.unlockable(sellData, operatorData, this.props.address);
-
+          setModalText( 'Writing unlockable information to IPFS...');
+          unlockableIPFSHash = await sell.unlockable(sellData, operatorData, address);
     };
 
-    this.setState({
-      ModalText: 'Writing sale information to blockchain..',
-      confirmLoading: true,
-    });
+    setModalText( 'Writing sale information to blockchain..');
+
     const txresult = await sell.blockchain(
             sellData.tokenId,
             ipfsHash,
             operatorData.sale.operator,
             unlockableIPFSHash,
-            this.props.address );
+            address );
     if(DEBUG) console.log("Sell txresult", txresult);
-    this.setState({
-        visible: false,
-      });
-  };
-  handleCancel = () => {
-    this.setState({
-      visible: false,
-    });
+    setVisible(false);
   };
 
-  handleChange = (values) => {
+  const handleCancel = () => {
+      setVisible(false);
+  };
+
+  const handleChange = (values) => {
   if(DEBUG) console.log("Sell values changed", values);
-      if( values.price !== undefined) this.setState({price: values.price});
-      if( values.comment !== undefined) this.setState({comment: values.comment});
-      if( values.currency !== undefined) this.setState({currency: values.currency});
+      if( values.price !== undefined) setPrice(values.price);
+      if( values.comment !== undefined) setComment(values.comment);
+      if( values.currency !== undefined) setCurrency( values.currency );
+      if( values.accepted !== undefined) setAccepted( values.accepted);
+      if( values.email !== undefined) setEmail( values.email);
+      if( values.sendEmail!== undefined) setSendEmail( values.sendEmail);
   };
 
-
-
-  render() {
-    const {visible, confirmLoading, ModalText, title} = this.state;
 
     return (
         <span>
-        {( (isChrome===true && isDesktop===true && this.props.address !== "") ||
-           (this.props.item.uri.contains_unlockable_content === false && this.props.address !== "") )?(
-        <Button type="primary" onClick={this.showModal}>Sell</Button>):("")}
+        {( (isChrome===true && isDesktop===true && address !== "") ||
+           (item.uri.contains_unlockable_content === false && address !== "") )?(
+        <Button type="primary"
+            onClick={showModal}
+          >
+          Sell
+          </Button>):("")}
         <Modal title={title}
                visible={visible}
-               onOk={this.handleOk}
-               confirmLoading={confirmLoading}
-               onCancel={this.handleCancel}
+               onOk={handleOk}
+               confirmLoading={loading}
+               onCancel={handleCancel}
+               footer={null}
         >
-          <p>{ModalText}</p>
+          <p>{modalText}</p>
         <Form
-        onValuesChange = {this.handleChange}
+        onValuesChange = {handleChange}
         layout="vertical"
         name="form_in_modal"
         initialValues={{
-          currency: 'usd',
+          currency: "usd",
           comment: "",
+          price: 100,
+          sendEmail:false,
+          email:"",
+          accepted:false
         }}
       >
         <Form.Item
@@ -117,21 +150,46 @@ class SellButton extends React.Component {
           label="Price"
           rules={[
             {
+              validator: (_, value) =>
+              (value > 10) ? Promise.resolve() : Promise.reject(new Error('Price should be higher than 10')),
+            },
+
+            {
               required: true,
               message: 'Please input the the price of NFT token!',
             },
           ]}
         >
           <InputNumber
-            min={5}
+            min={10}
           />
+        </Form.Item>
+        <Form.Item
+            name="sendEmail"
+            valuePropName="checked"
+            >
+        <Checkbox>Notify me by e-mail when token will be sold</Checkbox>
+        </Form.Item>
+
+        <Form.Item
+            name="email"
+            label="E-mail"
+            hidden={!sendEmail}
+            rules={[
+          {
+            type: 'email',
+            message: 'The input is not valid E-mail',
+          }
+        ]}
+            >
+          <Input type="textarea"  />
         </Form.Item>
         {/*}
         <Form.Item name="comment" label="Comment">
           <Input type="textarea" />
         </Form.Item>
         */}
-        <Form.Item name="currency" className="currency-sell-form_last-form-item">
+        <Form.Item name="currency" >
           <Radio.Group>
             <Radio value="usd"  >USD</Radio>
             <Radio value="eur"  >EUR</Radio>
@@ -139,12 +197,38 @@ class SellButton extends React.Component {
             <Radio value="rub"  >RUB</Radio>
           </Radio.Group>
         </Form.Item>
+        <Form.Item
+            name="accepted"
+            valuePropName="checked"
+            rules={[
+          {
+            validator: (_, value) =>
+              value ? Promise.resolve() : Promise.reject(new Error('You should accept agreement')),
+          },
+        ]}
+            >
+        <Checkbox>I accept <a href={footerAgreementLink} target="_blank">NFT Virtuoso {footerAgreement}</a></Checkbox>
+        </Form.Item>
+        <Form.Item
+            name="sell"
+            className="currency-sell-form_last-form-item"
+            >
+
+            <Button
+                 type="primary"
+                 onClick={handleOk}
+                 disabled={okDisabled}
+                 loading={loading}
+            >
+            Sell
+            </Button>
+          </Form.Item>
+
       </Form>
 
         </Modal>
        </span>
     );
-  }
 };
 
 export default SellButton;

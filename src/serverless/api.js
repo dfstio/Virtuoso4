@@ -13,8 +13,8 @@ const add = (address, amount, description) => {
   })
 }
 
-const sell = (tokenId, sellData) => {
-  const data = {"tokenId": tokenId, "data": sellData };
+const sell = (tokenId, sellData, email, address) => {
+  const data = {"tokenId": tokenId, "data": sellData, "email": email, "address": address };
   if(DEBUG) console.log("sell api: ", data);
   return fetch('/api/sell', {
     body: JSON.stringify(data),
