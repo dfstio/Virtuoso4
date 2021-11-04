@@ -143,7 +143,9 @@ async function createCheckoutSession(body)
 		{
 			  const currency = token.sale.currency;
 			  const amount = token.sale.price * 100;
-			  const image = token.uri.image;
+			  const image = `https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/${
+            token.uri.image
+            }`;
 
 
 			  // CHANGE THIS CALCULATION !!!

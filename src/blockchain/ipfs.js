@@ -7,7 +7,7 @@ const sigUtil = require("eth-sig-util");
 const { v4: uuidv4 } = require('uuid');
 
 
-const DEBUG = true;
+const DEBUG = false;
 
 const ipfsClient = require('ipfs-http-client');
 

@@ -150,7 +150,7 @@ const SellButton = ({item, address}) => {
           rules={[
             {
               validator: (_, value) =>
-              (value > 10) ? Promise.resolve() : Promise.reject(new Error('Price should be higher than 10')),
+              ((value > 10 && currency!=="rub") || value > 700) ? Promise.resolve() : Promise.reject(new Error(`Price should be higher than ${currency==='rub'?'700 RUB':'10 '+currency.toUpperCase()}`)),
             },
 
             {
@@ -167,7 +167,7 @@ const SellButton = ({item, address}) => {
             name="sendEmail"
             valuePropName="checked"
             >
-        <Checkbox>Notify me by e-mail when token will be sold</Checkbox>
+        <Checkbox>Notify me by e-mail when NFT token will be sold</Checkbox>
         </Form.Item>
 
         <Form.Item

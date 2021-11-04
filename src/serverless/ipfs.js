@@ -5,7 +5,7 @@ const { BufferList } = require("bl");
 //const fs = require('fs');
 const CryptoJS = require('crypto-js');
 
-const DEBUG = true;
+const DEBUG = false;
 
 const ipfsClient = require('ipfs-http-client');
 
@@ -114,25 +114,7 @@ async function getEncryptedFileFromIPFS(hash, key, filetype)
 };
 
 
-// helper function to "Get" from IPFS
-// you usually go content.toString() after this...
-/*
-export async function getFromIPFS( hashToGet)
-{
-  if (DEBUG) console.log("getFromIPFS hash:", hashToGet);
-  for await (const file of ipfs.get(hashToGet))
-  {
-    if (DEBUG) console.log("getFromIPFS file:", file);
-    if (!file.content) continue;
-    const content = new BufferList();
-    for await (const chunk of file.content) {
-      content.append(chunk);
-    }
-    if (DEBUG) console.log("getFromIPFS Content: ", content);
-    return content;
-  }
-};
-*/
+
 async function getFromIPFS( hashToGet)
 {
     if (DEBUG) console.log("getFromIPFS hash:", hashToGet);
