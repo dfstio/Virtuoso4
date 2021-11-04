@@ -4,7 +4,7 @@ export const UPDATE_BALANCE = 'UPDATE_BALANCE';
 export const UPDATE_VRT1 = 'UPDATE_VRT1';
 export const UPDATE_PUBLIC_KEY = 'UPDATE_PUBLIC_KEY';
 
-
+/*
 
 export const NETWORKS = {
   mainnet: {
@@ -41,3 +41,4 @@ export const NETWORKS = {
 };
 
 
+*/

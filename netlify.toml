@@ -18,6 +18,11 @@
   to = '/mintimages/:splat'
   status = 200
 
+[[redirects]]
+  from = '/agreement/*'
+  to = '/agreement/:splat'
+  status = 200
+
  [[redirects]]
   from = '/*'
   to = '/index.html'
