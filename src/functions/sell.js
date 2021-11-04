@@ -14,7 +14,7 @@ exports.handler = async(event, context) => {
     try {
         // parse form data
         const body = JSON.parse(event.body);
-	      const result = await lambdaSell(body.tokenId, body.data);
+	      const result = await lambdaSell(body.tokenId, body.data, body.email, body.address);
         //console.log("Sell API: ", result);
 
         // return success

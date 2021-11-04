@@ -39,7 +39,6 @@ const SellButton = ({item, address}) => {
 
       setVisible(true);
       setModalText('Please specify the price of the NFT token');
-      setAccepted(false);
       setLoading(false);
 
   };

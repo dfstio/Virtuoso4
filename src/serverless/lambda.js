@@ -35,9 +35,12 @@ async function lambdaResend(tokenId, saleID)
     return result;
 };
 
-async function lambdaSell(tokenId, data)
+async function lambdaSell(tokenId, data, email, address)
 {
-    let result = await lambdaHub("sell", tokenId, data);
+    let ldata = data;
+    ldata.email = email;
+    ldata.address = address;
+    let result = await lambdaHub("sell", tokenId, ldata);
     //if(DEBUG)  console.log("lambdaSell result",  result );
     return result;
 };

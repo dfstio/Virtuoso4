@@ -22,9 +22,11 @@ const operator = async (values) => {
          sellJSON.price = values.price;
          sellJSON.currency = values.currency;
          sellJSON.comment = values.comment;
+
+
          if( values.item.uri.contains_unlockable_content !== undefined ) sellJSON.contains_unlockable_content = values.item.uri.contains_unlockable_content;
 
-		 const operator = await api.sell(values.tokenId, sellJSON);
+		 const operator = await api.sell(values.tokenId, sellJSON, values.email, values.address);
 		 if (DEBUG) console.log('sellToken - operator: ', operator);
 		 sellJSON.operator = operator.data.operator.address;
 		 sellJSON.time = operator.data.operator.time;
