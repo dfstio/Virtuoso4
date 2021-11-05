@@ -2,9 +2,9 @@ import React from "react";
 import {Card} from "antd";
 
 const {Meta} = Card;
-const defaultImage = "https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png";
 
-const MintMenuItem = ({ title, creator, description, price, link, image = defaultImage}) => {
+
+const MintMenuItem = ({ title, creator, description, price, link, image }) => {
   return (
     <div className="gx-product-item gx-product-vertical" >
     <Card

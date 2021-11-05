@@ -26,11 +26,11 @@ const Mint = () => {
             <MintMenuItem
               creator="Бабочки"
               title="Выведи сам новый вид бабочек"
-              link="/mint/batterflies"
+              link="/mint/butterflies"
               price="От 500 руб до 45000 руб"
               description="Выведи новый вид бабочек - выбери свой из 50 тысяч вариантов. Соедини вместе виды: Акрея, Аматузида, Брассолида, Волнянка, Данаида, Морфо, Нимфалида, Серпокрылка, Урания"
               image="https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/https://ipfs.io/ipfs/QmRXNX7PuJgPktMdzDgQoqcrULJnDNfq7QqH14NrxMCXQ8"
-              key="Batterflies Mint"
+              key="Butterflies Mint"
 
               />
         </Col>
