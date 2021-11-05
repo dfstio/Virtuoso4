@@ -35,7 +35,7 @@ const MediaList = ({hits, onSelect, pdfPages, counter, onLoadMedia}) => {
     <div id="medialistid">
       <Row key={"medialistrow"}>
         {hits.map(media => (
-          <Col xl={12} lg={12} md={12} sm={24} xs={24} key={"medialistcol"+media.id}>
+          <Col xl={24} lg={24} md={24} sm={24} xs={24} key={"medialistcol"+media.id}>
             <TokenMedia
               media={media.data}
               onSelect={onSelect}
