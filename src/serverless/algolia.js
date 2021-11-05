@@ -32,7 +32,7 @@ async function alWriteToken(tokenId, token, contract, chainId)
                 saleStatus: token.saleStatus,
                 price: token.saleID? token.sale.price: 0,
                 currency: token.saleID? token.sale.currency.toUpperCase(): "",
-                category: "Music",
+                category: token.uri.category,
                 image: token.uri.image,
                 uri: token.uri,
                 sale: token.saleID? token.sale : ""

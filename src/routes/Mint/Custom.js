@@ -59,8 +59,8 @@ const startToken =
     "animation_url": "",
     "description": "",
     "license": "NFT Virtuoso Personal License Agreement V1",
-    "license_id": "0",
-    "license_url": "https://arweave.net/wCPAjAJISEeHgrFCkX1xKML1ZF9A4pKT0ij0SmrQyJU",
+    "license_id": "1",
+    "license_url": "https://nftvirtuoso.io/agreement/NFTVirtuosoAgreement.pdf",
     "contains_unlockable_content": false,
     "unlockable_content_encryption": {
       "unlockableContentKey": "MetaMask.eth-sig-util.encrypt.x25519-xsalsa20-poly1305",
@@ -644,6 +644,7 @@ const MintPrivate = () => {
                  <Option value="Technology">Technology</Option>
                  <Option value="Health">Health</Option>
                  <Option value="Event">Event</Option>
+                 <Option value="Butterflies">Butterflies</Option>
                </Select>
                 </Form.Item>
               )}
