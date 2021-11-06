@@ -7,7 +7,7 @@ import { metamaskLogin,
          virtuosoMint
          } from "../../blockchain/metamask";
 
-const {CONTEXT, URL} = process.env;
+const {CONTEXT, REACT_APP_MINT_KEY} = process.env;
 const { addFileToIPFS, addToIPFS } = require("../../blockchain/ipfs");
 const {Meta} = Card;
 const { Option } = Select;
@@ -135,7 +135,7 @@ const MintButterfly = () => {
 
                  if( left !== right)
                  {
-                        let path = "https://content.nftvirtuoso.io/image/batterflies/";
+                        let path = "https://content.nftvirtuoso.io/image/butterflies/";
                         if( CONTEXT === undefined) path = "/mintimages/butterflies/"
                      		let image1 = await Jimp.read( path + left.toString() + ".png");
                      		// "https://content.nftvirtuoso.io/image/batterflies/5.jpg"
