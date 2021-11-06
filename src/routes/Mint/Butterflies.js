@@ -1,6 +1,13 @@
 import React, {useState, useEffect} from "react";
-import {Card, Button, Row, Col, Select, Slider} from "antd";
+import {Card, Button, Row, Col, Select, Slider, message} from "antd";
 import Jimp from 'jimp';
+import { v4 as uuidv4 } from 'uuid';
+import api from "../../serverless/api";
+import { metamaskLogin,
+         virtuosoMint
+         } from "../../blockchain/metamask";
+
+const { addFileToIPFS, addToIPFS } = require("../../blockchain/ipfs");
 const {Meta} = Card;
 const { Option } = Select;
 const DEBUG = true;
@@ -48,6 +55,39 @@ const rareText = ["обычная", "редкая", "очень редкая"];
 const rare = [1, 1, 2, 0, 0, 2, 0, 1, 1];
 const prices = [500, 2000, 15000];
 
+const mintJSON =
+{
+"name":"",
+"type":"object",
+"category":"Butterflies",
+"visibility":"private",
+"image":"",
+"external_url":"nftvirtuoso.io",
+"animation_url":"",
+"description":"",
+"media":"",
+"attachments":"",
+"media_count":0,
+"attachments_count":0,
+"license":"NFT Virtuoso TERMS AND CONDITIONS AND LIMITED LICENSE V1",
+"license_id":"1",
+"license_url":"https://nftvirtuoso.io/agreement/NFTVirtuosoAgreement.pdf",
+"contains_unlockable_content":false,
+"id":"",
+"time":0,
+"properties":
+{
+  "image":"",
+  "animation":""
+},
+"attributes":[
+  {"trait_type":"Category","value":"Butterflies"}
+  ]
+};
+
+
+
+
 let i;
 let names = [];
 let optionsLeft = [];
@@ -77,6 +117,10 @@ const MintButterfly = () => {
     const [price, setPrice] = useState(700);
     const [left, setLeft] = useState(5);
     const [right, setRight] = useState(6);
+    const [imageLeft, setImageLeft] = useState();
+    const [imageRight, setImageRight] = useState();
+    const [loaded, setLoaded] = useState(false);
+
     const [slider, setSlider] = useState(50);
     const [minting, setMinting] = useState(false);
     const [disabled, setDisabled] = useState(false);
@@ -98,23 +142,32 @@ const MintButterfly = () => {
 `Эта уникальная бабочка скрещена из двух видов:
 ${names[left]} - 50%
 ${names[right]}  - 50%`);
-                     		let image1 = await Jimp.read("https://content.nftvirtuoso.io/image/batterflies/" + left.toString() + ".jpg");
-                        let image2 = await Jimp.read("https://content.nftvirtuoso.io/image/batterflies/" + right.toString() + ".jpg");
-                        image1.composite(image2, 0, 0, {
+                     		let image1 = await Jimp.read("/mintimages/butterflies/" + left.toString() + ".jpg");
+                     		setImageLeft(image1);
+                        let image2 = await Jimp.read("/mintimages/butterflies/" + right.toString() + ".jpg");
+                        setImageRight(image2);
+
+                        const image3 = image1.clone();
+                        image3.composite(image2, 0, 0, {
                          mode: Jimp.BLEND_SCREEN,
                            opacitySource: slider/100,
-                           opacityDest: 1
+                           opacityDest: 1-slider/100
                          });
-                         //const newImage = await image1.getBase64Async(Jimp.MIME_JPEG);
-                         //setImage(newImage);
+                         const newImage = await image3.getBase64Async(Jimp.MIME_JPEG);
+                         setImage(newImage);
+                         setLoaded(true);
 
                  }
                  else
                  {
+                      setLoaded(false);
+                      if( !disabled) setDisabled(true);
                       setPrice(prices[rare[left]]);
                       setTitle(butterflies[right]);
                       setDescription(names[left]);
-                      if( !disabled) setDisabled(true);
+                      setImage("/mintimages/butterflies/" + left.toString() + ".jpg");
+
+
                  };
         }
       changeNumbers()
@@ -123,10 +176,22 @@ ${names[right]}  - 50%`);
       useEffect(() => {
             async function changePrice() {
 
-                 if( DEBUG) console.log("MintButterfly slider: ", slider);
+                 //if( DEBUG) console.log("MintButterfly slider: ", slider);
                  const newPrice = prices[rare[left]]*(1+(100-slider)/100)+prices[rare[right]]*(1+slider/100);
                  const newPrice1 = newPrice.toFixed(0);
                  if( price !== newPrice) setPrice(newPrice1);
+                 if( loaded )
+                 {
+                       const image3 = imageLeft.clone();
+                       image3.composite(imageRight, 0, 0, {
+                               mode: Jimp.BLEND_SCREEN,
+                                 opacitySource: slider/100,
+                                 opacityDest: 1-slider/100
+                               });
+                       const newImage = await image3.getBase64Async(Jimp.MIME_JPEG);
+                       setImage(newImage);
+                 };
+
 
         }
       changePrice()
@@ -138,7 +203,89 @@ ${names[right]}  - 50%`);
 
  const mint = async () => {
 
-    if(DEBUG) console.log("Mint butterfly token: ");
+
+    let mintData = mintJSON;
+    mintData.name = title;
+    mintData.description = description;
+    mintData.id = uuidv4();
+
+    if( left === right)
+         mintData.attributes = [
+            {"trait_type":"Category","value":"Butterflies"},
+            {
+              "display_type": "boost_percentage",
+              "trait_type": butterfliesEng[left],
+              "value": 100
+            }
+          ];
+     else  mintData.attributes = [
+            {"trait_type":"Category","value":"Butterflies"},
+            {
+              "display_type": "boost_percentage",
+              "trait_type": butterfliesEng[left],
+              "value": 100-slider
+            },
+            {
+              "display_type": "boost_percentage",
+              "trait_type": butterfliesEng[right],
+              "value": slider
+            }
+          ];
+
+      mintData.time = Date.now();
+
+
+       if( loaded )
+       {
+             const image3 = imageLeft.clone();
+             image3.composite(imageRight, 0, 0, {
+                     mode: Jimp.BLEND_SCREEN,
+                       opacitySource: slider/100,
+                       opacityDest: 1-slider/100
+                     });
+             const newImage = await image3.getBufferAsync(Jimp.MIME_JPEG);
+             let hash = await addFileToIPFS(newImage);
+             mintData.image = "https://ipfs.io/ipfs/" + hash.path;
+             mintData.properties.image = {
+                 lastModified: mintData.time,
+                 size : hash.size,
+                 name : title,
+                 filename : title+".jpg",
+                 filetype : Jimp.MIME_JPEG,
+                 description : title,
+                 size : hash.size
+               };
+       }
+       else mintData.image = "https://nftvirtuoso.io/mintimages/butterflies/" + left.toString() + ".jpg";
+
+      if(DEBUG) console.log("Mint butterfly token", mintData);
+      const result = await addToIPFS(JSON.stringify(mintData));
+      const myaddress = await metamaskLogin(false);
+      message.loading( `Minting Butterfly NFT token - preparing checkout session`, 240);
+
+      const data = {
+                                type:    "mintItem",
+                                minttype: "butterflies",
+                                id: mintData.id,
+                                time: mintData.time,
+                                tokenId: 0,
+                                price: price,
+                                currency: "rub",
+                                image: mintData.image,
+                                name: mintData.name,
+                                address:  (myaddress==="")?"generate":myaddress,
+                                newTokenURI: result.path,
+                                unlockableContentKey: "",
+                                onEscrow: false,
+                                dynamicUri: ""
+                              };
+
+        let form = document.createElement('form');
+        form.action =  "/api/create-checkout-session?item=" + encodeURIComponent(JSON.stringify(data));
+        form.method = 'POST';
+        document.body.append(form);
+        form.submit();
+
   };
 
   function handleChangeLeft(value) {
