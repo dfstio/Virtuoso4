@@ -4,7 +4,8 @@ const crypto = require('crypto');
 const DEBUG = ("true"===process.env.DEBUG);
 
 // destructure env variables
-const { MY_AWS_ACCESS_KEY_ID, MY_AWS_SECRET_ACCESS_KEY, MY_AWS_REGION, LAMBDA_KEY, KEY_CONTEXT, REACT_APP_CONTRACT_ADDRESS, CHAIN_ID } = process.env;
+const { MY_AWS_ACCESS_KEY_ID, MY_AWS_SECRET_ACCESS_KEY, MY_AWS_REGION, LAMBDA_KEY, LAMBDA_FUNCTION,
+      KEY_CONTEXT, REACT_APP_CONTRACT_ADDRESS, CHAIN_ID } = process.env;
 
 // gets credentials from ~/.aws/config
 AWS.config.update({
@@ -97,7 +98,7 @@ async function lambdaHub(action, tokenId, data)
 
 
         const params = {
-          FunctionName: 'getOperator', /* required */
+          FunctionName: LAMBDA_FUNCTION, /* required */
           //ClientContext: 'STRING_VALUE',
           InvocationType: 'RequestResponse',
           LogType: 'None', //None Tail
