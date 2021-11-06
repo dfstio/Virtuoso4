@@ -321,7 +321,7 @@ ${names[right]}  - ${slider}%`);
         bordered={false}
         >
       <Row>
-       <Col xl={12} lg={12} md={12} sm={24} xs={24}>
+       <Col xl={12} lg={12} md={12} sm={12} xs={12}>
            <Select
                labelInValue
                defaultValue={{ value: 5 }}
@@ -331,7 +331,7 @@ ${names[right]}  - ${slider}%`);
             {optionsLeft}
             </Select>
        </Col>
-        <Col xl={12} lg={12} md={12} sm={12} xs={24}>
+        <Col xl={12} lg={12} md={12} sm={12} xs={12}>
            <Select
                labelInValue
                defaultValue={{ value: 6 }}
