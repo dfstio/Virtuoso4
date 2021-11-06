@@ -140,8 +140,8 @@ const MintButterfly = () => {
                      if( disabled) setDisabled(false);
                      setDescription(
 `Эта уникальная бабочка скрещена из двух видов:
-${names[left]} - 50%
-${names[right]}  - 50%`);
+${names[left]} - ${100-slider}%
+${names[right]}  - ${slider}%`);
                      		let image1 = await Jimp.read("https://content.nftvirtuoso.io/image/batterflies/" + left.toString() + ".jpg");
                      		// "https://content.nftvirtuoso.io/image/batterflies/5.jpg"
                      		setImageLeft(image1);
@@ -181,6 +181,11 @@ ${names[right]}  - 50%`);
                  const newPrice = prices[rare[left]]*(1+(100-slider)/100)+prices[rare[right]]*(1+slider/100);
                  const newPrice1 = newPrice.toFixed(0);
                  if( price !== newPrice) setPrice(newPrice1);
+                                      setDescription(
+`Эта уникальная бабочка скрещена из двух видов:
+${names[left]} - ${100-slider}%
+${names[right]}  - ${slider}%`);
+
                  if( loaded )
                  {
                        const image3 = imageLeft.clone();
