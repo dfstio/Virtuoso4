@@ -2,6 +2,7 @@
 const { REACT_APP_RELAY_KEY} = process.env;
 const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
 
+/*
 const add = (address, amount, description) => {
   const data = {"address": address, "amount": amount, "description": description };
   if(DEBUG) console.log("add api: ", data);
@@ -12,6 +13,8 @@ const add = (address, amount, description) => {
     return response;
   })
 }
+
+*/
 
 const sell = (tokenId, sellData, email, address) => {
   const data = {"tokenId": tokenId, "data": sellData, "email": email, "address": address };
@@ -57,7 +60,7 @@ const unlockable = (tokenId, address) => {
   })
 }
 
-
+/*
 const encrypt = (toEncrypt, key) => {
   const data = {"data": toEncrypt, "key": key };
   if(DEBUG) console.log("encrypt api: ", data);
@@ -96,6 +99,8 @@ const hello = (txRequest) => {
   })
 }
 
+*/
+
 const txSent = (txData, chainId, transactionId = "") => {
   const data = {"txData": txData, "transactionId": transactionId, "chainId": chainId};
   if(DEBUG) console.log("txSent api: ", data);
@@ -109,25 +114,11 @@ const txSent = (txData, chainId, transactionId = "") => {
   })
 }
 
-const getCollection = (set, address = 0, search = "", limit = 100, contract = "80001.0x49368C4ED51BE6484705F07B63eBD92270923081") => {
-  const data = {"set": set, "address": address, "search": "", "limit": limit, "contract": contract};
-  if(DEBUG) console.log("getCollection api: ", data);
-  return fetch('/api/getcollection', {
-    body: JSON.stringify(data),
-    method: 'POST'
-  }).then(response => {
-    return response.json();
-  })
-};
+
 
 export default {
-  getToken: getToken,
   txSent: txSent,
-  getCollection: getCollection,
-  hello: hello,
   sell: sell,
-  encrypt: encrypt,
-  add: add,
   unlockable: unlockable,
   content: content,
   mint: mint
