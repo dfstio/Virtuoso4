@@ -22,7 +22,7 @@ import {getOnLoad, getContentMessage} from "../../serverless/content"
 //import '../../styles/token/audio-player.less';
 
 const { getFromIPFS, decryptUnlockableToken, getEncryptedFileFromIPFS } = require("../../blockchain/ipfs");
-const {REACT_APP_CONTRACT_ADDRESS, REACT_APP_CHAIN_ID} = process.env;
+const {REACT_APP_CONTRACT_ADDRESS, REACT_APP_CHAIN_ID, URL} = process.env;
 var QRCode = require('qrcode.react');
 
 const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
@@ -523,7 +523,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
                 setFirstRun(false);
               };
 
-              const qrURL = "https://nftvirtuoso.io/token/"+  REACT_APP_CHAIN_ID  + "/" + REACT_APP_CONTRACT_ADDRESS + "/" + item.tokenId.toString();
+              const qrURL = URL + "/token/"+  REACT_APP_CHAIN_ID  + "/" + REACT_APP_CONTRACT_ADDRESS + "/" + item.tokenId.toString();
               setQRCodeURL(qrURL);
 
               //if(DEBUG) console.log("Token window ", window.location.pathname);

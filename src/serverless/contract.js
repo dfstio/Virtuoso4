@@ -30,7 +30,7 @@ async function txSent(hash, chainId, transactionId)
 {
   const data = {"txData": hash, "chainId": chainId, "transactionId": transactionId};
   if(DEBUG) console.log("contract txSent: ", data);
-  const response = await axios.post('https://nftvirtuoso.io/api/tx-background', data);
+  const response = await axios.post(`${URL}/api/tx-background`, data);
   return response;
 };
 
