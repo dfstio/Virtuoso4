@@ -42,7 +42,7 @@ const Mint = () => {
               link="/mint/custom"
               price="USD 10 for 10 private NFT tokens or $100 for one public NFT token"
               description="Private NFT token will be visible only to you on NFT Virtuoso marketplace, except when you'll put it for sale. Public NFT token is always visible to everyone on NFT Virtuoso marketplace"
-              image="https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/https://nftvirtuoso.io/mintimages/private.png"
+              image="https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/https://content.nftvirtuoso.io/image/mintimages/private.png"
               key="Private Mint"
 
               />
@@ -76,7 +76,7 @@ const Mint = () => {
               title="Taping Video and Instruction"
               price="USD 50"
               description="Резистентное тейпирование морщин в области глаз (гусиные лапки)"
-              image="https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/https://nftvirtuoso.io/mintimages/dokar.jpg"
+              image="https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/https://content.nftvirtuoso.io/image/mintimages/dokar.jpg"
               key="Doctor Mint"
 
               />
@@ -87,7 +87,7 @@ const Mint = () => {
               title="Глубина NFT"
               price="USD 5000"
               description="Описание картины глубина NFT"
-              image="https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/https://nftvirtuoso.io/mintimages/deepnft.jpg"
+              image="https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/https://content.nftvirtuoso.io/image/mintimages/deepnft.jpg"
 
               key="Artist L Mint"
 
