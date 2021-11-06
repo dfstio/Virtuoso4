@@ -134,30 +134,7 @@ const MintButterfly = () => {
                  if( DEBUG) console.log("MintButterfly numbers: ", left, right, meta);
 
                  if( left !== right)
-                     {
-                     if( meta )
-                     {
-                          if(DEBUG) console.log("Meta");
-                          if( !disabled) setDisabled(true);
-                          setPrice(prices[rare[left]] + prices[rare[right]]);
-                          setTitle("Meta " + butterflies[left]+"-"+butterflies[right]);
-                                               setDescription(
-`Эта уникальная meta бабочка скрещена из двух видов:
-${names[left]}
-${names[right]}`);
-
-                     }
-                     else
-                     {
-                     const newPrice = prices[rare[left]]*(1+(100-slider)/100)+prices[rare[right]]*(1+slider/100);
-                     const newPrice1 = newPrice.toFixed(0);
-                     if( price !== newPrice) setPrice(newPrice1);
-                     setTitle(butterflies[left]+"-"+butterflies[right]);
-                     if( disabled) setDisabled(false);
-                     setDescription(
-`Эта уникальная бабочка скрещена из двух видов:
-${names[left]} - ${100-slider}%
-${names[right]}  - ${slider}%`);
+                 {
                         let path = "https://content.nftvirtuoso.io/image/batterflies/";
                         if( CONTEXT === undefined) path = "/mintimages/butterflies/"
                      		let image1 = await Jimp.read( path + left.toString() + ".jpg");
@@ -166,15 +143,88 @@ ${names[right]}  - ${slider}%`);
                         let image2 = await Jimp.read(path  + right.toString() + ".jpg");
                         setImageRight(image2);
 
-                        const image3 = image1.clone();
-                        image3.composite(image2, 0, 0, {
-                         mode: Jimp.BLEND_SCREEN,
-                           opacitySource: slider/100,
-                           opacityDest: 1-slider/100
-                         });
-                         const newImage = await image3.getBase64Async(Jimp.MIME_JPEG);
-                         setImage(newImage);
-                         setLoaded(true);
+                        if( meta )
+                        {
+                             if(DEBUG) console.log("Meta");
+                             if( !disabled) setDisabled(true);
+                             setPrice(prices[rare[left]] + prices[rare[right]]);
+                             setTitle("Meta " + butterflies[left]+"-"+butterflies[right]);
+                                                  setDescription(
+`Эта уникальная meta бабочка скрещена из двух видов:
+${names[left]}
+${names[right]}`);
+                              	let newImageSrc = new Jimp(200, 160);
+                              	let image1m = image1.clone();
+                              	image1m.crop(0, 0, 100, 160);
+                              	let image2m = image2.clone();
+                              	image2m.crop(100, 0, 100, 160);
+                                newImageSrc.composite(image1m, 0, 0, {
+                                   mode: Jimp.BLEND_SOURCE_OVER,
+                                   });
+
+                                newImageSrc.composite(image2m, 100, 0, {
+                                   mode: Jimp.BLEND_SOURCE_OVER,
+                                   });
+
+                                if( left === 3 || right === 3)
+                                {
+                                       if( !mintDisabled ) setMintDisabled(true);
+                                       if( !disabled) setDisabled(true);
+                                       const font = await Jimp.loadFont(path + "font/open-sans-32-black.fnt");
+                                       newImageSrc.print(font, 0, 0, {
+                                         text: 'SOLD OUT',
+                                         alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+                                         alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE
+                                       }, 200, 160 );
+
+                                       newImageSrc.sepia();
+
+                                }
+                                else if(mintDisabled) setMintDisabled(false);
+
+                                const newImage = await newImageSrc.getBase64Async(Jimp.MIME_JPEG);
+                                setImage(newImage);
+                                setLoaded(true);
+
+
+                         }
+                         else
+                         {
+                                 const newPrice = prices[rare[left]]*(1+(100-slider)/100)+prices[rare[right]]*(1+slider/100);
+                                 const newPrice1 = newPrice.toFixed(0);
+                                 if( price !== newPrice) setPrice(newPrice1);
+                                 setTitle(butterflies[left]+"-"+butterflies[right]);
+
+                                 setDescription(
+`Эта уникальная бабочка скрещена из двух видов:
+${names[left]} - ${100-slider}%
+${names[right]}  - ${slider}%`);
+
+                                 const image3 = image1.clone();
+                                 image3.composite(image2, 0, 0, {
+                                  mode: Jimp.BLEND_SCREEN,
+                                    opacitySource: slider/100,
+                                    opacityDest: 1-slider/100
+                                  });
+                                  if( left === 3 || right === 3)
+                                  {
+                                            if( !mintDisabled ) setMintDisabled(true);
+                                            if( !disabled) setDisabled(true);
+                                            const font = await Jimp.loadFont(path + "font/open-sans-32-black.fnt");
+                                            image3.print(font, 0, 0, {
+                                                  text: 'SOLD OUT',
+                                                  alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+                                                  alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE
+                                                }, 200, 160 );
+
+                                            image3.sepia();
+
+
+                                  }
+                                  else { if(mintDisabled) setMintDisabled(false); if( disabled) setDisabled(false); };
+                                  const newImage = await image3.getBase64Async(Jimp.MIME_JPEG);
+                                  setImage(newImage);
+                                  setLoaded(true);
                          };
 
 
@@ -398,7 +448,7 @@ ${names[right]}  - ${slider}%`);
                  disabled={mintDisabled}
                  loading={minting}
                  >
-                 Создать NFT
+                 {mintDisabled?"Распродано":"Создать NFT"}
             </Button>
         </div>
     </Card>
