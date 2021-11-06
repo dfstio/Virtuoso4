@@ -142,9 +142,10 @@ const MintButterfly = () => {
 `Эта уникальная бабочка скрещена из двух видов:
 ${names[left]} - 50%
 ${names[right]}  - 50%`);
-                     		let image1 = await Jimp.read("/mintimages/butterflies/" + left.toString() + ".jpg");
+                     		let image1 = await Jimp.read("https://content.nftvirtuoso.io/image/batterflies/" + left.toString() + ".jpg");
+                     		// "https://content.nftvirtuoso.io/image/batterflies/5.jpg"
                      		setImageLeft(image1);
-                        let image2 = await Jimp.read("/mintimages/butterflies/" + right.toString() + ".jpg");
+                        let image2 = await Jimp.read("https://content.nftvirtuoso.io/image/batterflies/" + right.toString() + ".jpg");
                         setImageRight(image2);
 
                         const image3 = image1.clone();
@@ -165,7 +166,7 @@ ${names[right]}  - 50%`);
                       setPrice(prices[rare[left]]);
                       setTitle(butterflies[right]);
                       setDescription(names[left]);
-                      setImage("/mintimages/butterflies/" + left.toString() + ".jpg");
+                      setImage("https://content.nftvirtuoso.io/image/batterflies/" + left.toString() + ".jpg");
 
 
                  };
@@ -256,7 +257,7 @@ ${names[right]}  - 50%`);
                  size : hash.size
                };
        }
-       else mintData.image = "https://nftvirtuoso.io/mintimages/butterflies/" + left.toString() + ".jpg";
+       else mintData.image = "https://content.nftvirtuoso.io/image/batterflies/" + left.toString() + ".jpg";
 
       if(DEBUG) console.log("Mint butterfly token", mintData);
       const result = await addToIPFS(JSON.stringify(mintData));
@@ -308,7 +309,7 @@ ${names[right]}  - 50%`);
 
 
   return (
-    <div className="gx-product-item gx-product-vertical" >
+    <div className="gx-product-item gx-product-vertical" style={{ maxWidth: 600 }} >
     <Card
         title={title}
         cover={<img alt="example" src={image}/>}
@@ -319,18 +320,18 @@ ${names[right]}  - 50%`);
            <Select
                labelInValue
                defaultValue={{ value: 5 }}
-               style={{ width: 150 }}
+               style={{ width: 120 }}
                onChange={handleChangeLeft}
              >
             {optionsLeft}
             </Select>
        </Col>
-        <Col xl={12} lg={12} md={12} sm={24} xs={24}>
+        <Col xl={12} lg={12} md={12} sm={12} xs={24}>
            <Select
                labelInValue
                defaultValue={{ value: 6 }}
                onChange={handleChangeRight}
-               style={{ width: 150 , float: "right"}}
+               style={{ width: 120 , float: "right"}}
              >
             {optionsRight}
             </Select>

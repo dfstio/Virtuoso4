@@ -12,7 +12,7 @@ async function alWriteToken(tokenId, token, contract, chainId)
         let shortdescription = token.uri.description;
         if( shortdescription.length > 100)
         {
-          shortdescription = token.uri.description.slice(0,100) + "...";
+          shortdescription = token.uri.description.slice(0,70) + "...";
         };
 
         // create item to insert
