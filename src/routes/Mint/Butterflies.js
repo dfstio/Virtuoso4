@@ -149,7 +149,7 @@ const MintButterfly = () => {
                              if(DEBUG) console.log("Meta");
                              if( !disabled) setDisabled(true);
                              setPrice(prices[rare[left]] + prices[rare[right]]);
-                             setTitle("Meta " + butterflies[left]+"-"+butterflies[right]);
+                             setTitle("Мета " + butterflies[left]+"-"+butterflies[right]);
                                                   setDescription(
 `Эта уникальная meta бабочка скрещена из двух видов:
 ${names[left]}
