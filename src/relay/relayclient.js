@@ -10,7 +10,7 @@ const ForwarderAbi  = require('./IForwarder.json');
 
 const {REACT_APP_CONTRACT_ADDRESS, REACT_APP_FORWARDER_ADDRESS, REACT_APP_CHAIN_ID, REACT_APP_RELAY_KEY} = process.env;
 const RelayUrl = '/api/relay';
-const DEBUG = true;
+const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
 
 const EIP712DomainType = [
   { name: 'name', type: 'string' },

@@ -128,7 +128,7 @@ const STARTING_JSON = {
 };
 
 
-const DEBUG = true;
+const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
 const mintPrivateText = '$10 to create one Private NFT token. Private NFT token will not be visible on NFT Virtuoso marketplace except for sale';
 const mintPublicText = '$100 to create one Public NFT token. Public NFT token will always be visible on NFT Virtuoso marketplace';
 

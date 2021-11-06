@@ -25,7 +25,7 @@ const { getFromIPFS, decryptUnlockableToken, getEncryptedFileFromIPFS } = requir
 const {REACT_APP_CONTRACT_ADDRESS, REACT_APP_CHAIN_ID} = process.env;
 var QRCode = require('qrcode.react');
 
-const DEBUG = true;
+const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
 
 
 

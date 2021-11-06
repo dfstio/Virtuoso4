@@ -5,7 +5,7 @@ const { BufferList } = require("bl");
 //const fs = require('fs');
 const CryptoJS = require('crypto-js');
 
-const DEBUG = false;
+const DEBUG = false; //const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
 
 const ipfsClient = require('ipfs-http-client');
 

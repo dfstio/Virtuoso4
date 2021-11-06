@@ -1,6 +1,7 @@
 import React from "react";
 import api from "../../serverless/api";
 import {isMobile, isDesktop, isChrome} from 'react-device-detect';
+import {accountingEmail } from "../../util/config";
 //import {submitPublicKey from "../../relay/relayclient";
 
 import {Button, message} from "antd";
@@ -14,7 +15,7 @@ import { metamaskLogin,
 
 import IntlMessages from "util/IntlMessages";
 
-const DEBUG = true;
+const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
 
 const Settings = () => {
 
@@ -26,15 +27,18 @@ const Settings = () => {
 
   if(DEBUG) console.log("Settings", address, publicKey, balance, virtuosoBalance);
   let vb = "$0";
+  let showWithdaw = false;
   if( virtuosoBalance !== undefined)
   {
     const vb1 = virtuosoBalance/100;
     vb = ' $' + vb1.toString();
+    if( vb1 > 100) showWithdaw = true;
   };
 
   let pb = " is not registered";
   if( publicKey !== undefined && publicKey !== "") pb = " is " + publicKey;
 
+/*
   function add()
   {
 
@@ -42,7 +46,7 @@ const Settings = () => {
             //if( address !== "") api.add( address, 1000, "Added $10 ");
             if( address !== "") api.hello({ address:address, type: "mint", tokenId: 1});
   }
-
+*/
   async function register()
   {
 
@@ -98,7 +102,19 @@ const Settings = () => {
       <div className="gx-d-flex justify-content-center">
         <h4>Your Virtuoso balance: {vb}</h4>
       </div>
+      {showWithdaw?(
+       <div className="gx-d-flex justify-content-center">
+        <Button
+        type="primary"
+        onClick={(e) => {window.location = accountingEmail; e.preventDefault();}}
+        key = "withdraw"
+        >
+        Withdraw
+        </Button>
+      </div>):("")}
+      {/*}
       <div className="gx-d-flex justify-content-center">
+
         <Button
         type="primary"
         onClick={add}
@@ -106,7 +122,10 @@ const Settings = () => {
         >
         Topup $10
         </Button>
+
+
       </div>
+       */}
       <div className="gx-d-flex justify-content-center">
         <h4>Your Public Key {pb}</h4>
       </div>

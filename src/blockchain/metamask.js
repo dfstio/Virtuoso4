@@ -20,8 +20,8 @@ const {REACT_APP_CONTRACT_ADDRESS, REACT_APP_CHAIN_ID, REACT_APP_RPCURL_METAMASK
 var provider = window.ethereum && new ethers.providers.Web3Provider(window.ethereum);
 var signer = provider && provider.getSigner();
 var readVirtuoso = provider && new ethers.Contract(REACT_APP_CONTRACT_ADDRESS, VirtuosoNFTJSON, provider);
-const DEBUG = true;
-const DEBUGM = true;
+const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
+const DEBUGM = false;
 
 
 

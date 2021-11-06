@@ -2,7 +2,7 @@ import api from "./api";
 import { getAddress } from "../blockchain/metamask";
 
 
-const DEBUG = true;
+const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
 
 
 export async function getOnLoad(tokenId, signature, time)

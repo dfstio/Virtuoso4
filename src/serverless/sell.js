@@ -3,7 +3,7 @@ import { getFromIPFS, addToIPFS} from "../blockchain/ipfs";
 import { getVirtuosoUnlockableContentKey, metamaskDecrypt, virtuosoSell } from "../blockchain/metamask";
 
 const EthCrypto = require('eth-crypto');
-const DEBUG = true;
+const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
 
 
 const operator = async (values) => {

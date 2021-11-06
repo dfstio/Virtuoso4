@@ -1,6 +1,6 @@
 // Server-side code for receiving meta-tx requests
 // The server validates the request, and if accepted, will send the meta-tx via a Defender Relayer
-const DEBUG = true;
+const DEBUG = ("true"===process.env.DEBUG);
 const {  RELAY_KEY, RELAY_SECRET, REACT_APP_FORWARDER_ADDRESS, REACT_APP_CONTRACT_ADDRESS, CHAIN_ID, RPC_URL, REACT_APP_RELAY_KEY} = process.env;
 
 

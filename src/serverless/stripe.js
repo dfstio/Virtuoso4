@@ -6,7 +6,7 @@ const delayMS = 1000;
 
 const { addBalance, getTokenPrice } = require("./contract");
 const { lambdaTransferToken, lambdaAddBalance, lambdaMintItem } = require("../serverless/lambda");
-const DEBUG = true;
+const DEBUG = ("true"===process.env.DEBUG);
 
 
 
@@ -191,6 +191,7 @@ async function createCheckoutSession(body)
 		}
 		else console.error("Token No ", body.tokenId, " is not on sale" );
 	}
+	/*
 	else if(body.type == "mint" )
 	{
 		console.log("Mint order received from ", body.address);
@@ -214,6 +215,7 @@ async function createCheckoutSession(body)
 
 	   return  session.url;
 	}
+	*/
 	else if(body.type == "mintItem" )
 	{
 	    	 console.log("MintItem order received", body);

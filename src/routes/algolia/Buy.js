@@ -6,7 +6,7 @@ import { metamaskLogin } from "../../blockchain/metamask";
 import IntlMessages from "util/IntlMessages";
 
 
-const DEBUG = true;
+const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
 
 const BuyButton = ({item}) => {
 

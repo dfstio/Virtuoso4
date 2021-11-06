@@ -4,7 +4,7 @@ import {isMobile, isDesktop, isChrome} from 'react-device-detect';
 import sell from "../../serverless/sell"
 import {footerAgreement, footerAgreementLink } from "../../util/config";
 
-const DEBUG = true;
+const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
 
 const SellButton = ({item, address}) => {
 //class SellButton extends React.Component {

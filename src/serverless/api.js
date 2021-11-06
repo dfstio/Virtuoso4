@@ -1,6 +1,6 @@
 /* Api methods to call /functions */
 const { REACT_APP_RELAY_KEY} = process.env;
-const DEBUG = true;
+const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
 
 const add = (address, amount, description) => {
   const data = {"address": address, "amount": amount, "description": description };

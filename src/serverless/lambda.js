@@ -1,7 +1,7 @@
 const AWS = require("aws-sdk");
 const crypto = require('crypto');
 
-const DEBUG = true;
+const DEBUG = ("true"===process.env.DEBUG);
 
 // destructure env variables
 const { MY_AWS_ACCESS_KEY_ID, MY_AWS_SECRET_ACCESS_KEY, MY_AWS_REGION, LAMBDA_KEY, KEY_CONTEXT, REACT_APP_CONTRACT_ADDRESS, CHAIN_ID } = process.env;

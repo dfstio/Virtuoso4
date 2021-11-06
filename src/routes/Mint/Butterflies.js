@@ -11,7 +11,7 @@ const { REACT_APP_MINT_KEY} = process.env;
 const { addFileToIPFS, addToIPFS } = require("../../blockchain/ipfs");
 const {Meta} = Card;
 const { Option } = Select;
-const DEBUG = true;
+const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
 
 
 const butterfliesNum = 9;
@@ -132,7 +132,7 @@ const MintButterfly = () => {
       useEffect(() => {
             async function changeNumbers() {
 
-                 if( DEBUG) console.log("MintButterfly numbers: ", left, right, meta);
+                 if( DEBUG) console.log("MintButterfly numbers: ", left, right, meta, "true"===process.env.REACT_APP_DEBUG, false);
 
                  if( left !== right)
                  {

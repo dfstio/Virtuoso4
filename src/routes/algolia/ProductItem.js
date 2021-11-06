@@ -8,7 +8,7 @@ import IntlMessages from "util/IntlMessages";
 import { metamaskLogin } from "../../blockchain/metamask";
 import  SellButton  from "./Sell";
 import  BuyButton  from "./Buy";
-const DEBUG = true;
+const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
 
 const ProductItem = ({item}) => {
   //const icons = [];

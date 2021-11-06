@@ -23,7 +23,7 @@ const axios = require("axios");
 //const {  dbWriteToken, dbReadToken } = require("./dynamodb");
 const {  alWriteToken, alDeleteToken, alReadToken } = require("./algolia");
 const TOKEN_JSON = { isLoading: false, isTokenLoaded: false, isPriceLoaded: false, owner: "", name: "", onSale: false };
-const DEBUG = true;
+const DEBUG = ("true"===process.env.DEBUG);
 const delayMS = 1000;
 
 async function txSent(hash, chainId, transactionId)
