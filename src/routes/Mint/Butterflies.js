@@ -7,6 +7,7 @@ import { metamaskLogin,
          virtuosoMint
          } from "../../blockchain/metamask";
 
+const {CONTEXT} = process.env;
 const { addFileToIPFS, addToIPFS } = require("../../blockchain/ipfs");
 const {Meta} = Card;
 const { Option } = Select;
@@ -120,6 +121,7 @@ const MintButterfly = () => {
     const [imageLeft, setImageLeft] = useState();
     const [imageRight, setImageRight] = useState();
     const [loaded, setLoaded] = useState(false);
+    const [meta, setMeta] = useState(false);
 
     const [slider, setSlider] = useState(50);
     const [minting, setMinting] = useState(false);
@@ -129,7 +131,7 @@ const MintButterfly = () => {
       useEffect(() => {
             async function changeNumbers() {
 
-                 if( DEBUG) console.log("MintButterfly numbers: ", left, right);
+                 if( DEBUG) console.log("MintButterfly numbers: ", left, right, CONTEXT);
 
                  if( left !== right)
                      {
