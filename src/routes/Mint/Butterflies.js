@@ -137,10 +137,10 @@ const MintButterfly = () => {
                  {
                         let path = "https://content.nftvirtuoso.io/image/batterflies/";
                         if( CONTEXT === undefined) path = "/mintimages/butterflies/"
-                     		let image1 = await Jimp.read( path + left.toString() + ".jpg");
+                     		let image1 = await Jimp.read( path + left.toString() + ".png");
                      		// "https://content.nftvirtuoso.io/image/batterflies/5.jpg"
                      		setImageLeft(image1);
-                        let image2 = await Jimp.read(path  + right.toString() + ".jpg");
+                        let image2 = await Jimp.read(path  + right.toString() + ".png");
                         setImageRight(image2);
 
                         if( meta )
@@ -182,7 +182,7 @@ ${names[right]}`);
                                 }
                                 else if(mintDisabled) setMintDisabled(false);
 
-                                const newImage = await newImageSrc.getBase64Async(Jimp.MIME_JPEG);
+                                const newImage = await newImageSrc.getBase64Async(Jimp.MIME_PNG);
                                 setImage(newImage);
                                 setLoaded(true);
 
@@ -222,7 +222,7 @@ ${names[right]}  - ${slider}%`);
 
                                   }
                                   else { if(mintDisabled) setMintDisabled(false); if( disabled) setDisabled(false); };
-                                  const newImage = await image3.getBase64Async(Jimp.MIME_JPEG);
+                                  const newImage = await image3.getBase64Async(Jimp.MIME_PNG);
                                   setImage(newImage);
                                   setLoaded(true);
                          };
@@ -236,7 +236,7 @@ ${names[right]}  - ${slider}%`);
                       setPrice(prices[rare[left]]);
                       setTitle(butterflies[right]);
                       setDescription(names[left]);
-                      setImage("https://content.nftvirtuoso.io/image/batterflies/" + left.toString() + ".jpg");
+                      setImage("https://content.nftvirtuoso.io/image/butterflies/" + left.toString() + ".png");
 
 
                  };
@@ -264,7 +264,7 @@ ${names[right]}  - ${slider}%`);
                                  opacitySource: slider/100,
                                  opacityDest: 1-slider/100
                                });
-                       const newImage = await image3.getBase64Async(Jimp.MIME_JPEG);
+                       const newImage = await image3.getBase64Async(Jimp.MIME_PNG);
                        setImage(newImage);
                  };
 
@@ -319,7 +319,7 @@ ${names[right]}  - ${slider}%`);
                        opacitySource: slider/100,
                        opacityDest: 1-slider/100
                      });
-             const newImage = await image3.getBufferAsync(Jimp.MIME_JPEG);
+             const newImage = await image3.getBufferAsync(Jimp.MIME_PNG);
              let hash = await addFileToIPFS(newImage);
              mintData.image = "https://ipfs.io/ipfs/" + hash.path;
              mintData.properties.image = {
@@ -327,12 +327,12 @@ ${names[right]}  - ${slider}%`);
                  size : hash.size,
                  name : title,
                  filename : title+".jpg",
-                 filetype : Jimp.MIME_JPEG,
+                 filetype : Jimp.MIME_PNG,
                  description : title,
                  size : hash.size
                };
        }
-       else mintData.image = "https://content.nftvirtuoso.io/image/batterflies/" + left.toString() + ".jpg";
+       else mintData.image = "https://content.nftvirtuoso.io/image/butterflies/" + left.toString() + ".png";
 
       if(DEBUG) console.log("Mint butterfly token", mintData);
       const result = await addToIPFS(JSON.stringify(mintData));
