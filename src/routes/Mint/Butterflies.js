@@ -120,10 +120,11 @@ const MintButterfly = () => {
     const [right, setRight] = useState(6);
     const [imageLeft, setImageLeft] = useState();
     const [imageRight, setImageRight] = useState();
+    const [imageDisplayed, setImageDisplayed] = useState();
     const [loaded, setLoaded] = useState(false);
     const [meta, setMeta] = useState(false);
 
-    const [slider, setSlider] = useState(50);
+    const [slider, setSlider] = useState(20);
     const [minting, setMinting] = useState(false);
     const [disabled, setDisabled] = useState(false);
     const [mintDisabled, setMintDisabled] = useState(false);
@@ -165,6 +166,7 @@ ${names[right]}`);
                                 newImageSrc.composite(image2m, 100, 0, {
                                    mode: Jimp.BLEND_SOURCE_OVER,
                                    });
+                                setImageDisplayed(newImageSrc);
 
                                 if( left === 3 || right === 3)
                                 {
@@ -206,6 +208,8 @@ ${names[right]}  - ${slider}%`);
                                     opacitySource: slider/100,
                                     opacityDest: 1-slider/100
                                   });
+
+                                  setImageDisplayed(image3);
                                   if( left === 3 || right === 3)
                                   {
                                             if( !mintDisabled ) setMintDisabled(true);
@@ -264,8 +268,10 @@ ${names[right]}  - ${slider}%`);
                                  opacitySource: slider/100,
                                  opacityDest: 1-slider/100
                                });
+
                        const newImage = await image3.getBase64Async(Jimp.MIME_PNG);
                        setImage(newImage);
+                       setImageDisplayed(image3);
                  };
 
 
@@ -299,12 +305,12 @@ ${names[right]}  - ${slider}%`);
             {
               "display_type": "boost_percentage",
               "trait_type": butterfliesEng[left],
-              "value": 100-slider
+              "value": meta? 50 : 100-slider
             },
             {
               "display_type": "boost_percentage",
               "trait_type": butterfliesEng[right],
-              "value": slider
+              "value": meta? 50 : slider
             }
           ];
 
@@ -313,13 +319,15 @@ ${names[right]}  - ${slider}%`);
 
        if( loaded )
        {
+             /*
              const image3 = imageLeft.clone();
              image3.composite(imageRight, 0, 0, {
                      mode: Jimp.BLEND_SCREEN,
                        opacitySource: slider/100,
                        opacityDest: 1-slider/100
                      });
-             const newImage = await image3.getBufferAsync(Jimp.MIME_PNG);
+             */
+             const newImage = await imageDisplayed.getBufferAsync(Jimp.MIME_PNG);
              let hash = await addFileToIPFS(newImage);
              mintData.image = "https://ipfs.io/ipfs/" + hash.path;
              mintData.properties.image = {
@@ -402,7 +410,7 @@ ${names[right]}  - ${slider}%`);
            <Select
                labelInValue
                defaultValue={{ value: 5 }}
-               style={{ width: 120 }}
+               style={{ width: 150 }}
                onChange={handleChangeLeft}
              >
             {optionsLeft}
@@ -413,7 +421,7 @@ ${names[right]}  - ${slider}%`);
                labelInValue
                defaultValue={{ value: 6 }}
                onChange={handleChangeRight}
-               style={{ width: 120 , float: "right"}}
+               style={{ width: 150 , float: "right"}}
              >
             {optionsRight}
             </Select>
