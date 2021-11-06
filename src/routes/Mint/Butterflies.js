@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import {Card, Button, Row, Col, Select, Slider, message} from "antd";
+import {Card, Button, Row, Col, Select, Slider, Radio, message} from "antd";
 import Jimp from 'jimp';
 import { v4 as uuidv4 } from 'uuid';
 import api from "../../serverless/api";
@@ -7,7 +7,7 @@ import { metamaskLogin,
          virtuosoMint
          } from "../../blockchain/metamask";
 
-const {CONTEXT} = process.env;
+const {CONTEXT, URL} = process.env;
 const { addFileToIPFS, addToIPFS } = require("../../blockchain/ipfs");
 const {Meta} = Card;
 const { Option } = Select;
@@ -131,9 +131,23 @@ const MintButterfly = () => {
       useEffect(() => {
             async function changeNumbers() {
 
-                 if( DEBUG) console.log("MintButterfly numbers: ", left, right, CONTEXT);
+                 if( DEBUG) console.log("MintButterfly numbers: ", left, right, meta);
 
                  if( left !== right)
+                     {
+                     if( meta )
+                     {
+                          if(DEBUG) console.log("Meta");
+                          if( !disabled) setDisabled(true);
+                          setPrice(prices[rare[left]] + prices[rare[right]]);
+                          setTitle("Meta " + butterflies[left]+"-"+butterflies[right]);
+                                               setDescription(
+`Эта уникальная meta бабочка скрещена из двух видов:
+${names[left]}
+${names[right]}`);
+
+                     }
+                     else
                      {
                      const newPrice = prices[rare[left]]*(1+(100-slider)/100)+prices[rare[right]]*(1+slider/100);
                      const newPrice1 = newPrice.toFixed(0);
@@ -144,10 +158,12 @@ const MintButterfly = () => {
 `Эта уникальная бабочка скрещена из двух видов:
 ${names[left]} - ${100-slider}%
 ${names[right]}  - ${slider}%`);
-                     		let image1 = await Jimp.read("https://content.nftvirtuoso.io/image/batterflies/" + left.toString() + ".jpg");
+                        let path = "https://content.nftvirtuoso.io/image/batterflies/";
+                        if( CONTEXT === undefined) path = "/mintimages/butterflies/"
+                     		let image1 = await Jimp.read( path + left.toString() + ".jpg");
                      		// "https://content.nftvirtuoso.io/image/batterflies/5.jpg"
                      		setImageLeft(image1);
-                        let image2 = await Jimp.read("https://content.nftvirtuoso.io/image/batterflies/" + right.toString() + ".jpg");
+                        let image2 = await Jimp.read(path  + right.toString() + ".jpg");
                         setImageRight(image2);
 
                         const image3 = image1.clone();
@@ -159,6 +175,8 @@ ${names[right]}  - ${slider}%`);
                          const newImage = await image3.getBase64Async(Jimp.MIME_JPEG);
                          setImage(newImage);
                          setLoaded(true);
+                         };
+
 
                  }
                  else
@@ -174,7 +192,7 @@ ${names[right]}  - ${slider}%`);
                  };
         }
       changeNumbers()
-      },[left, right]);
+      },[left, right, meta]);
 
       useEffect(() => {
             async function changePrice() {
@@ -312,6 +330,13 @@ ${names[right]}  - ${slider}%`);
 
   }
 
+    function onMetaChange(value) {
+    //if(DEBUG)  console.log("onMetaChange: ", value.target.value);
+    if( meta !== value.target.value) setMeta(value.target.value);
+   // setSlider(value);
+
+  }
+
 
 
 
@@ -344,6 +369,15 @@ ${names[right]}  - ${slider}%`);
             </Select>
        </Col>
        </Row>
+       <div className="gx-mt-4">
+       Решите где будет жить Ваша бабочка:
+       </div>
+       <div className="gx-mt-2">
+       <Radio.Group defaultValue={false} onChange={onMetaChange}>
+      <Radio.Button value={false}>Вселенная</Radio.Button>
+      <Radio.Button value={true}>Мета Вселенная</Radio.Button>
+       </Radio.Group>
+       </div>
        {disabled?(""):(
        <div className="gx-mt-4">
        Решите на какую бабочку должна быть больше похожа Ваша бабочка, передвинув слайдер:
