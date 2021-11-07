@@ -34,7 +34,7 @@ const TypedData = {
   domain: {
     name: 'NFT Virtuoso', //'GSN Relayed Transaction',
     version: '1', //'2',
-    chainId: parseInt(REACT_APP_CHAIN_ID),
+    chainId: parseInt(CHAIN_ID),
     verifyingContract: REACT_APP_FORWARDER_ADDRESS
   },
   primaryType: 'ForwardRequest',
