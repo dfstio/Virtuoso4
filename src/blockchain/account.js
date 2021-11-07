@@ -155,7 +155,7 @@ const handleAccountsChanged = useCallback( async (accounts) => {
     {
       const vb = virtuosoBalance/100;
       topupText = "$" + vb.toFixed(2);
-      topup = "/api/create-checkout-session?type=mint&address=" + address.toString();
+      //topup = "/api/create-checkout-session?type=mint&address=" + address.toString();
     };
     blockExplorer = REACT_APP_NETWORK_EXPLORER + "address/" + address;
     result =
@@ -168,23 +168,7 @@ const handleAccountsChanged = useCallback( async (accounts) => {
               >
               {metamaskText}
               </li>
-              <li
-               onClick={() => {
-                    console.log("Topup clicked", topup);
-                    if( topup !== "")
-                    {
-                         let form = document.createElement('form');
-                         form.action = topup;
-                         form.method = 'POST';
-
-                         // the form must be in the document to submit it
-                         document.body.append(form);
-
-                         form.submit();
-                    };
-                }}
-
-              >
+              <li>
               {topupText}
               </li>
             </ul>
