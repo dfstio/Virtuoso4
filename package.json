@@ -101,7 +101,8 @@
     "commit": "git commit -a -S -m",
     "archive": "git archive -o mvp04.zip HEAD",
     "push": "git push -u Virtuoso4",
-    "dev": "netlify dev"
+    "dev": "netlify dev",
+    "listenv": "netlify env:list --json"
   },
   "eslintConfig": {
     "extends": "react-app"
