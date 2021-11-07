@@ -28,11 +28,13 @@ const ForwardRequestType = [
   { name: 'validUntil', type:  "uint256" }
 ];
 
+const chainIdStr = REACT_APP_CHAIN_ID;
+
 const TypedData = {
   domain: {
     name: 'NFT Virtuoso', //'GSN Relayed Transaction',
     version: '1', //'2',
-    chainId: 80001,
+    chainId: chainIdStr.toNumber(),
     verifyingContract: REACT_APP_FORWARDER_ADDRESS
   },
   primaryType: 'ForwardRequest',

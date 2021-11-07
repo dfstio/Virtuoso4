@@ -32,12 +32,12 @@ const RadioGroup = Radio.Group;
 
 const startToken =
 {
-  "contract": "0x49368c4ed51be6484705f07b63ebd92270923081",
-  "chainId": 80001,
+//  "contract": "0x49368c4ed51be6484705f07b63ebd92270923081",
+//  "chainId": 80001,
   "tokenId": 17,
   "vrtTokenId": "VRT1-17",
   "updated": 1633284972170,
-  "owner": "0xa73CC65aBfb96FD65D6EF407535CFDeBBF77fCbb",
+//  "owner": "0xa73CC65aBfb96FD65D6EF407535CFDeBBF77fCbb",
   "name": "",
   "description": "",
   "shortdescription": "",
@@ -88,7 +88,7 @@ const startToken =
       "time": 1632691467099
     }
   },
-  "objectID": "80001.0x49368c4ed51be6484705f07b63ebd92270923081.17",
+//  "objectID": "80001.0x49368c4ed51be6484705f07b63ebd92270923081.17",
   "unlockable": {
     "media": "",
     "attachments": "",
