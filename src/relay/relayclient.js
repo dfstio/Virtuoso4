@@ -29,13 +29,13 @@ const ForwardRequestType = [
   { name: 'validUntil', type:  "uint256" }
 ]
 
-const chainIdStr = REACT_APP_CHAIN_ID;
+
 
 const TypedData = {
   domain: {
     name: 'NFT Virtuoso', //'GSN Relayed Transaction',
     version: '1', //'2',
-    chainId: chainIdStr.toNumber(),
+    chainId: parseInt(REACT_APP_CHAIN_ID),
     verifyingContract: REACT_APP_FORWARDER_ADDRESS,
   },
   primaryType: 'ForwardRequest',
@@ -56,7 +56,8 @@ export async function relayFunction(name, args) {
   var signer = provider && provider.getSigner();
   const from = await signer.getAddress();
   const network = await provider.getNetwork();
-  if (network.chainId !== 80001) console.error(`Must be connected to Mumbai`);
+  if (network.chainId !== REACT_APP_CHAIN_ID)
+      console.error(`Must be connected to network`, REACT_APP_CHAIN_ID, ", not", network.chainId );
 
   // Get nonce for current signer
   const forwarder = new ethers.Contract(REACT_APP_FORWARDER_ADDRESS, ForwarderAbi, signer);
