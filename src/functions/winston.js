@@ -1,5 +1,10 @@
-const logger = require("../serverless/winston");
-const log = logger.child({ winston: 'winstontest' });
+const WinstonCloudWatch = require('winston-cloudwatch');
+
+const { WINSTON_ID, WINSTON_KEY, WINSTON_NAME, WINSTON_REGION, BRANCH, CHAIN_ID } = process.env;
+
+
+
+
 
 exports.handler = async(event, context) => {
 
@@ -14,24 +19,39 @@ exports.handler = async(event, context) => {
 
     try {
         // parse form data
-        const body = JSON.parse(event.body);
-	      log.info("Winston text on functions info", {body});
-	      log.error("Winston text on functions warn", {body});
+        let body = JSON.parse(event.body);
+        body.winstonBranch = BRANCH;
+        body.winstonChainId = CHAIN_ID;
+        body.winstonLevel = 'info';
+        const cloudwatchConfig = {
+                   logGroupName:  WINSTON_NAME ,
+                   logStreamName: `${BRANCH}-${CHAIN_ID}`,
+                   awsAccessKeyId: WINSTON_ID,
+                   awsSecretKey: WINSTON_KEY,
+                   awsRegion: WINSTON_REGION,
+                   jsonMessage: true
+                   //messageFormatter: ({ level, message, additionalInfo }) =>    `[${level}] : ${message} \nAdditional Info: ${JSON.stringify(additionalInfo)}}`
+               };
+        console.log("Winston", body);
+        const transport = new WinstonCloudWatch(cloudwatchConfig);
+	      function myfunc() {};
+	      transport.log(body, myfunc);
 
-        //console.log("Sell API: ", result);
+
+
 
         // return success
         return {
             statusCode: 200,
             body: JSON.stringify({
                 success: true,
-                data: result,
             }),
         };
 
     } catch (error) {
 
         // return error
+        console.log("Winston error", error);
         return {
             statusCode: error.statusCode || 500,
             body: JSON.stringify({

@@ -27,6 +27,17 @@ const sell = (tokenId, sellData, email, address) => {
   })
 }
 
+const winston = (info) => {
+
+  if(DEBUG) console.log("winston api: ", info);
+  return fetch('/api/winston', {
+    body: JSON.stringify(info),
+    method: 'POST'
+  }).then(response => {
+    return response
+  })
+}
+
 const content = (tokenId, contentData) => {
   const data = {"tokenId": tokenId, "data": contentData, "key": REACT_APP_RELAY_KEY };
   if(DEBUG) console.log("content api: ", data);
@@ -121,5 +132,6 @@ export default {
   sell: sell,
   unlockable: unlockable,
   content: content,
-  mint: mint
+  mint: mint,
+  winston:winston
 }

@@ -1,21 +1,17 @@
 import winston from 'winston';
 import Transport from 'winston-transport';
+import api from "./api";
+
+const { REACT_APP_DEBUG } = process.env;
 
 class VirtuosoTransport extends Transport {
   constructor(opts) {
     super(opts);
-    //
-    // Consume any custom options here. e.g.:
-    // - Connection information for databases
-    // - Authentication information for APIs (e.g. loggly, papertrail,
-    //   logentries, etc.).
-    //
   }
 
   log(info, callback) {
     setImmediate(() => {
-      //this.emit('logged', info);
-      console.log("VirtuosoTransport", info);
+      api.winston(info);
     });
 
     // Perform the writing to the remote service
@@ -23,26 +19,54 @@ class VirtuosoTransport extends Transport {
   }
 };
 
-
-
-
-
-const logger = new winston.createLogger({
-    format: winston.format.json(),
-    transports: [
-        new (winston.transports.Console)({
-            timestamp: true,
+const transportInfo = [ new VirtuosoTransport() ];
+const transportDebug = [ new VirtuosoTransport() ];
+if( REACT_APP_DEBUG === 'true')
+{
+  transportInfo.push(new (winston.transports.Console)({
             colorize: true,
-        }),
-        new VirtuosoTransport()
-   ]
+            timestamp: true,
+            level: 'info',
+            format: winston.format.combine(
+                  winston.format.colorize(),
+                  winston.format.simple()
+                )
+        }));
+ transportDebug.push(new (winston.transports.Console)({
+            colorize: true,
+            timestamp: true,
+            level: 'debug',
+            format: winston.format.combine(
+                  winston.format.colorize(),
+                  winston.format.simple()
+                )
+        }));
+};
+
+const info = new winston.createLogger({
+    level: 'info',
+    format: winston.format.json(),
+    transports: transportInfo,
+    exceptionHandlers: transportInfo,
+    rejectionHandlers: transportInfo,
+    exitOnError: false
+});
+
+const debug = new winston.createLogger({
+    level: 'debug',
+    format: winston.format.json(),
+    transports: transportDebug,
+    exceptionHandlers: transportDebug,
+    rejectionHandlers: transportDebug,
+    exitOnError: false
 });
 
 
 
+export default {
 
+info: info,
+debug: debug
 
-
-
-export default logger;
+}
 

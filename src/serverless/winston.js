@@ -2,17 +2,6 @@ const winston = require('winston'),
       WinstonCloudWatch = require('winston-cloudwatch');
 
 const { WINSTON_ID, WINSTON_KEY, WINSTON_NAME, WINSTON_REGION, BRANCH, CHAIN_ID } = process.env;
-const logger = new winston.createLogger({
-    format: winston.format.json(),
-    transports: [
-        new (winston.transports.Console)({
-            timestamp: true,
-            colorize: true,
-        })
-   ]
-});
-
-
 
 const cloudwatchConfig = {
     logGroupName:  WINSTON_NAME ,
@@ -23,7 +12,51 @@ const cloudwatchConfig = {
     jsonMessage: true
     //messageFormatter: ({ level, message, additionalInfo }) =>    `[${level}] : ${message} \nAdditional Info: ${JSON.stringify(additionalInfo)}}`
 };
-logger.add(new WinstonCloudWatch(cloudwatchConfig))
 
-module.exports = logger;
+const transportInfo = [
+        new (winston.transports.Console)({
+            colorize: true,
+            timestamp: true,
+            level: 'info',
+            format: winston.format.combine(
+                  winston.format.colorize(),
+                  winston.format.simple()
+                )
+        }),
+        new WinstonCloudWatch(cloudwatchConfig)
+   ];
+
+const transportDebug = [
+        new (winston.transports.Console)({
+            colorize: true,
+            timestamp: true,
+            level: 'debug',
+            format: winston.format.combine(
+                  winston.format.colorize(),
+                  winston.format.simple()
+                )
+        }),
+        new WinstonCloudWatch(cloudwatchConfig)
+   ];
+
+
+const debug = new winston.createLogger({
+    level: 'debug',
+    format: winston.format.json(),
+    defaultMeta: { winstonBranch: BRANCH, winstonChainId: CHAIN_ID, winstonLevel: 'debug' },
+    transports: transportDebug,
+    exceptionHandlers: transportDebug,
+    rejectionHandlers: transportDebug
+});
+
+const info = new winston.createLogger({
+    level: 'info',
+    format: winston.format.json(),
+    defaultMeta: { winstonBranch: BRANCH, winstonChainId: CHAIN_ID, winstonLevel: 'info' },
+    transports: transportInfo,
+    exceptionHandlers: transportInfo,
+    rejectionHandlers: transportInfo
+});
+
+module.exports = { info, debug };
 
