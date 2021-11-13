@@ -1,10 +1,12 @@
 import React from "react";
 import api from "../../serverless/api";
+
 import {isMobile, isDesktop, isChrome} from 'react-device-detect';
 import {accountingEmail } from "../../util/config";
 //import {submitPublicKey from "../../relay/relayclient";
 
 import {Button, message} from "antd";
+import logger from "../../serverless/logger";
 
 
 import {useDispatch, useSelector} from "react-redux";
@@ -16,6 +18,8 @@ import { metamaskLogin,
 import IntlMessages from "util/IntlMessages";
 
 const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
+const log = logger.child({ file: 'Settings' });
+
 
 const Settings = () => {
 
@@ -25,7 +29,11 @@ const Settings = () => {
   const virtuosoBalance = useSelector(({blockchain}) => blockchain.virtuosoBalance);
   const dispatch = useDispatch();
 
-  if(DEBUG) console.log("Settings", address, publicKey, balance, virtuosoBalance);
+  console.log("Settings", address, publicKey, balance, virtuosoBalance);
+  console.log("Before winston test");
+  log.info("Winston info test", {address, publicKey, balance, virtuosoBalance});
+  log.error("Winston error test");
+  log.warn("Winston warn test");
   let vb = "$0";
   let showWithdaw = false;
   if( virtuosoBalance !== undefined)

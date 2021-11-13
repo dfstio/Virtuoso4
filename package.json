@@ -91,6 +91,7 @@
     "web3-core": "^1.6.0",
     "winston": "^3.3.3",
     "winston-cloudwatch": "^3.1.1",
+    "winston-transport": "^4.4.0",
     "yarn": "^1.22.11"
   },
   "scripts": {
