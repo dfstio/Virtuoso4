@@ -41,7 +41,7 @@ exports.handler = async(event, context) => {
 	      function myfunc( args ) { console.log("myfunc", args); };
 	      function myfunc2( args ) { console.log("myfunc2", args); };
 	      transport.log(body, myfunc);
-	      await transport.kthxbye(myfunc2);
+	      await new Promise( (resolve) => { transport.kthxbye(resolve) } );
 
 
 
