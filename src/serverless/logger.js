@@ -19,8 +19,8 @@ class VirtuosoTransport extends Transport {
   }
 };
 
-const transportInfo = [ new VirtuosoTransport() ];
-const transportDebug = [ new VirtuosoTransport() ];
+const transportInfo = [ new VirtuosoTransport({level: 'info'}) ];
+const transportDebug = [ new VirtuosoTransport({level: 'info'}) ];
 if( REACT_APP_DEBUG === 'true')
 {
   transportInfo.push(new (winston.transports.Console)({

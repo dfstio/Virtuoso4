@@ -43,7 +43,7 @@ const transportDebug = [
 const debug = new winston.createLogger({
     level: 'debug',
     format: winston.format.json(),
-    defaultMeta: { winstonBranch: BRANCH, winstonChainId: CHAIN_ID, winstonLevel: 'debug' },
+    defaultMeta: { winstonBranch: BRANCH, winstonChainId: CHAIN_ID, winstonLevel: 'debug', winstonRepo: 'functions' },
     transports: transportDebug,
     exceptionHandlers: transportDebug,
     rejectionHandlers: transportDebug
@@ -52,7 +52,7 @@ const debug = new winston.createLogger({
 const info = new winston.createLogger({
     level: 'info',
     format: winston.format.json(),
-    defaultMeta: { winstonBranch: BRANCH, winstonChainId: CHAIN_ID, winstonLevel: 'info' },
+    defaultMeta: { winstonBranch: BRANCH, winstonChainId: CHAIN_ID, winstonLevel: 'info', winstonRepo: 'functions'  },
     transports: transportInfo,
     exceptionHandlers: transportInfo,
     rejectionHandlers: transportInfo

@@ -35,9 +35,9 @@ const Settings = () => {
   const dispatch = useDispatch();
 
 
-  const log = logmodule.child({ winstonComponent: 'Settings1' });
-  log.warn("Winston info test 223", {address, virtuosoBalance});
-  log.debug("Winston debug test 223", {address, virtuosoBalance});
+  const log = logmodule.child({ winstonComponent: 'Settings' });
+//  log.info("Winston info test 223", {address, virtuosoBalance});
+  log.info("Settings 1");
 
   let vb = "$0";
   let showWithdaw = false;
@@ -63,7 +63,7 @@ const Settings = () => {
   async function register()
   {
 
-            if(DEBUG) console.log("Register clicked", address);
+            log.info("Register clicked", {address});
             if( address !== undefined && address !== "")
             {
                  const key = 'RegisterPublicKey';
@@ -87,7 +87,7 @@ const Settings = () => {
   async function connect()
   {
 
-            if(DEBUG) console.log("Connect clicked", address);
+            log.info("Connect clicked", {address});
             const newAddress = await metamaskLogin();
             dispatch(updateAddress(newAddress));
             //if( address !== "") api.add( address, 1000, "Added $10 ");

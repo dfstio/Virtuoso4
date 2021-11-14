@@ -19,10 +19,14 @@ exports.handler = async(event, context) => {
 
     try {
         // parse form data
+        //console.log( "Winston", event.headers);
+
         let body = JSON.parse(event.body);
         body.winstonBranch = BRANCH;
         body.winstonChainId = CHAIN_ID;
         body.winstonLevel = 'info';
+        body.winstonRepo = 'frontend';
+        body.winstonHost = event.headers.host;
         const cloudwatchConfig = {
                    logGroupName:  WINSTON_NAME ,
                    logStreamName: `${BRANCH}-${CHAIN_ID}`,

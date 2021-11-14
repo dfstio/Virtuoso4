@@ -30,6 +30,7 @@ const sell = (tokenId, sellData, email, address) => {
 const winston = (info) => {
 
   if(DEBUG) console.log("winston api: ", info);
+  if( info.level === 'debug') return;
   return fetch('/api/winston', {
     body: JSON.stringify(info),
     method: 'POST'
