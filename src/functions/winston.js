@@ -19,7 +19,7 @@ exports.handler = async(event, context) => {
 
     try {
         // parse form data
-        console.log( "Winston", event, context);
+        //console.log( "Winston", event, context);
 
         let body = JSON.parse(event.body);
         body.winstonBranch = BRANCH;
@@ -38,9 +38,10 @@ exports.handler = async(event, context) => {
                };
         console.log("Winston", body);
         const transport = new WinstonCloudWatch(cloudwatchConfig);
-	      function myfunc() {};
+	      function myfunc( args ) { console.log("myfunc", args); };
+	      function myfunc2( args ) { console.log("myfunc2", args); };
 	      transport.log(body, myfunc);
-	      transport.kthxbye(myfunc);
+	      await transport.kthxbye(myfunc2);
 
 
 
