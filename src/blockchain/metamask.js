@@ -24,7 +24,7 @@ var readVirtuoso = provider && new ethers.Contract(REACT_APP_CONTRACT_ADDRESS, V
 async function virtuosoFunction(address, name, args)
 {
     const log = logm.child({address, name, args, wf: "virtuosoFunction"});
-    log.profile("call executed");
+    log.profile(`call executed: ${name} from ${address}`);
     let result = { hash : '', transactionId: ''};
 
     try {
@@ -67,12 +67,12 @@ async function virtuosoFunction(address, name, args)
                               result = await await window.ethereum.request({method: 'eth_sendTransaction', params: [request]});
                               await api.txSent(result.hash, REACT_APP_CHAIN_ID);
                         }
-                 } else log.error("wrong chain or address");
-          } else log.error("no signer or address", {signer});
+                 } else log.error(`wrong chain or address calling ${name} from ${address}`);
+          } else log.error(`no signer or address calling ${name} from ${address}`, {signer});
 
     } catch (error) { log.error("catch", error );};
 
-    log.profile("call executed", {result});
+    log.profile(`call executed: ${name} from ${address}`, {result});
     return result;
 };
 
@@ -418,7 +418,7 @@ export async function virtuosoRegisterPublicKey(address)
           if( publicKey !== "")
           {
                 result.publicKey = publicKey;
-                let tx = await virtuosoFunction('setPublicKey', [publicKey]);
+                let tx = await virtuosoFunction(address, 'setPublicKey', [publicKey]);
                 result.hash = tx.hash;
           }
 

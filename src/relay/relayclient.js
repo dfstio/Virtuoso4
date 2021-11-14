@@ -56,7 +56,7 @@ export async function relayFunction(name, args) {
   var signer = provider && provider.getSigner();
   const from = await signer.getAddress();
   const network = await provider.getNetwork();
-  if (network.chainId !== REACT_APP_CHAIN_ID)
+  if (network.chainId.toString() !== REACT_APP_CHAIN_ID)
       console.error(`Must be connected to network`, REACT_APP_CHAIN_ID, ", not", network.chainId );
 
   // Get nonce for current signer
