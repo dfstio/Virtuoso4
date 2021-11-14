@@ -3,6 +3,13 @@ import Transport from 'winston-transport';
 import api from "./api";
 
 const { REACT_APP_DEBUG } = process.env;
+const { combine, timestamp, label, printf } = winston.format;
+
+
+const myFormat = printf(({ level, message, winstonModule, wf, timestamp }) => {
+  return `${timestamp} ${level} [${winstonModule}:${wf}]: ${message}`;
+});
+
 
 class VirtuosoTransport extends Transport {
   constructor(opts) {
@@ -29,16 +36,18 @@ if( REACT_APP_DEBUG === 'true')
             level: 'info',
             format: winston.format.combine(
                   winston.format.colorize(),
-                  winston.format.simple()
+                  winston.format.timestamp('HH:mm:ss.SSS'),
+                  myFormat
                 )
         }));
  transportDebug.push(new (winston.transports.Console)({
             colorize: true,
             timestamp: true,
             level: 'debug',
-            format: winston.format.combine(
+             format: winston.format.combine(
                   winston.format.colorize(),
-                  winston.format.simple()
+                  winston.format.timestamp('HH:mm:ss.SSS'),
+                  myFormat
                 )
         }));
 };

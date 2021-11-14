@@ -38,7 +38,7 @@ exports.handler = async(event, context) => {
                };
         //console.log("Winston", body);
         const transport = new WinstonCloudWatch(cloudwatchConfig);
-	      function myfunc( args ) { console.log("logged to cloudwatch", (args===null)?"":args); };
+	      function myfunc( args ) { };
 	      transport.log(body, myfunc);
 	      await new Promise( (resolve) => { transport.kthxbye(resolve) } );
 

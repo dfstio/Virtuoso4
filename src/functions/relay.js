@@ -100,8 +100,11 @@ exports.handler = async function(event, context, callback) {
     const data = JSON.parse(event.body);
     //if(DEBUG) console.log("Relay function:", data);
     const response = await relay(data);
+    await logger.flush();
     callback(null, { statusCode: 200, body: JSON.stringify(response) });
   } catch (err) {
+    logm.error("catch", {err});
+    await logger.flush();
     callback(err);
   }
 }

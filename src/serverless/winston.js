@@ -1,7 +1,13 @@
 const winston = require('winston'),
       WinstonCloudWatch = require('winston-cloudwatch');
 
+const { combine, timestamp, label, printf } = winston.format;
+
 const { WINSTON_ID, WINSTON_KEY, WINSTON_NAME, WINSTON_REGION, BRANCH, CHAIN_ID } = process.env;
+
+const myFormat = printf(({ level, message, winstonModule, wf, timestamp }) => {
+  return `${timestamp} ${level} [${winstonModule}:${wf}]: ${message}`;
+});
 
 const cloudwatchConfig = {
     level: 'info',
@@ -21,7 +27,8 @@ const transportInfo = [
             level: 'info',
             format: winston.format.combine(
                   winston.format.colorize(),
-                  winston.format.simple()
+                  winston.format.timestamp('HH:mm:ss.SSS'),
+                  myFormat
                 )
         }),
         new WinstonCloudWatch(cloudwatchConfig)
@@ -34,7 +41,8 @@ const transportDebug = [
             level: 'debug',
             format: winston.format.combine(
                   winston.format.colorize(),
-                  winston.format.simple()
+                  winston.format.timestamp('HH:mm:ss.SSS'),
+                  myFormat
                 )
         }),
         new WinstonCloudWatch(cloudwatchConfig)

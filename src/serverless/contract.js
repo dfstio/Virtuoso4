@@ -18,41 +18,46 @@ const forwarder = new ethers.Contract(REACT_APP_FORWARDER_ADDRESS, ForwarderAbi,
 const inter = new ethers.utils.Interface(VirtuosoNFTJSON);
 const interForwarder = new ethers.utils.Interface(ForwarderAbi);
 
-//const fetch = require('node-fetch');
+
 const axios = require("axios");
-//const {  dbWriteToken, dbReadToken } = require("./dynamodb");
+
 const {  alWriteToken, alDeleteToken, alReadToken } = require("./algolia");
 const TOKEN_JSON = { isLoading: false, isTokenLoaded: false, isPriceLoaded: false, owner: "", name: "", onSale: false };
-const DEBUG = ("true"===process.env.DEBUG);
 const delayMS = 1000;
+
+const logger  = require("./winston");
+const logm = logger.debug.child({ winstonModule: 'contract' });
 
 async function txSent(hash, chainId, transactionId)
 {
   const data = {"txData": hash, "chainId": chainId, "transactionId": transactionId};
-  if(DEBUG) console.log("contract txSent: ", data);
+  //if(DEBUG) console.log("contract txSent: ", data);
   const response = await axios.post(`${URL}/api/tx-background`, data);
   return response;
 };
 
 async function relayCall(functionName, args)
 {
+  const log = logm.child({functionName, args, wf: "relayCall"});
+  //if(DEBUG) console.log("Relay call:", functionName, args);
+  try {
+       const virtuosoInterface = new ethers.utils.Interface(VirtuosoNFTJSON);
+       const data = virtuosoInterface.encodeFunctionData(functionName, args);
+       const relayer = new Relayer({apiKey: RELAY_KEY, apiSecret: RELAY_SECRET});
+        //if(DEBUG) console.log("Relay call:", functionName, args);
+       const tx = await relayer.sendTransaction({
+         speed: 'fast',
+         to: CONTRACT_ADDRESS,
+         gasLimit: 1e7,
+         data: data,
+       });
 
-  if(DEBUG) console.log("Relay call:", functionName, args);
+       //if(DEBUG) console.log(`Sent relay-tx: ${tx.hash}`);
+       await txSent(tx.hash, CHAIN_ID, tx.transactionId);
+       log.info(`tx sent ${functionName} with hash ${tx.hash}`, {tx});
+       return tx;
+    } catch (error) { log.error("catch", {error}); }
 
-  const virtuosoInterface = new ethers.utils.Interface(VirtuosoNFTJSON);
-  const data = virtuosoInterface.encodeFunctionData(functionName, args);
-  const relayer = new Relayer({apiKey: RELAY_KEY, apiSecret: RELAY_SECRET});
-   if(DEBUG) console.log("Relay call:", functionName, args);
-  const tx = await relayer.sendTransaction({
-    speed: 'fast',
-    to: CONTRACT_ADDRESS,
-    gasLimit: 1e6,
-    data: data,
-  });
-
-  if(DEBUG) console.log(`Sent relay-tx: ${tx.hash}`);
-  await txSent(tx.hash, CHAIN_ID, tx.transactionId);
-  return tx;
 };
 
 
@@ -144,8 +149,9 @@ async function initAlgoliaTokens(force)
 	  const totalSupply = await virtuoso.totalSupply();
 	  //const chainId = await provider.getChainId();
     const contract = virtuoso.address.toString();
+    const log = logm.child({totalSupply, force,  wf: "initAlgoliaTokens"});
 
-	  if(DEBUG) console.log("initAlgoliaTokens totalSupply: ", totalSupply.toString(), "contract:", contract);
+	  //if(DEBUG) console.log("initAlgoliaTokens totalSupply: ", totalSupply.toString(), "contract:", contract);
 
 
     let i;
@@ -159,7 +165,7 @@ async function initAlgoliaTokens(force)
           const readToken = await alReadToken(tokenId, contract, CHAIN_ID);
           if( readToken.success === true )
           {
-            if(DEBUG) console.log("initAlgoliaTokens finished, totalSupply: ", totalSupply.toString());
+            log.info(`finished, totalSupply: ${totalSupply}`);
             return totalSupply;
           };
 
@@ -171,21 +177,16 @@ async function initAlgoliaTokens(force)
 
        if( result == false)
        {
-         console.error("initAlgoliaTokens Warning: token No ", tokenId, " is not loaded: ");
+         log.warn(`token No ${tokenId} is not loaded`, { i, tokenId});
          await sleep(10000);
          result = await loadAlgoliaToken(tokenId, contract, CHAIN_ID);
          if( result == false)
          {
-           console.error("initAlgoliaTokens Error: token No ", tokenId, " is not loaded: ");
+           log.error(`token No ${tokenId} is not loaded`, { i, tokenId});
          };
        };
-
-
 	  }
-
-
-//    let result = await loadAlgoliaToken(16, contract, chainId);
-	  if(DEBUG) console.log("initAlgoliaTokens finished, totalSupply: ", totalSupply.toString());
+    log.info(`finished, totalSupply: ${totalSupply}`);
 	  return totalSupply;
 }
 
@@ -286,6 +287,7 @@ async function getToken(tokenId)
 */
 async function getTokenPrice(tokenId)
 {
+    const log = logm.child({tokenId,  wf: "getTokenPrice"});
     let token  = TOKEN_JSON;
     try {
              const uri = await virtuoso.tokenURI(tokenId);
@@ -294,14 +296,14 @@ async function getTokenPrice(tokenId)
              const tokenuriraw = await getFromIPFS(uriHash);
              const tokenuri = JSON.parse(tokenuriraw.toString());
              const owner = await virtuoso.ownerOf(tokenId);
-             if(DEBUG) console.log("loadToken", tokenId.toString(), "uri", tokenuri);
+             //if(DEBUG) console.log("loadToken", tokenId.toString(), "uri", tokenuri);
              token.uri=tokenuri;
              token.owner = owner;
 
 
              const saleID = await virtuoso.salesIndex(tokenId);
              token.saleID = saleID.toString();
-             if(DEBUG) console.log("loadToken", tokenId.toString(), "saleID", saleID);
+             //if(DEBUG) console.log("loadToken", tokenId.toString(), "saleID", saleID);
              if( saleID == 0 )
              {
                token.onSale = false;
@@ -310,7 +312,7 @@ async function getTokenPrice(tokenId)
              {
                     const sale = await virtuoso.sales(saleID);
 
-                    if(DEBUG) console.log("loadToken", tokenId.toString(), "sale", sale);
+                    //if(DEBUG) console.log("loadToken", tokenId.toString(), "sale", sale);
 
                     if( sale[1] != 1 )
                     {
@@ -324,7 +326,7 @@ async function getTokenPrice(tokenId)
                       //const saleConditions = await axios.get(saleConditionsURL);
                       const saleConditionsraw = await getFromIPFS(sale[2]);
                       const saleConditions = JSON.parse(saleConditionsraw.toString());
-                      if(DEBUG) console.log("loadToken", tokenId.toString(), "saleConditions", saleConditions.data);
+                      //if(DEBUG) console.log("loadToken", tokenId.toString(), "saleConditions", saleConditions.data);
                       token.sale = saleConditions;
                       token.isPriceLoaded = true;
                      };
@@ -333,7 +335,7 @@ async function getTokenPrice(tokenId)
 
 
 		    } catch (error) {
-    			  console.error("loadToken loading token ", tokenId.toString(), " error ", error.code, error.config.url);
+    			  log.error(`catch ${error.code} ${error.config.url}` , {error} );
     			  return false;
   			};
 
@@ -439,15 +441,16 @@ async function loadAlgoliaToken(tokenId, contract, chainId)
 async function _loadAlgoliaToken(tokenId, contract, chainId)
 {
 
+   const log = logm.child({tokenId, contract, chainId, wf: "_loadAlgoliaToken"});
    let token  = TOKEN_JSON;
 
 
     try {
-            if(DEBUG) console.log("loadToken", tokenId.toString(), "contract", contract, "chainId", chainId);
+            //if(DEBUG) console.log("loadToken", tokenId.toString(), "contract", contract, "chainId", chainId);
              const isBlocked = await virtuoso.isBlocked(tokenId);
              if( isBlocked == true)
              {
-                  if(DEBUG) console.log("loadAlgoliaToken delete token", tokenId.toString());
+                  //if(DEBUG) console.log("loadAlgoliaToken delete token", tokenId.toString());
                   await alDeleteToken(tokenId, token, contract, chainId);
                   return true;
              }
@@ -501,13 +504,13 @@ async function _loadAlgoliaToken(tokenId, contract, chainId)
 
               };
               token.isLoading = false;
-		          if(DEBUG) console.log("loadAlgoliaToken", tokenId.toString(), "write with name", token.uri.name);
+		          log.info(`Write token ${tokenId} with name ${token.uri.name}`, { token });
 		          await alWriteToken(tokenId, token, contract, chainId);
 		          return true;
 
 
 		    } catch (error) {
-    			  console.error("loadAlgoliaToken loading token ", tokenId.toString(), " error ", error);
+    			  log.error(`catch loading token ${tokenId}`, { error });
     			  return false;
   			};
 }
@@ -517,9 +520,10 @@ async function _loadAlgoliaToken(tokenId, contract, chainId)
 
 async function getBalance(address)
 {
-    const balance = await virtuoso.virtuosoBalances(address);
+    let balance = 0;
+    if( address !== "") balance = await virtuoso.virtuosoBalances(address);
     const balance1 = balance / 100;
-    console.log("getBalance: ", balance1.toString() );
+    //console.log("getBalance: ", balance1.toString() );
     return balance1.toString();
 }
 
@@ -575,23 +579,197 @@ function sleep(ms) {
 
 async function txBackground(body)
 {
-    console.log("txBackground contract background: ", body);
+    //console.log("txBackground contract background: ", body);
 
-    if( body.chainId == CHAIN_ID)
+    if( body.chainId.toString() === CHAIN_ID)
     {
           await loadTransaction(body.txData, body.chainId, body.transactionId);
     }
     else
     {
-          console.error("txBackground wrong chain", body, "needs to be on chain", CHAIN_ID);
+          logm.error(`wrong chain ${body.chainId}, needs to be on chain ${CHAIN_ID}`, {body, wf: "txBackground"});
     }
 
 }
 
+async function getConfirmedHash(hashOriginal, transactionId)
+{
+      const log = logm.child({hashOriginal, transactionId, wf: "getConfirmedHash"});
+      let txHash = hashOriginal;
+      let relayer;
+
+      if( transactionId !== "") relayer = new Relayer({apiKey: RELAY_KEY, apiSecret: RELAY_SECRET});
+
+       // Poll for 300 seconds with a 5 second poll interval.
+       // TODO: Make these parameters configurable.
+       const pollTimeout = 300e3;
+       const pollInterval = 5e3;
+       const waitConfirmed = 100e3;
+       const startTime = Date.now();
+       let confirmed = 0;
+
+       if (txHash !== undefined && txHash !== "")
+       {
+         while (true) {
+           const elapsedTime = Date.now() - startTime;
+           if (elapsedTime >= ( pollTimeout + confirmed ))
+           {
+             // A timeout is NOT an InvalidDeployment
+             log.warn(`wait timeout 5 min for hash  ${txHash}`, {txHash, elapsedTime, pollInterval, pollTimeout, startTime});
+             return "";
+           }
+           log.debug(`verifying tx mined ${txHash}, passed ${elapsedTime} ms`);
+           let receipt = await provider.getTransactionReceipt(txHash);
+           if (receipt && parseInt(receipt.status) === 1)
+           {
+
+             if( receipt.confirmations >= 5)
+             {
+                const sec = parseInt(elapsedTime/1000);
+                log.info(`Transaction confirmed with hash ${txHash}, ${receipt.confirmations} confirmations in ${sec} sec`, {txHash, status: receipt.status, confirmations: receipt.confirmations, elapsedTime});
+                if( txHash !== hashOriginal) log.warn(`Hash was replaced from ${hashOriginal} to ${txHash}, confirmed in ${sec} sec`)
+                return txHash;
+              }
+              else
+              {
+                  confirmed = waitConfirmed;
+                  log.debug(`succeeded verifying tx mined ${txHash}, ${receipt.confirmations} confirmations`);
+                  await sleep(pollInterval);
+              };
+           }
+           else if (receipt)
+           {
+              if( transactionId !== '' )
+              {
+                const txRelay = await relayer.query(transactionId);
+                if(txHash !== txRelay.hash )
+                {
+                  log.warn(`tx was reverted from ${txHash} to ${txRelay.hash}`, {txHash, txRelay, status: receipt.status  });
+                  txHash = txRelay.hash;
+                 };
+              }
+              else
+              {
+                log.error(`tx was reverted from ${txHash}`, {txHash, receipt});
+                return "";
+              };
+           }
+           else
+           {
+             log.debug(`waiting for tx ${txHash} to be mined`);
+             await sleep(pollInterval);
+             if( transactionId !== '' )
+             {
+                const txRelay = await relayer.query(transactionId);
+                if(txHash !== txRelay.hash )
+                {
+                   log.warn(`tx was reverted from ${txHash} to ${txRelay.hash}`, {txHash, receipt, txRelay});
+                   txHash = txRelay.hash;
+                };
+             };
+           }
+         }
+       };
+       return "";
+};
+
 async function loadTransaction(hashOriginal, chainId, transactionId)
 {
 
-      if( DEBUG) console.log("txBackground loadTransaction with hash ", hashOriginal,
+        const log = logm.child({hashOriginal, chainId, transactionId, wf: "loadTransaction"});
+        log.debug("txBackground loadTransaction");
+
+        const hash = await getConfirmedHash(hashOriginal, transactionId);
+        log.debug(`Confirmed hash ${hash}`, {hash});
+        if( hash === "") { log.error(`Failed transaction ${hashOriginal} ${transactionId}`, {hash}); return; };
+        const tx = await provider.getTransaction(hash);
+
+        let contract = ethers.utils.getAddress(tx.to);
+        let name = "";
+        let args = "";
+        let tokenId = 0;
+
+
+        if(contract === ethers.utils.getAddress(virtuoso.address))
+        {
+
+             const decodedInput = inter.parseTransaction({ data: tx.data, value: tx.value});
+             name = decodedInput.name;
+             args = decodedInput.args;
+      	}
+      	else if(contract === ethers.utils.getAddress(forwarder.address))
+        {
+             const decodedInput1 = interForwarder.parseTransaction({ data: tx.data, value: tx.value});
+             const name1 = decodedInput1.name;
+             const args1 = decodedInput1.args;
+             if( name1 === 'execute')
+             {
+                      const from = decodedInput1.args.forwardRequest.from;
+                      const to = decodedInput1.args.forwardRequest.to;
+                      //const data = decodedInput1.args.forwardRequest.data;
+                      //if( DEBUG) console.log("relay txBackground execute from", from, "to", to );
+                      const decodedInput2 = inter.parseTransaction({ data: decodedInput1.args.forwardRequest.data, value: decodedInput1.args.forwardRequest.value});
+                      //if( DEBUG) console.log("txBackground gasless: ", decodedInput2.name, "from", from, "to", to );
+                      name = decodedInput2.name;
+                      args = decodedInput2.args;
+                      contract = to.toString();
+
+              }
+              else
+              {
+                  log.error(`Wrong function ${name1}, must be execute`, {tx, decodedInput1, contract});
+                  return;
+              };
+
+        }
+        else
+        {
+            log.error(`Wrong contract address ${tx.to}`, {tx, contract});
+            return;
+        };
+
+        if( name == "approveSale" ||
+            name == "cancelSale" ||
+            name == "setBlock" ||
+            name == "safeTransferFrom" ||
+            name == "sell" ||
+            name == "transferFrom" ||
+            name == "virtuosoSafeTransferFrom"
+            )
+          {
+            tokenId = args.tokenId;
+            log.info(`loadToken ${tokenId} on ${name}`, {name, args, tokenId, contract, chainId});
+            await loadAlgoliaToken(tokenId, contract.toString(), chainId)
+
+          }
+         else if( name == "mintItem" ||
+                  name == "mintChildItem"
+            )
+          {
+              let receipt = await provider.getTransactionReceipt(hash);
+              if(receipt.logs[2] !== undefined )
+              {
+                     const log = inter.parseLog(receipt.logs[2]); // here you can add your own logic to find the correct log
+
+                     if( log.name === 'OnMint')
+                     {
+                        tokenId = log.args._id;
+                        log.info(`initTokens on ${name}, tokenId ${tokenId}`, {log, hash, receipt});
+                        await initAlgoliaTokens(false);
+
+                     } else { log.error(`Wrong log name on ${name}: ${log.name}`, {log, hash, receipt}); return; };
+              } else { log.error(`Wrong logs on ${name}`, {log, hash, receipt}); return; };
+          } else log.info(`Function name: ${name}`);
+};
+
+/*
+
+
+async function loadTransaction(hashOriginal, chainId, transactionId)
+{
+
+      const log = logm.child({hashOriginal, chainId, transactionId, wf: "loadTransaction"});
+      log.debug("txBackground loadTransaction with hash ", hashOriginal,
                               "chainId", chainId, "transactionId", transactionId);
       let relayer;
       let tx;
@@ -679,13 +857,7 @@ async function loadTransaction(hashOriginal, chainId, transactionId)
             name == "mintChildItem"
             )
           {
-              /*const topics = ["0xdbb46a548b5ad93085f682859c3fd4fd70691a90732eb1eaaed4e0ff37a2fdee"];
-              resultwait.logs.map(function(log)
-                  {
-                  const item = inter.parseLog(log);
-                  if( DEBUG) console.log("loadTransaction parseLog ", item);
-                  if( item.name === 'OnMint') tokenId = item.args._id;
-              });*/
+
 
               if(resultwait.logs[2] !== undefined )
               {
@@ -706,7 +878,8 @@ async function loadTransaction(hashOriginal, chainId, transactionId)
 
 };
 
-/*
+
+
 async function addBalance( address, amount, description)
 {
 	console.log("addBalance: address: ", address, "amount: ", amount);
@@ -765,8 +938,6 @@ async function transferToken(tokenId, address, credit)
 */
 
 module.exports = {
-//    virtuoso,
-//    provider,
     getBalance,
     getTokenPrice,
     txBackground,

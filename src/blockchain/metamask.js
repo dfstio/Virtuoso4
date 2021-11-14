@@ -70,7 +70,7 @@ async function virtuosoFunction(address, name, args)
                  } else log.error(`wrong chain or address calling ${name} from ${address}`);
           } else log.error(`no signer or address calling ${name} from ${address}`, {signer});
 
-    } catch (error) { log.error("catch", error );};
+    } catch (error) { log.error("catch", {error} );};
 
     log.profile(`call executed: ${name} from ${address}`, {result});
     return result;
