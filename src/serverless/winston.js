@@ -4,6 +4,7 @@ const winston = require('winston'),
 const { WINSTON_ID, WINSTON_KEY, WINSTON_NAME, WINSTON_REGION, BRANCH, CHAIN_ID } = process.env;
 
 const cloudwatchConfig = {
+    level: 'info',
     logGroupName:  WINSTON_NAME ,
     logStreamName: `${BRANCH}-${CHAIN_ID}`,
     awsAccessKeyId: WINSTON_ID,
@@ -58,5 +59,11 @@ const info = new winston.createLogger({
     rejectionHandlers: transportInfo
 });
 
-module.exports = { info, debug };
+async function flush()
+{
+    await new Promise( (resolve) => { transportInfo[1].kthxbye(resolve) } );
+    await new Promise( (resolve) => { transportDebug[1].kthxbye(resolve) } );
+};
+
+module.exports = { info, debug, flush };
 
