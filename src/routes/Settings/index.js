@@ -1,14 +1,8 @@
 import React from "react";
 import api from "../../serverless/api";
-
 import {isMobile, isDesktop, isChrome} from 'react-device-detect';
 import {accountingEmail } from "../../util/config";
-//import {submitPublicKey from "../../relay/relayclient";
-
 import {Button, message} from "antd";
-
-
-
 import {useDispatch, useSelector} from "react-redux";
 import {updateAddress, updateVirtuosoBalance, updatePublicKey} from "../../appRedux/actions";
 import { metamaskLogin,
@@ -18,12 +12,7 @@ import { metamaskLogin,
 import IntlMessages from "util/IntlMessages";
 
 import logger from "../../serverless/logger";
-const logmodule = logger.info.child({ winstonModule: 'Settings' });
-
-
-
-const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
-
+const logm = logger.info.child({ winstonModule: 'Settings' });
 
 
 const Settings = () => {
@@ -35,9 +24,8 @@ const Settings = () => {
   const dispatch = useDispatch();
 
 
-  const log = logmodule.child({ winstonComponent: 'Settings' });
-//  log.info("Winston info test 223", {address, virtuosoBalance});
-  log.info("Settings 1");
+  const log = logm.child({ winstonComponent: 'Settings' });
+
 
   let vb = "$0";
   let showWithdaw = false;
@@ -51,21 +39,15 @@ const Settings = () => {
   let pb = " is not registered";
   if( publicKey !== undefined && publicKey !== "") pb = " is " + publicKey;
 
-/*
-  function add()
-  {
 
-            if(DEBUG) console.log("Add balance clicked", address);
-            //if( address !== "") api.add( address, 1000, "Added $10 ");
-            if( address !== "") api.hello({ address:address, type: "mint", tokenId: 1});
-  }
-*/
   async function register()
   {
 
-            log.info("Register clicked", {address});
+            log.info("Register clicked", {address, wf: "register"});
+
             if( address !== undefined && address !== "")
             {
+                 log.profile("Register");
                  const key = 'RegisterPublicKey';
                  message.loading({content: `Please provide public key in Metamask and confirm transaction`, key, duration: 60});
 
@@ -78,6 +60,7 @@ const Settings = () => {
                     message.success({content: `Public key ${result.publicKey} is written to blockchain with transaction ${result.hash}`, key, duration: 10});
                 }
                 else message.error({content: `Public key is not provided or written to blockchain`, key, duration: 10});
+                log.profile("Register", {address, result, wf: "register"});
 
             };
   }
@@ -87,10 +70,9 @@ const Settings = () => {
   async function connect()
   {
 
-            log.info("Connect clicked", {address});
+            log.info("Connect clicked", {address, wf: "connect"});
             const newAddress = await metamaskLogin();
             dispatch(updateAddress(newAddress));
-            //if( address !== "") api.add( address, 1000, "Added $10 ");
   }
 
   return (
