@@ -43,11 +43,11 @@ const Settings = () => {
   async function register()
   {
 
-            log.info("Register clicked", {address, wf: "register"});
+            //log.info("Register clicked", {address, wf: "register"});
 
             if( address !== undefined && address !== "")
             {
-                 log.profile("Register");
+                 log.profile(`Registered public key of address ${address}`);
                  const key = 'RegisterPublicKey';
                  message.loading({content: `Please provide public key in Metamask and confirm transaction`, key, duration: 60});
 
@@ -60,7 +60,7 @@ const Settings = () => {
                     message.success({content: `Public key ${result.publicKey} is written to blockchain with transaction ${result.hash}`, key, duration: 10});
                 }
                 else message.error({content: `Public key is not provided or written to blockchain`, key, duration: 10});
-                log.profile("Register", {address, result, wf: "register"});
+                log.profile(`Registered public key of address ${address}`, {address, result, wf: "register"});
 
             };
   }

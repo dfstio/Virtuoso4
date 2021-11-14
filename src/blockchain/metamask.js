@@ -248,6 +248,7 @@ export async function getVirtuosoUnlockableContentKey(tokenId, address)
 
 };
 
+/*
 export async function virtuosoSell(tokenId, ipfsHash, operatorAddress, unlockableIPFSHash, address)
 {
     const log = logm.child({tokenId, ipfsHash, operatorAddress, unlockableIPFSHash, address, wf: "virtuosoSell"});
@@ -291,6 +292,34 @@ export async function virtuosoSell(tokenId, ipfsHash, operatorAddress, unlockabl
 
 };
 
+*/
+
+export async function virtuosoSell(tokenId, ipfsHash, operatorAddress, unlockableIPFSHash, address)
+{
+    const log = logm.child({tokenId, ipfsHash, operatorAddress, unlockableIPFSHash, address, wf: "virtuosoSell"});
+    let txresult = '';
+
+    try {
+            txresult =  await virtuosoFunction(address, 'sell', [tokenId, ipfsHash, operatorAddress, unlockableIPFSHash]);
+    } catch (error) { log.error("catch", {error} );};
+    return txresult;
+
+};
+
+export async function virtuosoMint(address, ipfsHash, unlockableIPFSHash, onEscrow, dynamicUri)
+{
+
+    const log = logm.child({address, ipfsHash, unlockableIPFSHash, onEscrow, dynamicUri, wf: "virtuosoMint"});
+
+    let txresult = '';
+    try {
+            txresult = await virtuosoFunction(address, 'mintItem', [address, ipfsHash, unlockableIPFSHash, onEscrow, dynamicUri]);
+    } catch (error) { log.error("catch", {error} );};
+    return txresult;
+
+};
+
+/*
 export async function waitForHash(txresult)
 {
     let resultwait = await txresult.wait(6);
@@ -344,7 +373,7 @@ export async function virtuosoMint(address, ipfsHash, unlockableIPFSHash, onEscr
     return txresult;
 
 };
-/*
+
 export async function virtuosoRegisterPublicKey(address)
 {
     const log = logm.child({address, wf: "virtuosoRegisterPublicKey"});

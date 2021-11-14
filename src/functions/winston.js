@@ -36,10 +36,9 @@ exports.handler = async(event, context) => {
                    jsonMessage: true
                    //messageFormatter: ({ level, message, additionalInfo }) =>    `[${level}] : ${message} \nAdditional Info: ${JSON.stringify(additionalInfo)}}`
                };
-        console.log("Winston", body);
+        //console.log("Winston", body);
         const transport = new WinstonCloudWatch(cloudwatchConfig);
-	      function myfunc( args ) { console.log("myfunc", args); };
-	      function myfunc2( args ) { console.log("myfunc2", args); };
+	      function myfunc( args ) { console.log("logged to cloudwatch", (args===null)?"":args); };
 	      transport.log(body, myfunc);
 	      await new Promise( (resolve) => { transport.kthxbye(resolve) } );
 
