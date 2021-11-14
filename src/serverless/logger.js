@@ -36,7 +36,7 @@ if( REACT_APP_DEBUG === 'true')
             level: 'info',
             format: winston.format.combine(
                   winston.format.colorize(),
-                  winston.format.timestamp('HH:mm:ss.SSS'),
+                  winston.format.timestamp({ format: 'HH:mm:ss.SSS'}),
                   myFormat
                 )
         }));
@@ -46,7 +46,7 @@ if( REACT_APP_DEBUG === 'true')
             level: 'debug',
              format: winston.format.combine(
                   winston.format.colorize(),
-                  winston.format.timestamp('HH:mm:ss.SSS'),
+                  winston.format.timestamp({ format: 'HH:mm:ss.SSS'}),
                   myFormat
                 )
         }));

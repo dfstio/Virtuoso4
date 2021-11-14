@@ -623,7 +623,7 @@ async function getConfirmedHash(hashOriginal, transactionId)
            if (receipt && parseInt(receipt.status) === 1)
            {
 
-             if( receipt.confirmations >= 5)
+             if( receipt.confirmations >= 6)
              {
                 const sec = parseInt(elapsedTime/1000);
                 log.info(`Transaction confirmed with hash ${txHash}, ${receipt.confirmations} confirmations in ${sec} sec`, {txHash, status: receipt.status, confirmations: receipt.confirmations, elapsedTime});
