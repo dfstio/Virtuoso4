@@ -175,15 +175,7 @@ const handleAccountsChanged = useCallback( async (accounts) => {
 
     );
    };
-
-
-
-
     return result;
-    /*
-
-            }
-      ); */
 };
 
 export default MetaMaskAccount;

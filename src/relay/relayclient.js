@@ -1,7 +1,8 @@
 // User client-side code for signing a meta-tx request
 // Note that, instead of sending the tx, the end-user signs the request and sends it to a relayer server
 // This server will process the request, and if valid, send the tx via a Defender Relayer
-
+import logger from "../serverless/logger";
+const logm = logger.debug.child({ winstonModule: 'relayclient' });
 
 const ethers = require("ethers");
 const VirtuosoNFTJSON = require("../contract/NFTVirtuoso.json");
@@ -10,7 +11,7 @@ const ForwarderAbi  = require('./IForwarder.json');
 
 const {REACT_APP_CONTRACT_ADDRESS, REACT_APP_FORWARDER_ADDRESS, REACT_APP_CHAIN_ID, REACT_APP_RELAY_KEY} = process.env;
 const RelayUrl = '/api/relay';
-const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
+
 
 const EIP712DomainType = [
   { name: 'name', type: 'string' },
@@ -34,7 +35,7 @@ const ForwardRequestType = [
 const TypedData = {
   domain: {
     name: 'NFT Virtuoso', //'GSN Relayed Transaction',
-    version: '1', //'2',
+    version: '1',
     chainId: parseInt(REACT_APP_CHAIN_ID),
     verifyingContract: REACT_APP_FORWARDER_ADDRESS,
   },
@@ -51,13 +52,16 @@ const TypedData = {
 
 
 export async function relayFunction(name, args) {
-
+  const log = logm.child({name, args, wf: "relayFunction"});
   var provider = window.ethereum && new ethers.providers.Web3Provider(window.ethereum);
   var signer = provider && provider.getSigner();
   const from = await signer.getAddress();
   const network = await provider.getNetwork();
-  if (network.chainId !== REACT_APP_CHAIN_ID)
-      console.error(`Must be connected to network`, REACT_APP_CHAIN_ID, ", not", network.chainId );
+  if (network.chainId.toString() !== REACT_APP_CHAIN_ID)
+  {
+      log.error(`Must be connected to network ${REACT_APP_CHAIN_ID}, not ${network.chainId}`, {from, network } );
+      return { hash : '', transactionId: ''};
+  };
 
   // Get nonce for current signer
   const forwarder = new ethers.Contract(REACT_APP_FORWARDER_ADDRESS, ForwarderAbi, signer);
@@ -67,8 +71,6 @@ export async function relayFunction(name, args) {
 
   // Encode meta-tx request
   const virtuosoInterface = new ethers.utils.Interface(VirtuosoNFTJSON);
-  //const forwarderInterface = new ethers.utils.Interface(ForwarderAbi);
-  //const data = virtuosoInterface.encodeFunctionData('setPublicKey', [publicKey]);
   const data = virtuosoInterface.encodeFunctionData(name, args);
   /*
   const gasEstimate = await provider.estimateGas({
@@ -90,7 +92,7 @@ export async function relayFunction(name, args) {
     from,
     to: REACT_APP_CONTRACT_ADDRESS,
     value: '0x0',
-    gas: 500000,
+    gas: 1e6,
     nonce,
     data,
     validUntil: "0x0"
@@ -100,66 +102,6 @@ export async function relayFunction(name, args) {
   // Directly call the JSON RPC interface, since ethers does not support signTypedDataV4 yet
   // See https://github.com/ethers-io/ethers.js/issues/830
   const signature = await provider.send('eth_signTypedData_v4', [from, JSON.stringify(toSign)]);
-
-
- // const requestdata = { ...request, signature };
-  //const forwarder = new ethers.Contract(REACT_APP_FORWARDER_ADDRESS, ForwarderAbi, signer);
-  /*
-  const args = {forwardRequest:{
-                        from: from,
-                        to: REACT_APP_CONTRACT_ADDRESS,
-                        value: 0,
-                        gas: 1e6,
-                        nonce: nonceNumber,
-                        data: data
-                   },
-                   validUntil: 15467154871,
-                   domainSeparator: DomainSeparator,
-                   requestTypeHash: TypeHash,
-                   suffixData: SuffixData,
-                   signature: signature
-                 };
-
-  const args = [
-    { to: REACT_APP_FORWARDER_ADDRESS,
-      from,
-      value:"0x0",
-      gas:ethers.BigNumber.from(1000000).toHexString(),
-      nonce: nonceNumber,
-      data,
-      validUntil: "0x0"  },
-    DomainSeparator,
-    TypeHash,
-    SuffixData,
-    signature
-  ];
-
-  if(DEBUG) console.log("Relay3:", args);
-
-
-
-  //const forwarderData = forwarderInterface.encodeFunctionData('execute', args );
-  const forwarderData = forwarderInterface.getFunction('execute');
-   if(DEBUG) console.log("Relay forwarderData:", forwarderData);
-
-    const requestForwarder = {
-    from,
-    to: REACT_APP_FORWARDER_ADDRESS,
-    value: '0',
-    gas: ethers.BigNumber.from(1000000).toHexString(),
-    nonce,
-    data
-  };
-
-  if(DEBUG) console.log("Relay4:", requestForwarder );
-  //const result = await provider.send('eth_sendTransaction', ...requestForwarder );
-  //const result = await forwarder.execute(...args);
-  //if(DEBUG) console.log("Relay 5:", result);
-  //const verifyResult = await forwarder.verify(...args);
-  //if(DEBUG) console.log("Relay 5:", verifyResult);
-
-
-*/
 
   // Send request to the server
   const relayData = { request: request, signature: signature, key: REACT_APP_RELAY_KEY};

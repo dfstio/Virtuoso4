@@ -1,4 +1,6 @@
 import {message} from 'antd';
+import logger from "../serverless/logger";
+const logm = logger.debug.child({ winstonModule: 'ipfs' });
 
 const { REACT_APP_INFURA_IPFS_PROJECT_ID, REACT_APP_INFURA_IPFS_PROJECT_SECRET } = process.env;
 const { BufferList } = require("bl");
@@ -6,8 +8,6 @@ const CryptoJS = require('crypto-js');
 const sigUtil = require("eth-sig-util");
 const { v4: uuidv4 } = require('uuid');
 
-
-const DEBUG = false; //const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
 
 const ipfsClient = require('ipfs-http-client');
 
@@ -43,7 +43,7 @@ function readFileAsync(file) {
 export async function addEncryptedFileToIPFS(file)
 {
 
-     if(DEBUG) console.log("addEncryptedFileToIPFS file: ", file);
+     //if(DEBUG) console.log("addEncryptedFileToIPFS file: ", file);
      var result = {
         "IPFShash" : "",
         "password" : "",
@@ -111,14 +111,14 @@ export async function addEncryptedFileToIPFS(file)
           result.SHA256_Hash = sha256Hash;
 
           result.size = file.size;
-          if(DEBUG) console.log("addEncryptedFileToIPFS result: ", result);
+          //if(DEBUG) console.log("addEncryptedFileToIPFS result: ", result);
 
           message.success(`File ${file.name} uploaded to IPFS with hash ${result.IPFShash}`);
 
 
 
     } catch (error) {
-      console.log('addEncryptedFileToIPFS Error uploading file: ', error);
+      logm.error(`Error uploading file ${file.name} to IPFS`, {error, file, wf:"addEncryptedFileToIPFS"} );
       message.error(`Error uploading file ${file.name} to IPFS`);
     }
     return result;
@@ -140,20 +140,14 @@ async function encryptUnlockableContent(content, key)
 
     if (key == "")
     {
-        console.error("encryptUnlockableContent - publicKey is empty",  key);
+        logm.error("encryptUnlockableContent - publicKey is empty", {key, wf:"encryptUnlockableContent"});
         return encryptedContent;
     }
     else
     {
-        //let msg = content.unlockable;
-        //msg.description = content.unlockable_description;
-        //if(DEBUG) console.log('encryptUnlockableContent 1: ', content.image.IPFShash);
-        //if(DEBUG) console.log('encryptUnlockableContent 2: ', content.image);
-        //let msg = content;
+
         const msg1 = JSON.stringify(content);
-        //if(DEBUG) console.log('encryptUnlockableContent msg1: ', msg1);
         const password = CryptoJS.lib.WordArray.random(64).toString(CryptoJS.enc.Base64);
-        if(DEBUG) console.log('msg1: ', msg1, " password: ", password);
 
         encryptedContent.data = CryptoJS.AES.encrypt(msg1, password).toString();
 
@@ -170,7 +164,6 @@ async function encryptUnlockableContent(content, key)
                );
 
           encryptedContent.key = "0x" + buf.toString("hex");
-          if(DEBUG) console.log("encryptUnlockableContent encrypted: ", encryptedContent);
           encryptedContent.exists = true;
           encryptedContent.method = { "unlockableContentKey" : "MetaMask.eth-sig-util.encrypt.x25519-xsalsa20-poly1305", "unlockableContent": "crypto-js.AES.encrypt"};
           return encryptedContent;
@@ -229,12 +222,10 @@ export async function encryptUnlockableToken(token, key)
                    content.attachments = filesJSON;
            };
 
-
-           if(DEBUG) console.log('encryptUnlockableToken: ', content);
            encryptedContent = await encryptUnlockableContent(content, key);
 
 
-      } catch (error) {console.error("encryptUnlockableToken error:", error)}
+      } catch (error) {logm.error("catch", {error, token, wf:"encryptUnlockableToken"})}
 
 
       return encryptedContent ;
@@ -321,11 +312,9 @@ export async function writeToken(token, writeToIPFS = true)
 
 
            };
-           if(DEBUG) console.log('writeToken: ', content);
 
 
-
-      } catch (error) {console.error("writeToken error:", error)}
+      } catch (error) {logm.error("catch", { token, writeToIPFS, error, wf:"writeToken"})}
 
       return content ;
 
@@ -351,11 +340,14 @@ export async function decryptUnlockableToken(data, password)
 
         var bytes  = CryptoJS.AES.decrypt(data, password);
         var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-        if(DEBUG) console.log('decrypted: ', decryptedData);
+        //if(DEBUG) console.log('decrypted: ', decryptedData);
         decryptedData.loaded = true;
         return decryptedData;
 
-        } catch (error) {console.error("decryptUnlockableToken error:", error)}
+        } catch (error)
+        {
+           logm.error("catch", {data, error, wf:"decryptUnlockableToken"});
+        }
 
 
 
@@ -414,7 +406,7 @@ export async function decryptUnlockableToken(data, password)
 export async function addFileHashToIPFS(file, writeToIPFS = true, folder = "")
 {
 
-     if(DEBUG) console.log("addFileHashToIPFS file: ", file, writeToIPFS, folder);
+     //if(DEBUG) console.log("addFileHashToIPFS file: ", file, writeToIPFS, folder);
 
      try {
      var binaryWA;
@@ -462,12 +454,12 @@ export async function addFileHashToIPFS(file, writeToIPFS = true, folder = "")
             result.url = "";
       };
 
-      if(DEBUG) console.log("addFileHashToIPFS result: ", result);
+      //if(DEBUG) console.log("addFileHashToIPFS result: ", result);
       return result;
 
 
     } catch (error) {
-      console.log('addFileHashToIPFS Error uploading file: ', error)
+      logm.error('catch', {error, wf:"addFileHashToIPFS", file, writeToIPFS, folder});
     }
 };
 
@@ -490,7 +482,6 @@ export async function getEncryptedFileFromIPFS(hash, key, filetype, sizeFunction
      try {
 
      const file = await getFromIPFS(hash, sizeFunction);
-     if (DEBUG) console.log("getEncryptedFileFromIPFS file: ", hash);
      const ebuf = file.toString();
      //if (DEBUG) console.log("getEncryptedFileFromIPFS ebuf: ", ebuf);
      var bytes  = CryptoJS.AES.decrypt(ebuf, key);
@@ -501,12 +492,11 @@ export async function getEncryptedFileFromIPFS(hash, key, filetype, sizeFunction
      //let filename = new File([ dcArrayBuffer ], "album1.jpeg", {type: filetype });
      var urlCreator = window.URL || window.webkitURL;
      var imageUrl = urlCreator.createObjectURL( blob);
-     if (DEBUG) console.log("getEncryptedFileFromIPFS result: ", hash, imageUrl);
      return imageUrl;
 
 
     } catch (error) {
-      console.log('getEncryptedFileFromIPFS Error: ', error)
+     logm.error('catch', {error, wf:"getEncryptedFileFromIPFS", hash, key, filetype});
     }
 };
 
@@ -532,16 +522,22 @@ export async function getFromIPFS( hashToGet)
 */
 export async function getFromIPFS( hashToGet, sizeFunction = null)
 {
-    if (DEBUG) console.log("getFromIPFS hash:", hashToGet);
+    //if (DEBUG) console.log("getFromIPFS hash:", hashToGet);
     let size = 0;
     const content = new BufferList();
-    for await (const chunk of ipfs.cat(hashToGet)) {
-      content.append(chunk);
-      size += chunk.length;
-      //if (DEBUG) console.log("getFromIPFS chunk ", chunk.length, size);
-      if( sizeFunction!== null) sizeFunction(size);
-    };
-    if (DEBUG) console.log("getFromIPFS finished ", hashToGet, size);
+
+    try {
+          for await (const chunk of ipfs.cat(hashToGet)) {
+            content.append(chunk);
+            size += chunk.length;
+            //if (DEBUG) console.log("getFromIPFS chunk ", chunk.length, size);
+            if( sizeFunction!== null) sizeFunction(size);
+          };
+    } catch (error) {
+     logm.error('catch', {error, wf:"getFromIPFS", hashToGet});
+    }
+
+    //if (DEBUG) console.log("getFromIPFS finished ", hashToGet, size);
     //if( DEBUG && content !== undefined ) console.log("getFromIPFS Content as string: ", content.toString());
     return content;
 };
@@ -550,8 +546,13 @@ export async function getFromIPFS( hashToGet, sizeFunction = null)
 
 export async function addToIPFS( str )
 {
-	const result = await ipfs.add(str, {pin: true});
-	return result;
+  try {
+	  const result = await ipfs.add(str, {pin: true});
+	  return result;
+	 } catch (error) {
+     logm.error('catch', {error, wf:"addToIPFS", str});
+   }
+
 };
 
 
@@ -561,6 +562,6 @@ try {
       const hash = await ipfs.add(file, {pin: true});
       return hash;
     } catch (error) {
-      console.log('addFileToIPFS Error uploading file: ', error)
+      logm.error('catch', {error, wf:"addFileToIPFS", file});
     }
 };

@@ -1,8 +1,9 @@
 // Server-side code for receiving meta-tx requests
 // The server validates the request, and if accepted, will send the meta-tx via a Defender Relayer
-const DEBUG = ("true"===process.env.DEBUG);
-const {  RELAY_KEY, RELAY_SECRET, REACT_APP_FORWARDER_ADDRESS, REACT_APP_CONTRACT_ADDRESS, CHAIN_ID, RPC_URL, REACT_APP_RELAY_KEY} = process.env;
 
+const {  RELAY_KEY, RELAY_SECRET, REACT_APP_FORWARDER_ADDRESS, REACT_APP_CONTRACT_ADDRESS, CHAIN_ID, RPC_URL, REACT_APP_RELAY_KEY} = process.env;
+const logger  = require("../serverless/winston");
+const logm = logger.debug.child({ winstonModule: 'relay' });
 
 const { Relayer } = require('defender-relay-client');
 const { ethers } = require('ethers');
@@ -54,14 +55,14 @@ const SuffixData = '0x';
 
 async function relay(relayData) {
   // Unpack request
-
+  const log = logm.child({relayData,  wf: "relay"});
   const { to, from, value, gas, nonce, data} = relayData.request;
   const signature = relayData.signature;
-  if(DEBUG) console.log("Relay request:", relayData.request);
+  log.debug("Relay request");
 
   // Validate request
-  if( relayData.key === undefined || relayData.key !== REACT_APP_RELAY_KEY) { console.error("Relay: wrong key"); return {hash:0}; };
-  if( to === undefined || to !== REACT_APP_CONTRACT_ADDRESS) { console.error("Relay: wrong contract"); return {hash:0}; };
+  if( relayData.key === undefined || relayData.key !== REACT_APP_RELAY_KEY) { log.error("wrong key"); return {hash:0}; };
+  if( to === undefined || to !== REACT_APP_CONTRACT_ADDRESS) { log.error("wrong contract", {to, REACT_APP_CONTRACT_ADDRESS}); return {hash:0}; };
 
   const provider = new ethers.providers.StaticJsonRpcProvider(RPC_URL);
   const forwarder = new ethers.Contract(REACT_APP_FORWARDER_ADDRESS, ForwarderAbi, provider);
@@ -84,11 +85,11 @@ async function relay(relayData) {
   const tx = await relayer.sendTransaction({
     speed: 'fast',
     to: REACT_APP_FORWARDER_ADDRESS,
-    gasLimit: 1e6,
+    gasLimit: 1e7,
     data: forwardData,
   });
 
-  if(DEBUG) console.log(`Sent meta-tx: ${tx.hash}`);
+  log.debug(`Sent meta-tx: ${tx.hash}`);
   return tx;
 }
 
@@ -99,8 +100,11 @@ exports.handler = async function(event, context, callback) {
     const data = JSON.parse(event.body);
     //if(DEBUG) console.log("Relay function:", data);
     const response = await relay(data);
+    await logger.flush();
     callback(null, { statusCode: 200, body: JSON.stringify(response) });
   } catch (err) {
+    logm.error("catch", {err});
+    await logger.flush();
     callback(err);
   }
 }

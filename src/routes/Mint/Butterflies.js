@@ -355,7 +355,7 @@ ${names[right]}  - ${slider}%`);
                                 tokenId: 0,
                                 price: price,
                                 currency: "rub",
-                                image: mintData.image,
+                                image: "https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/https://ipfs.io/ipfs/QmRXNX7PuJgPktMdzDgQoqcrULJnDNfq7QqH14NrxMCXQ8",
                                 name: mintData.name,
                                 address:  (myaddress==="")?"generate":myaddress,
                                 newTokenURI: result.path,

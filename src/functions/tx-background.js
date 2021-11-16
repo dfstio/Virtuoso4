@@ -1,4 +1,6 @@
 const { txBackground } = require("../serverless/contract");
+const logger  = require("../serverless/winston");
+const logm = logger.info.child({ winstonModule: 'tx-background' });
 
 exports.handler = async(event, context) => {
     //const { name = "Anonymous" } = event.queryStringParameters;
@@ -16,11 +18,14 @@ exports.handler = async(event, context) => {
 
     try {
         const body = JSON.parse(event.body);
+        //logm.info("txBackground start", {body});
         await txBackground(body);
+        await logger.flush();
 
     } catch (error) {
 
-       console.error("tx-background error: ", error);
+       logm.error("catch", {error, body:event.body});
+       await logger.flush();
     }
 
 };
