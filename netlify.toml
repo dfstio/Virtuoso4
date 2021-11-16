@@ -13,10 +13,6 @@
   to = '/email/:splat'
   status = 200
 
-[[redirects]]
-  from = '/mintimages/*'
-  to = '/mintimages/:splat'
-  status = 200
 
 [[redirects]]
   from = '/agreement/*'

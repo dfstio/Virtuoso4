@@ -163,7 +163,7 @@ async function createCheckoutSession(body)
 				   product_data: {
 					 name: token.uri.name,
 					 description: token.uri.description,
-					 images: [URL+"/mintimages/public.jpg"]
+					 images: [image]
 				   },
 				   unit_amount: amount,
 				 },
@@ -230,7 +230,7 @@ async function createCheckoutSession(body)
                   product_data: {
                   name: "Creation of the Virtuoso NFT token",
                   description: body.name,
-                  images: [URL+"/mintimages/public.jpg"]
+                  images: ["https://content.nftvirtuoso.io/image/mintimages/public.jpg"]
                   },
                   unit_amount: body.price * 100,
                 },
