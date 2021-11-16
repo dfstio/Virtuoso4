@@ -48,7 +48,7 @@ const SellButton = ({item, address}) => {
 
                 const newOkDisabled = (Number(price)>= 5 && accepted===true)? false : true;
                 if( newOkDisabled !== okDisabled) setOkDisabled(newOkDisabled);
-                if( DEBUG) console.log("Sell okDisabled: ", newOkDisabled, price, accepted);
+                //if( DEBUG) console.log("Sell okDisabled: ", newOkDisabled, price, accepted);
 
         }
       checkOkButton()

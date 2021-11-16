@@ -749,16 +749,16 @@ async function loadTransaction(hashOriginal, chainId, transactionId)
               let receipt = await provider.getTransactionReceipt(hash);
               if(receipt.logs[2] !== undefined )
               {
-                     const log = inter.parseLog(receipt.logs[2]); // here you can add your own logic to find the correct log
+                     const parsedLog = inter.parseLog(receipt.logs[2]); // here you can add your own logic to find the correct log
 
-                     if( log.name === 'OnMint')
+                     if( parsedLog.name === 'OnMint')
                      {
-                        tokenId = log.args._id;
-                        log.info(`initTokens on ${name}, tokenId ${tokenId}`, {log, hash, receipt});
+                        tokenId = parsedLog.args._id;
+                        log.info(`initTokens on ${name}, tokenId ${tokenId}`, {parsedLog, hash, receipt});
                         await initAlgoliaTokens(false);
 
-                     } else { log.error(`Wrong log name on ${name}: ${log.name}`, {log, hash, receipt}); return; };
-              } else { log.error(`Wrong logs on ${name}`, {log, hash, receipt}); return; };
+                     } else { log.error(`Wrong log name on ${name}: ${parsedLog.name}`, {parsedLog, hash, receipt}); return; };
+              } else { log.error(`Wrong logs on ${name}`, {hash, receipt}); return; };
           } else log.info(`Function name: ${name}`);
 };
 
