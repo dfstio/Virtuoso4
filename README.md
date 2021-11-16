@@ -1,10 +1,10 @@
-# NFT Virtuoso repo
-It is NFT Virtuoso frontend repo
+# NFT Virtuoso 4 repo
+It is NFT Virtuoso 4 frontend & functions repo
  
 
 ## Branches
 | Branch                           | Description   |
 | -------------------------------- | ------------- |
-| `main`                           | This is the main production branch for Polygon network |
+| `polygon`                           | This is the main production branch for Polygon network |
 | `mumbai`                         | This branch is for testing on mumbai |
 
