@@ -163,7 +163,7 @@ async function createCheckoutSession(body)
 				   product_data: {
 					 name: token.uri.name,
 					 description: token.uri.description,
-					 images: [image]
+					 images: [URL+"/mintimages/public.jpg"]
 				   },
 				   unit_amount: amount,
 				 },
