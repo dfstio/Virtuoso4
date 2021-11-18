@@ -7,11 +7,11 @@ const { combine, timestamp, label, printf } = winston.format;
 
 const { WINSTON_ID, WINSTON_KEY, WINSTON_NAME, WINSTON_REGION, BRANCH, CHAIN_ID } = process.env;
 
-var meta = { id: uuidv4(), type: "functions", startTime: Date.now() };
+var meta = { id: uuidv4(), type: "functions", startTime: Date.now(), updated: true };
 
 function initMeta()
 {
-    meta = { id: uuidv4(), type: "lambda", startTime: Date.now() };
+    meta = { id: uuidv4(), type: "functions", startTime: Date.now() };
 };
 
 
