@@ -7,6 +7,9 @@ import { metamaskLogin,
          virtuosoMint
          } from "../../blockchain/metamask";
 
+import logger from "../../serverless/logger";
+const log = logger.info.child({ winstonModule: 'Mint' , winstonComponent: "Butterflies" });
+
 const { REACT_APP_MINT_KEY} = process.env;
 const { addFileToIPFS, addToIPFS } = require("../../blockchain/ipfs");
 const {Meta} = Card;
@@ -132,7 +135,7 @@ const MintButterfly = () => {
       useEffect(() => {
             async function changeNumbers() {
 
-                 if( DEBUG) console.log("MintButterfly numbers: ", left, right, meta, "true"===process.env.REACT_APP_DEBUG, false);
+                 //if( DEBUG) console.log("MintButterfly numbers: ", left, right, meta, "true"===process.env.REACT_APP_DEBUG, false);
 
                  if( left !== right)
                  {
@@ -146,7 +149,7 @@ const MintButterfly = () => {
 
                         if( meta )
                         {
-                             if(DEBUG) console.log("Meta");
+                             //if(DEBUG) console.log("Meta");
                              if( !disabled) setDisabled(true);
                              setPrice(prices[rare[left]] + prices[rare[right]]);
                              setTitle("Мета " + butterflies[left]+"-"+butterflies[right]);
@@ -342,7 +345,7 @@ ${names[right]}  - ${slider}%`);
        }
        else mintData.image = "https://content.nftvirtuoso.io/image/butterflies/" + left.toString() + ".png";
 
-      if(DEBUG) console.log("Mint butterfly token", mintData);
+      log.info(`Minting butterfly token ${title}`, {mintData});
       const result = await addToIPFS(JSON.stringify(mintData));
       const myaddress = await metamaskLogin(false);
       message.loading( `Minting Butterfly NFT token - preparing checkout session`, 240);
@@ -361,7 +364,8 @@ ${names[right]}  - ${slider}%`);
                                 newTokenURI: result.path,
                                 unlockableContentKey: "",
                                 onEscrow: false,
-                                dynamicUri: ""
+                                dynamicUri: "",
+                                winstonMeta: logger.meta
                               };
 
         let form = document.createElement('form');

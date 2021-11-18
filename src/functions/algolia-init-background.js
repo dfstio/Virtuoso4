@@ -1,5 +1,6 @@
 const { initAlgoliaTokens } = require("../serverless/contract");
-
+const logger  = require("../serverless/winston");
+const log = logger.info.child({ winstonModule: 'algolia-init-background' });
 
 exports.handler = async(event, context) => {
     //const { name = "Anonymous" } = event.queryStringParameters;
@@ -16,17 +17,18 @@ exports.handler = async(event, context) => {
     }
 
     try {
-
+        logger.initMeta();
         // parse form data
         const body = JSON.parse(event.body);
-        console.log("algolia-init-background body:", body)
+        log.info("started", {body})
         let force = true;
         if( body.force !== undefined && body.force === false) force = false;
 
         let result = await initAlgoliaTokens(force);
-        console.log("algolia-init-background: ", result.toString(), " tokens");
+        log.info(`finished, total ${result} tokens`, {result});
 
         // return success
+        await logger.flush();
         return {
             statusCode: 200,
             body: JSON.stringify({
@@ -36,7 +38,16 @@ exports.handler = async(event, context) => {
         };
 
     } catch (error) {
-       console.error("algolia-init-background: ", error);
+
+       log.error("catch", {error, body:event.body});
+       await logger.flush();
+               // return error
+        return {
+            statusCode: error.statusCode || 500,
+            body: JSON.stringify({
+                message: error, success: false
+            }),
+        };
     }
 
 };

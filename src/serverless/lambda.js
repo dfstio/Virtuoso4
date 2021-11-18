@@ -119,61 +119,6 @@ async function lambdaHub(action, tokenId, data)
 };
 
 
-async function lambdaGetOperator(action, chainId, contract, tokenId, text)
-{
-
-
-
-       const payload = {
-                key: LAMBDA_KEY,
-                action: action,
-                chainId: chainId,
-                contract: contract,
-                tokenId: Number(tokenId),
-                context: KEY_CONTEXT,
-
-        };
-
-
-
-        const params = {
-          FunctionName: 'getOperator', /* required */
-          //ClientContext: 'STRING_VALUE',
-          InvocationType: 'RequestResponse',
-          LogType: 'None', //None Tail
-          Payload: JSON.stringify(payload) /* Strings will be Base-64 encoded on your behalf */,
-      };
-
-
-        //console.log("lambdaGetOperator params",  params, );
-
-   try {
-        //console.log("lambdaGetOperator params",  params, );
-        let result = await lambda.invoke(params).promise();
-        /*
-        , function(err, data) {
-                    if (err) {
-                        console.error("lambdaGetOperator invoke error:", JSON.stringify(err, null, 2));
-                    } else {
-                        console.log("lambdaGetOperator succeeded:", JSON.stringify(data, null, 2));
-                        //return data;
-                        }
-               }).promise(); */
-
-        const resultJSON = JSON.parse(result.Payload.toString());
-        resultJSON.encryptedText = encrypt(text, resultJSON.keyPair.PublicKey);
-        resultJSON.decryptedText = decrypt( resultJSON.encryptedText, resultJSON.keyPair.PrivateKeyPlaintext );
-        //if(DEBUG) console.log("lambdaGetOperator result: ", resultJSON, " params: ",  params);
-        return resultJSON;
-
-    } catch (error) {
-
-       console.log("lambdaGetOperator error: ", error);
-       return error;
-    }
-
-}
-
 function encrypt(toEncrypt, publicKey)
 {
        const buffer = Buffer.from(toEncrypt, 'utf8')
@@ -214,7 +159,6 @@ function decrypt(toDecrypt, privateKey)
 
 
 module.exports = {
-    lambdaGetOperator,
     lambdaSell,
     lambdaTransferToken,
     lambdaMintItem,

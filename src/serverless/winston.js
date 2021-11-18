@@ -9,8 +9,14 @@ const { WINSTON_ID, WINSTON_KEY, WINSTON_NAME, WINSTON_REGION, BRANCH, CHAIN_ID 
 
 var meta = { id: uuidv4(), type: "functions", startTime: Date.now() };
 
+function initMeta()
+{
+    meta = { id: uuidv4(), type: "lambda", startTime: Date.now() };
+};
+
+
 const myFormat = printf(({ level, message, winstonModule, wf, timestamp }) => {
-  return `${timestamp} ${level} [${winstonModule}:${wf}]: ${message}`;
+  return `${timestamp} ${level} [${winstonModule} ${wf===undefined? "": ":"+wf}]: ${message}`;
 });
 
 function formatWinstonTime( ms )
@@ -95,5 +101,5 @@ async function flush()
     await new Promise( (resolve) => { transportDebug[1].kthxbye(resolve) } );
 };
 
-module.exports = { info, debug, flush, meta };
+module.exports = { info, debug, flush, meta, initMeta };
 

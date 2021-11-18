@@ -5,6 +5,8 @@ import {updateAddress} from "../../appRedux/actions";
 import { metamaskLogin } from "../../blockchain/metamask";
 import IntlMessages from "util/IntlMessages";
 
+import logger from "../../serverless/logger";
+const logm = logger.info.child({ winstonModule: 'Algolia', winstonComponent: "Buy" });
 
 const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
 
@@ -12,6 +14,8 @@ const BuyButton = ({item}) => {
 
   const address = useSelector(({blockchain}) => blockchain.address);
   const dispatch = useDispatch();
+
+  const log = logm.info.child({wf: 'BuyButton', item, address });
 
   function makeURL(data)
   {
@@ -25,7 +29,7 @@ const BuyButton = ({item}) => {
           <Button
           type="primary"
           onClick={ async () => {
-                    if(DEBUG) console.log("Buy clicked");
+                    log.info(`Buy clicked on token ${item.tokenId}`);
 
                     message.loading("Preparing checkout page", 10);
                     const myaddress = await metamaskLogin(false);
@@ -39,6 +43,7 @@ const BuyButton = ({item}) => {
                                 address: (myaddress==="")?"generate":myaddress,
                                 saleID:  item.saleID.toString(),
                                 tokenId: item.tokenId.toString(),
+                                winstonMeta: logger.meta
                               };
 
                            const buyTokenPath = makeURL(data);

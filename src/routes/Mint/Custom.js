@@ -19,6 +19,9 @@ import { metamaskLogin,
          getVirtuosoBalance
          } from "../../blockchain/metamask";
 
+import logger from "../../serverless/logger";
+const logm = logger.info.child({ winstonModule: 'Mint' , winstonComponent: "Custom" });
+
 const { addFileHashToIPFS, addToIPFS, encryptUnlockableToken, writeToken } = require("../../blockchain/ipfs");
 
 const { TextArea } = Input;
@@ -405,7 +408,8 @@ const MintPrivate = () => {
                                 newTokenURI: result.path,
                                 unlockableContentKey: unlockableResult.path,
                                 onEscrow: false,
-                                dynamicUri: ""
+                                dynamicUri: "",
+                                winstonMeta: logger.meta
                               };
 
             let form = document.createElement('form');

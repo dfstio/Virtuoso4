@@ -1,6 +1,6 @@
 const { txBackground } = require("../serverless/contract");
 const logger  = require("../serverless/winston");
-const logm = logger.info.child({ winstonModule: 'tx-background' });
+const log = logger.info.child({ winstonModule: 'tx-background' });
 
 exports.handler = async(event, context) => {
     //const { name = "Anonymous" } = event.queryStringParameters;
@@ -18,6 +18,13 @@ exports.handler = async(event, context) => {
 
     try {
         const body = JSON.parse(event.body);
+        logger.initMeta();
+        logger.meta.frontendMeta = body.winstonMeta;
+        logger.meta.frontendMeta.winstonHost = event.headers.host;
+        logger.meta.frontendMeta.winstonIP = event.headers['x-bb-ip'];
+        logger.meta.frontendMeta.winstonUserAgent = event.headers['user-agent'];
+        logger.meta.frontendMeta.winstonBrowser = event.headers['sec-ch-ua'];
+
         //logm.info("txBackground start", {body});
         await txBackground(body);
         await logger.flush();
@@ -33,7 +40,7 @@ exports.handler = async(event, context) => {
 
     } catch (error) {
 
-       logm.error("catch", {error, body:event.body});
+       log.error("catch", {error, body:event.body});
        await logger.flush();
         // return error
         return {

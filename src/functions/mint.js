@@ -1,7 +1,8 @@
 
 const { relayCall } = require("../serverless/contract");
 const {  REACT_APP_RELAY_KEY} = process.env;
-
+const logger  = require("../serverless/winston");
+const log = logger.info.child({ winstonModule: 'mint' });
 
 
 exports.handler = async(event, context) => {
@@ -19,12 +20,19 @@ exports.handler = async(event, context) => {
 
         // parse form data
         const body = JSON.parse(event.body);
+        logger.initMeta();
+        logger.meta.frontendMeta = body.winstonMeta;
+        logger.meta.frontendMeta.winstonHost = event.headers.host;
+        logger.meta.frontendMeta.winstonIP = event.headers['x-bb-ip'];
+        logger.meta.frontendMeta.winstonUserAgent = event.headers['user-agent'];
+        logger.meta.frontendMeta.winstonBrowser = event.headers['sec-ch-ua'];
 
-        console.log("Relay call:", event.body);
+
+        //console.log("Relay call:", event.body);
 
         if( body.key === undefined || body.key !== REACT_APP_RELAY_KEY)
         {
-            console.error("Relay call: wrong key");
+            log.error("Relay call: wrong key");
             return {
                    statusCode: error.statusCode || 500,
                    body: JSON.stringify({
@@ -39,6 +47,7 @@ exports.handler = async(event, context) => {
 
 
         // return success
+        await logger.flush();
         return {
             statusCode: 200,
             body: JSON.stringify({
@@ -50,6 +59,8 @@ exports.handler = async(event, context) => {
     } catch (error) {
 
         // return error
+        log.error("catch", {error, body:event.body});
+        await logger.flush();
         return {
             statusCode: error.statusCode || 500,
             body: JSON.stringify({
