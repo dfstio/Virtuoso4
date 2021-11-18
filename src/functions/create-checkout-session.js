@@ -15,14 +15,13 @@ exports.handler = async(event, context) => {
 
     try {
         logger.initMeta();
-
+        const params = event.queryStringParameters;
+        const body = JSON.parse(decodeURIComponent(params.item));
+        logger.meta.frontendMeta = JSON.parse(body.winstonMeta);
         logger.meta.frontendMeta.winstonHost = event.headers.host;
         logger.meta.frontendMeta.winstonIP = event.headers['x-bb-ip'];
         logger.meta.frontendMeta.winstonUserAgent = event.headers['user-agent'];
         logger.meta.frontendMeta.winstonBrowser = event.headers['sec-ch-ua'];
-        const params = event.queryStringParameters;
-        const body = JSON.parse(decodeURIComponent(params.item));
-        logger.meta.frontendMeta = body.winstonMeta;
 
         let result = await createCheckoutSession(body);
         //console.log("createCheckoutSession redirect: ", result);

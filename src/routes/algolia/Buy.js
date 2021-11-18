@@ -43,7 +43,7 @@ const BuyButton = ({item}) => {
                                 address: (myaddress==="")?"generate":myaddress,
                                 saleID:  item.saleID.toString(),
                                 tokenId: item.tokenId.toString(),
-                                winstonMeta: logger.meta
+                                winstonMeta: JSON.stringify(logger.meta)
                               };
 
                            const buyTokenPath = makeURL(data);

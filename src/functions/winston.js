@@ -29,6 +29,7 @@ exports.handler = async(event, context) => {
         // parse form data
 
         let body = JSON.parse(event.body);
+        logger.initMeta();
         const wTimer = Date.now()-body.winstonFrontendMeta.startTime;
         body.winstonBranch = BRANCH;
         body.winstonChainId = CHAIN_ID;

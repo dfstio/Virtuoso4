@@ -365,7 +365,7 @@ ${names[right]}  - ${slider}%`);
                                 unlockableContentKey: "",
                                 onEscrow: false,
                                 dynamicUri: "",
-                                winstonMeta: logger.meta
+                                winstonMeta: JSON.stringify(logger.meta)
                               };
 
         let form = document.createElement('form');
