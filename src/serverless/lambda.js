@@ -1,9 +1,9 @@
 const AWS = require("aws-sdk");
 const crypto = require('crypto');
+const logger  = require("../serverless/winston");
+const logm = logger.info.child({ winstonModule: 'functionsLambda' });
 
-const DEBUG = ("true"===process.env.DEBUG);
 
-// destructure env variables
 const { MY_AWS_ACCESS_KEY_ID, MY_AWS_SECRET_ACCESS_KEY, MY_AWS_REGION, LAMBDA_KEY, LAMBDA_FUNCTION,
       KEY_CONTEXT, REACT_APP_CONTRACT_ADDRESS, CHAIN_ID } = process.env;
 
@@ -49,7 +49,7 @@ async function lambdaSell(tokenId, data, email, address)
 async function lambdaContent(tokenId, data)
 {
     let result = await lambdaHub("content", tokenId, data);
-    if(DEBUG)  console.log("lambdaContent result",  result );
+    //if(DEBUG)  console.log("lambdaContent result",  result );
     return result;
 };
 
@@ -57,7 +57,7 @@ async function  lambdaTransferToken(tokenId, checkout_metadata, email_address)
 {
     const data = { checkout_metadata: checkout_metadata, email_address: email_address };
     let result = await lambdaHub("transfer", tokenId, data);
-    if(DEBUG)  console.log("lambdaTransferToken result",  result );
+    //if(DEBUG)  console.log("lambdaTransferToken result",  result );
     return result.success;
 };
 
@@ -67,7 +67,7 @@ async function  lambdaMintItem(id, checkout_metadata, email_address)
 {
     const data = { stripeId: id, checkout_metadata: checkout_metadata, email_address: email_address };
     let result = await lambdaHub("mintItem", 0, data);
-    if(DEBUG)  console.log("lambdaMintItem result",  result );
+    //if(DEBUG)  console.log("lambdaMintItem result",  result );
     return result.success;
 };
 
@@ -75,7 +75,7 @@ async function  lambdaAddBalance( address, amount, description)
 {
     const data = { address: address, amount: amount, description: description };
     let result = await lambdaHub("add", 0, data);
-    if(DEBUG)  console.log("lambdaAddBalance result",  result );
+    //if(DEBUG)  console.log("lambdaAddBalance result",  result );
     return result;
 };
 
@@ -92,7 +92,8 @@ async function lambdaHub(action, tokenId, data)
            contract: lowerContractAddress,
            tokenId: Number(tokenId),
            context: KEY_CONTEXT,
-           data: data
+           data: data,
+           wistonFunctionsMeta: logger.meta
 
          };
 
@@ -106,15 +107,13 @@ async function lambdaHub(action, tokenId, data)
       };
 
 
-        //if(DEBUG) console.log("lambdaHub params",  params );
-
    try {
         let result = await lambda.invoke(params).promise();
         const resultJSON = JSON.parse(result.Payload.toString());
         return resultJSON;
     } catch (error) {
-       console.error("lambdaHub error: ", error);
-       return error;
+       logm.error("catch", {error, action, tokenId, data});
+       return { error, success: false } ;
     }
 
 };
