@@ -15,7 +15,7 @@ const BuyButton = ({item}) => {
   const address = useSelector(({blockchain}) => blockchain.address);
   const dispatch = useDispatch();
 
-  const log = logm.info.child({wf: 'BuyButton', item, address });
+  const log = logm.child({wf: 'BuyButton', item, address });
 
   function makeURL(data)
   {
