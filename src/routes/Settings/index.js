@@ -13,7 +13,7 @@ import IntlMessages from "util/IntlMessages";
 
 import logger from "../../serverless/logger";
 const logm = logger.info.child({ winstonModule: 'Settings' });
-
+const { REACT_APP_DEBUG } = process.env;
 
 const Settings = () => {
 
@@ -43,7 +43,7 @@ const Settings = () => {
   async function register()
   {
 
-            //log.info("Register clicked", {address, wf: "register"});
+            log.info("Register clicked", {address, wf: "register"});
 
             if( address !== undefined && address !== "")
             {
@@ -65,6 +65,12 @@ const Settings = () => {
             };
   }
 
+  async function test()
+  {
+            //logger.meta.address = address;
+            log.info("Test clicked", {address, wf: "register"});
+
+  }
 
 
   async function connect()
@@ -107,20 +113,16 @@ const Settings = () => {
         Withdraw
         </Button>
       </div>):("")}
-      {/*}
+      {REACT_APP_DEBUG==="true"?(
       <div className="gx-d-flex justify-content-center">
-
         <Button
         type="primary"
-        onClick={add}
-        key = "topup"
+        onClick={test}
+        key = "testButton"
         >
-        Topup $10
+        Test
         </Button>
-
-
-      </div>
-       */}
+      </div>):("")}
       <div className="gx-d-flex justify-content-center">
         <h4>Your Public Key {pb}</h4>
       </div>

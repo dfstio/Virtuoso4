@@ -1,9 +1,12 @@
 const winston = require('winston'),
       WinstonCloudWatch = require('winston-cloudwatch');
+const { v4: uuidv4 } = require('uuid');
 
 const { combine, timestamp, label, printf } = winston.format;
 
 const { WINSTON_ID, WINSTON_KEY, WINSTON_NAME, WINSTON_REGION, BRANCH, CHAIN_ID } = process.env;
+
+var meta = { id: uuidv4(), type: "functions", startTime: Date.now() };
 
 const myFormat = printf(({ level, message, winstonModule, wf, timestamp }) => {
   return `${timestamp} ${level} [${winstonModule}:${wf}]: ${message}`;
@@ -52,7 +55,7 @@ const transportDebug = [
 const debug = new winston.createLogger({
     level: 'debug',
     format: winston.format.json(),
-    defaultMeta: { winstonBranch: BRANCH, winstonChainId: CHAIN_ID, winstonLevel: 'debug', winstonRepo: 'functions' },
+    defaultMeta: { winstonBranch: BRANCH, winstonChainId: CHAIN_ID, winstonLevel: 'debug', winstonRepo: 'functions', winstonFunctionsMeta: meta },
     transports: transportDebug,
     exceptionHandlers: transportDebug,
     rejectionHandlers: transportDebug
@@ -61,7 +64,7 @@ const debug = new winston.createLogger({
 const info = new winston.createLogger({
     level: 'info',
     format: winston.format.json(),
-    defaultMeta: { winstonBranch: BRANCH, winstonChainId: CHAIN_ID, winstonLevel: 'info', winstonRepo: 'functions'  },
+    defaultMeta: { winstonBranch: BRANCH, winstonChainId: CHAIN_ID, winstonLevel: 'info', winstonRepo: 'functions', winstonFunctionsMeta: meta  },
     transports: transportInfo,
     exceptionHandlers: transportInfo,
     rejectionHandlers: transportInfo
