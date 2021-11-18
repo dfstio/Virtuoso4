@@ -3,9 +3,6 @@ const logger  = require("../serverless/winston");
 const log = logger.info.child({ winstonModule: 'tx-background' });
 
 exports.handler = async(event, context) => {
-    //const { name = "Anonymous" } = event.queryStringParameters;
-
-
 
         // check for POST
     if (event.httpMethod !== "POST") {
@@ -19,13 +16,7 @@ exports.handler = async(event, context) => {
     try {
         const body = JSON.parse(event.body);
         logger.initMeta();
-        logger.meta.frontendMeta = body.winstonMeta;
-        logger.meta.frontendMeta.winstonHost = event.headers.host;
-        logger.meta.frontendMeta.winstonIP = event.headers['x-bb-ip'];
-        logger.meta.frontendMeta.winstonUserAgent = event.headers['user-agent'];
-        logger.meta.frontendMeta.winstonBrowser = event.headers['sec-ch-ua'];
 
-        //logm.info("txBackground start", {body});
         await txBackground(body);
         await logger.flush();
 

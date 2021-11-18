@@ -25,6 +25,7 @@ async function checkoutCompleted(body, headers)
          }
          catch (err) {
            log.error(`Webhook Error: ${err}`);
+           return;
          }
 
         //log.info(`checkoutCompleted event: ${event.type}`);
@@ -99,7 +100,7 @@ async function handleCheckoutCompleted(checkout )
 async function createCheckoutSession(body)
 {
   //if(DEBUG) console.log("createCheckoutSession body", body);
-  const log = logm.child({body, wf: "createCheckoutSessio"});
+  const log = logm.child({body, wf: "createCheckoutSession"});
 
   let success_url = URL + "/token/" + CHAIN_ID + "/" + CONTRACT_ADDRESS + "/" + body.tokenId.toString() + "/checkout/success";
 	let cancel_url  = URL + "/token/" + CHAIN_ID + "/" + CONTRACT_ADDRESS + "/" + body.tokenId.toString() + "/checkout/cancel";

@@ -21,6 +21,7 @@ const myFormat = printf(({ level, message, winstonModule, wf, timestamp }) => {
 
 function formatWinstonTime( ms )
 {
+    if( ms === undefined ) return "";
     if( ms < 1000) return ms + " ms";
     if ( ms < 60 * 1000) return parseInt(ms/1000) + " sec";
     if ( ms < 60 * 60 * 1000) return parseInt(ms/1000/60) + " min";

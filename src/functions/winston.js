@@ -6,6 +6,7 @@ const { WINSTON_ID, WINSTON_KEY, WINSTON_NAME, WINSTON_REGION, BRANCH, CHAIN_ID 
 
 function formatWinstonTime( ms )
 {
+    if( ms === undefined ) return "";
     if( ms < 1000) return ms + " ms";
     if ( ms < 60 * 1000) return parseInt(ms/1000) + " sec";
     if ( ms < 60 * 60 * 1000) return parseInt(ms/1000/60) + " min";
@@ -30,7 +31,7 @@ exports.handler = async(event, context) => {
 
         let body = JSON.parse(event.body);
         logger.initMeta();
-        const wTimer = Date.now()-body.winstonFrontendMeta.startTime;
+        const wTimer = body.winstonFrontendMeta && body.winstonFrontendMeta.startTime && (Date.now()-body.winstonFrontendMeta.startTime);
         body.winstonBranch = BRANCH;
         body.winstonChainId = CHAIN_ID;
         body.winstonLevel = 'info';

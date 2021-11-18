@@ -117,15 +117,16 @@ const hello = (txRequest) => {
 */
 
 const txSent = (txData, chainId, transactionId = "") => {
-  const data = {"txData": txData, "transactionId": transactionId, "chainId": chainId, winstonMeta: logger.meta};
-  //if(DEBUG) console.log("txSent api: ", data);
-  if( txData === undefined || txData === 0) return { error: "txSent error - wrong hash" };
+  const data = {"txData": txData, "transactionId": transactionId, "chainId": chainId};
+  //const log = logm.child({ wf: 'txSent' });
+  //log.info("txSent api ${txData}", {data});
+  if( txData === undefined || txData === 0) return { error: "txSent error - wrong hash", success: false };
   return fetch('/api/tx-background', {
     body: JSON.stringify(data),
     method: 'POST'
   }).then(response => {
     //if(DEBUG) console.log("txSent api response: ", response);
-    return response.json();
+    return response;
   })
 }
 
