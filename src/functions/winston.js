@@ -1,8 +1,16 @@
 const WinstonCloudWatch = require('winston-cloudwatch');
+const logger  = require("../serverless/winston");
+const log = logger.info.child({ winstonModule: 'winston' });
 
 const { WINSTON_ID, WINSTON_KEY, WINSTON_NAME, WINSTON_REGION, BRANCH, CHAIN_ID } = process.env;
 
-
+function formatWinstonTime( ms )
+{
+    if( ms < 1000) return ms + " ms";
+    if ( ms < 60 * 1000) return parseInt(ms/1000) + " sec";
+    if ( ms < 60 * 60 * 1000) return parseInt(ms/1000/60) + " min";
+    return parseInt(ms/1000/60/60) + " h";
+}
 
 
 
@@ -19,9 +27,9 @@ exports.handler = async(event, context) => {
 
     try {
         // parse form data
-        console.log( "Winston", event.headers);
 
         let body = JSON.parse(event.body);
+        const wTimer = Date.now()-body.winstonFrontendMeta.startTime;
         body.winstonBranch = BRANCH;
         body.winstonChainId = CHAIN_ID;
         body.winstonLevel = 'info';
@@ -30,6 +38,8 @@ exports.handler = async(event, context) => {
         body.winstonIP = event.headers['x-bb-ip'];
         body.winstonUserAgent = event.headers['user-agent'];
         body.winstonBrowser = event.headers['sec-ch-ua'];
+        body.winstonTimer = wTimer;
+        body.winstonTimerText =  formatWinstonTime( wTimer );
         const cloudwatchConfig = {
                    logGroupName:  WINSTON_NAME ,
                    logStreamName: `${BRANCH}-${CHAIN_ID}`,
@@ -43,11 +53,12 @@ exports.handler = async(event, context) => {
         const transport = new WinstonCloudWatch(cloudwatchConfig);
 	      function myfunc( args ) { };
 	      transport.log(body, myfunc);
+	      log.info("winston test");
 	      await new Promise( (resolve) => { transport.kthxbye(resolve) } );
 
 
 
-
+        await logger.flush();
         // return success
         return {
             statusCode: 200,
@@ -59,7 +70,8 @@ exports.handler = async(event, context) => {
     } catch (error) {
 
         // return error
-        console.log("Winston error", error);
+        log.error("catch", {error, body: event.body});
+        await logger.flush();
         return {
             statusCode: error.statusCode || 500,
             body: JSON.stringify({
