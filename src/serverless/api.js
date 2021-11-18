@@ -35,7 +35,7 @@ const winston = (info) => {
     body: JSON.stringify(info),
     method: 'POST'
   }).then(response => {
-    return response
+    return response.json()
   })
 }
 
@@ -68,7 +68,7 @@ const unlockable = (tokenId, address) => {
     body: JSON.stringify(data),
     method: 'POST'
   }).then(response => {
-    return response;
+    return response.json();
   })
 }
 
@@ -121,8 +121,8 @@ const txSent = (txData, chainId, transactionId = "") => {
     body: JSON.stringify(data),
     method: 'POST'
   }).then(response => {
-    if(DEBUG) console.log("txSent api response: ", response);
-    return response;
+    //if(DEBUG) console.log("txSent api response: ", response);
+    return response.json();
   })
 }
 

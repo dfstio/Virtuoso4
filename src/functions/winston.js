@@ -19,7 +19,7 @@ exports.handler = async(event, context) => {
 
     try {
         // parse form data
-        console.log( "Winston", event.headers, "host", event.headers.host);
+        console.log( "Winston", event.headers);
 
         let body = JSON.parse(event.body);
         body.winstonBranch = BRANCH;
@@ -27,7 +27,9 @@ exports.handler = async(event, context) => {
         body.winstonLevel = 'info';
         body.winstonRepo = 'frontend';
         body.winstonHost = event.headers.host;
-        body.winstonIP = event.headers["client-ip"];
+        body.winstonIP = event.headers['x-bb-ip'];
+        body.winstonUserAgent = event.headers['user-agent'];
+        body.winstonBrowser = event.headers['sec-ch-ua'];
         const cloudwatchConfig = {
                    logGroupName:  WINSTON_NAME ,
                    logStreamName: `${BRANCH}-${CHAIN_ID}`,
@@ -61,7 +63,7 @@ exports.handler = async(event, context) => {
         return {
             statusCode: error.statusCode || 500,
             body: JSON.stringify({
-                message: error,
+                message: error, success: false
             }),
         };
     }

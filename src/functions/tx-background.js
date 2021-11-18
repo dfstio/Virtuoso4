@@ -22,10 +22,26 @@ exports.handler = async(event, context) => {
         await txBackground(body);
         await logger.flush();
 
+                // return success
+        return {
+            statusCode: 200,
+            body: JSON.stringify({
+                success: true
+            }),
+        };
+
+
     } catch (error) {
 
        logm.error("catch", {error, body:event.body});
        await logger.flush();
+        // return error
+        return {
+            statusCode: error.statusCode || 500,
+            body: JSON.stringify({
+                message: error, success: false
+            }),
+        };
     }
 
 };
