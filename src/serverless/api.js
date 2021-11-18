@@ -1,6 +1,8 @@
 /* Api methods to call /functions */
+import logger from "./logger";
+//const logm = logger.info.child({ winstonModule: 'api' });
 const { REACT_APP_RELAY_KEY} = process.env;
-const DEBUG = ("true"===process.env.REACT_APP_DEBUG);
+
 
 /*
 const add = (address, amount, description) => {
@@ -16,9 +18,10 @@ const add = (address, amount, description) => {
 
 */
 
+
 const sell = (tokenId, sellData, email, address) => {
-  const data = {"tokenId": tokenId, "data": sellData, "email": email, "address": address };
-  if(DEBUG) console.log("sell api: ", data);
+  const data = {"tokenId": tokenId, "data": sellData, "email": email, "address": address, winstonMeta: logger.meta };
+  //if(DEBUG) console.log("sell api: ", data);
   return fetch('/api/sell', {
     body: JSON.stringify(data),
     method: 'POST'
@@ -40,8 +43,8 @@ const winston = (info) => {
 }
 
 const content = (tokenId, contentData) => {
-  const data = {"tokenId": tokenId, "data": contentData, "key": REACT_APP_RELAY_KEY };
-  if(DEBUG) console.log("content api: ", data);
+  const data = {"tokenId": tokenId, "data": contentData, "key": REACT_APP_RELAY_KEY, winstonMeta: logger.meta };
+  //if(DEBUG) console.log("content api: ", data);
   return fetch('/api/content', {
     body: JSON.stringify(data),
     method: 'POST'
@@ -51,8 +54,8 @@ const content = (tokenId, contentData) => {
 }
 
 const mint = (to, newTokenURI, unlockableContentKey, onEscrow, dynamicUri) => {
-  const data = { "data": {to, newTokenURI, unlockableContentKey, onEscrow, dynamicUri}, "key": REACT_APP_RELAY_KEY };
-  if(DEBUG) console.log("mint api: ", data);
+  const data = { "data": {to, newTokenURI, unlockableContentKey, onEscrow, dynamicUri}, "key": REACT_APP_RELAY_KEY , winstonMeta: logger.meta};
+  //if(DEBUG) console.log("mint api: ", data);
   return fetch('/api/mint', {
     body: JSON.stringify(data),
     method: 'POST'
@@ -62,8 +65,8 @@ const mint = (to, newTokenURI, unlockableContentKey, onEscrow, dynamicUri) => {
 }
 
 const unlockable = (tokenId, address) => {
-  const data = {"tokenId": tokenId, "address": address };
-  if(DEBUG) console.log("unlockable api: ", data);
+  const data = {"tokenId": tokenId, "address": address , winstonMeta: logger.meta};
+  //if(DEBUG) console.log("unlockable api: ", data);
   return fetch('/api/unlockable-background', {
     body: JSON.stringify(data),
     method: 'POST'
@@ -115,8 +118,8 @@ const hello = (txRequest) => {
 
 const txSent = (txData, chainId, transactionId = "") => {
   const data = {"txData": txData, "transactionId": transactionId, "chainId": chainId};
-  if(DEBUG) console.log("txSent api: ", data);
-  if( txData === undefined || txData === 0) return "txSent error - wrong hash";
+  //if(DEBUG) console.log("txSent api: ", data);
+  if( txData === undefined || txData === 0) return { error: "txSent error - wrong hash" };
   return fetch('/api/tx-background', {
     body: JSON.stringify(data),
     method: 'POST'

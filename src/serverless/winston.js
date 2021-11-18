@@ -95,5 +95,5 @@ async function flush()
     await new Promise( (resolve) => { transportDebug[1].kthxbye(resolve) } );
 };
 
-module.exports = { info, debug, flush };
+module.exports = { info, debug, flush, meta };
 
