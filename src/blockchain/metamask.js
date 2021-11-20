@@ -13,7 +13,7 @@ const VirtuosoNFTJSON = require("../contract/NFTVirtuoso.json");
 
 
 const {REACT_APP_CONTRACT_ADDRESS, REACT_APP_CHAIN_ID, REACT_APP_RPCURL_METAMASK, REACT_APP_NETWORK_TOKEN,
-      REACT_APP_NETWORK_NAME, REACT_APP_NETWORK_HEXCHAIN_ID, REACT_APP_NETWORK_EXPLORER} = process.env;
+      REACT_APP_NETWORK_NAME, REACT_APP_NETWORK_HEXCHAIN_ID, REACT_APP_NETWORK_EXPLORER, REACT_APP_VIRTUOSO_URL} = process.env;
 
 
 var provider = window.ethereum && new ethers.providers.Web3Provider(window.ethereum);
@@ -535,7 +535,7 @@ export async function metamaskLogin( openlink = true )
            {
               if( openlink )
               {
-                    const linkURL = "https://metamask.app.link/dapp/nftvirtuoso.io" + window.location.pathname ;
+                    const linkURL = "https://metamask.app.link/dapp/" + REACT_APP_VIRTUOSO_URL + window.location.pathname ;
                     window.open(linkURL);
               };
            }
