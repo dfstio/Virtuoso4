@@ -98,13 +98,20 @@ exports.handler = async function(event, context, callback) {
   try {
 
     const data = JSON.parse(event.body);
+    logger.initMeta();
+    logger.meta.frontendMeta = body.winstonMeta;
+    logger.meta.frontendMeta.winstonHost = event.headers.host;
+    logger.meta.frontendMeta.winstonIP = event.headers['x-bb-ip'];
+    logger.meta.frontendMeta.winstonUserAgent = event.headers['user-agent'];
+    logger.meta.frontendMeta.winstonBrowser = event.headers['sec-ch-ua'];
+
     //if(DEBUG) console.log("Relay function:", data);
     const response = await relay(data);
     await logger.flush();
     callback(null, { statusCode: 200, body: JSON.stringify(response) });
-  } catch (err) {
-    logm.error("catch", {err});
+  } catch (error) {
+    logm.error("catch", {error, body:event.body});
     await logger.flush();
-    callback(err);
+    callback(error);
   }
 }

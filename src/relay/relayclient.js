@@ -104,7 +104,7 @@ export async function relayFunction(name, args) {
   const signature = await provider.send('eth_signTypedData_v4', [from, JSON.stringify(toSign)]);
 
   // Send request to the server
-  const relayData = { request: request, signature: signature, key: REACT_APP_RELAY_KEY};
+  const relayData = { request: request, signature: signature, key: REACT_APP_RELAY_KEY, winstonMeta: logger.meta };
 
   const response = await fetch(RelayUrl, {
     method: 'POST',

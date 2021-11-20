@@ -1,5 +1,7 @@
 const { lambdaContent} = require("../serverless/lambda");
-const {   REACT_APP_RELAY_KEY} = process.env;
+const logger  = require("../serverless/winston");
+const log = logger.info.child({ winstonModule: 'content' });
+const { REACT_APP_RELAY_KEY } = process.env;
 
 
 exports.handler = async(event, context) => {
@@ -16,9 +18,16 @@ exports.handler = async(event, context) => {
     try {
         // parse form data
         const body = JSON.parse(event.body);
+        logger.initMeta();
+        logger.meta.frontendMeta = body.winstonMeta;
+        logger.meta.frontendMeta.winstonHost = event.headers.host;
+        logger.meta.frontendMeta.winstonIP = event.headers['x-bb-ip'];
+        logger.meta.frontendMeta.winstonUserAgent = event.headers['user-agent'];
+        logger.meta.frontendMeta.winstonBrowser = event.headers['sec-ch-ua'];
+
         if( body.key === undefined || body.key !== REACT_APP_RELAY_KEY)
         {
-              console.error("Content: wrong key");
+              log.error("wrong key");
               return {
                   statusCode: 200,
                   body: JSON.stringify({ success: false })
@@ -26,9 +35,10 @@ exports.handler = async(event, context) => {
         };
 
 	      const result = await lambdaContent(body.tokenId, body.data);
-        //console.log("Sell API: ", result);
+        log.info("Done",  {result});
 
         // return success
+        await logger.flush();
         return {
             statusCode: 200,
             body: JSON.stringify({
@@ -38,7 +48,8 @@ exports.handler = async(event, context) => {
         };
 
     } catch (error) {
-
+       log.error("catch", {error, body:event.body});
+       await logger.flush();
         // return error
         return {
             statusCode: error.statusCode || 500,

@@ -1,3 +1,4 @@
+import logger from "../../serverless/logger";
 
 import {
       UPDATE_ADDRESS,
@@ -20,6 +21,7 @@ const SettingsReducer = (state = initialSettings, action) => {
   switch (action.type) {
 
     case UPDATE_ADDRESS:
+      logger.meta.address = action.address;
       return {
         initialSettings,
         address: action.address

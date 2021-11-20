@@ -1,13 +1,42 @@
 const winston = require('winston'),
       WinstonCloudWatch = require('winston-cloudwatch');
+const { format } = require('logform');
+const { v4: uuidv4 } = require('uuid');
 
 const { combine, timestamp, label, printf } = winston.format;
 
 const { WINSTON_ID, WINSTON_KEY, WINSTON_NAME, WINSTON_REGION, BRANCH, CHAIN_ID } = process.env;
 
+var meta = { id: uuidv4(), type: "functions", startTime: Date.now(), updated: true };
+
+function initMeta()
+{
+    meta = { id: uuidv4(), type: "functions", startTime: Date.now() };
+};
+
+
 const myFormat = printf(({ level, message, winstonModule, wf, timestamp }) => {
-  return `${timestamp} ${level} [${winstonModule}:${wf}]: ${message}`;
+  return `${timestamp} ${level} [${winstonModule} ${wf===undefined? "": ":"+wf}]: ${message}`;
 });
+
+function formatWinstonTime( ms )
+{
+    if( ms === undefined ) return "";
+    if( ms < 1000) return ms + " ms";
+    if ( ms < 60 * 1000) return parseInt(ms/1000) + " sec";
+    if ( ms < 60 * 60 * 1000) return parseInt(ms/1000/60) + " min";
+    return parseInt(ms/1000/60/60) + " h";
+};
+
+const winstonFormat = format((info, opts) => {
+
+  const wTimer = Date.now()-meta.startTime;
+  info.winstonTimer = wTimer;
+  info.winstonTimerText =  formatWinstonTime( wTimer );
+
+  return info;
+});
+
 
 const cloudwatchConfig = {
     level: 'info',
@@ -28,7 +57,7 @@ const transportInfo = [
             format: winston.format.combine(
                   winston.format.colorize(),
                   winston.format.timestamp({ format: 'HH:mm:ss.SSS'}),
-                  myFormat
+                  myFormat,
                 )
         }),
         new WinstonCloudWatch(cloudwatchConfig)
@@ -42,7 +71,7 @@ const transportDebug = [
             format: winston.format.combine(
                   winston.format.colorize(),
                   winston.format.timestamp({ format: 'HH:mm:ss.SSS'}),
-                  myFormat
+                  myFormat,
                 )
         }),
         new WinstonCloudWatch(cloudwatchConfig)
@@ -51,8 +80,8 @@ const transportDebug = [
 
 const debug = new winston.createLogger({
     level: 'debug',
-    format: winston.format.json(),
-    defaultMeta: { winstonBranch: BRANCH, winstonChainId: CHAIN_ID, winstonLevel: 'debug', winstonRepo: 'functions' },
+    format: winston.format.combine( winston.format.json(), winstonFormat() ),
+    defaultMeta: { winstonBranch: BRANCH, winstonChainId: CHAIN_ID, winstonLevel: 'debug', winstonRepo: 'functions', winstonFunctionsMeta: meta },
     transports: transportDebug,
     exceptionHandlers: transportDebug,
     rejectionHandlers: transportDebug
@@ -60,8 +89,8 @@ const debug = new winston.createLogger({
 
 const info = new winston.createLogger({
     level: 'info',
-    format: winston.format.json(),
-    defaultMeta: { winstonBranch: BRANCH, winstonChainId: CHAIN_ID, winstonLevel: 'info', winstonRepo: 'functions'  },
+    format: winston.format.combine( winston.format.json(), winstonFormat() ),
+    defaultMeta: { winstonBranch: BRANCH, winstonChainId: CHAIN_ID, winstonLevel: 'info', winstonRepo: 'functions', winstonFunctionsMeta: meta  },
     transports: transportInfo,
     exceptionHandlers: transportInfo,
     rejectionHandlers: transportInfo
@@ -73,5 +102,5 @@ async function flush()
     await new Promise( (resolve) => { transportDebug[1].kthxbye(resolve) } );
 };
 
-module.exports = { info, debug, flush };
+module.exports = { info, debug, flush, meta, initMeta };
 

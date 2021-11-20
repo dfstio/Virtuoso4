@@ -63,9 +63,11 @@ async function virtuosoFunction(address, name, args)
                                    data: data,
                                    chainId: parseInt(REACT_APP_CHAIN_ID)
                                  };
-
+                              log.debug("before send");
                               result.hash = await window.ethereum.request({method: 'eth_sendTransaction', params: [request]});
+                              log.debug(`sent tx ${result.hash}`);
                               await api.txSent(result.hash, REACT_APP_CHAIN_ID);
+                              log.debug(`txSent ${result.hash}`);
                         }
                  } else log.error(`wrong chain or address calling ${name} from ${address}`);
           } else log.error(`no signer or address calling ${name} from ${address}`, {signer});

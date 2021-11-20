@@ -1,4 +1,6 @@
 const { lambdaResend } = require("../serverless/lambda");
+const logger  = require("../serverless/winston");
+const log = logger.info.child({ winstonModule: 'resend-background' });
 
 exports.handler = async(event, context) => {
 
@@ -12,12 +14,14 @@ exports.handler = async(event, context) => {
     }
 
     try {
+        logger.initMeta();
         // parse form data
         const body = JSON.parse(event.body);
 	      const result = await lambdaResend(body.tokenId, body.saleID);
         //console.log("Sell API: ", result);
 
         // return success
+        await logger.flush();
         return {
             statusCode: 200,
             body: JSON.stringify({
@@ -29,10 +33,13 @@ exports.handler = async(event, context) => {
     } catch (error) {
 
         // return error
+        log.error("catch", {error});
+        await logger.flush();
         return {
             statusCode: error.statusCode || 500,
             body: JSON.stringify({
                 message: error,
+                success: false
             }),
         };
     }

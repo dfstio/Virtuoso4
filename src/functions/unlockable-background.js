@@ -1,4 +1,6 @@
 const { lambdaUnlockable } = require("../serverless/lambda");
+const logger  = require("../serverless/winston");
+const log = logger.info.child({ winstonModule: 'unlockable' });
 
 exports.handler = async(event, context) => {
 
@@ -14,10 +16,18 @@ exports.handler = async(event, context) => {
     try {
         // parse form data
         const body = JSON.parse(event.body);
+        logger.initMeta();
+        logger.meta.frontendMeta = body.winstonMeta;
+        logger.meta.frontendMeta.winstonHost = event.headers.host;
+        logger.meta.frontendMeta.winstonIP = event.headers['x-bb-ip'];
+        logger.meta.frontendMeta.winstonUserAgent = event.headers['user-agent'];
+        logger.meta.frontendMeta.winstonBrowser = event.headers['sec-ch-ua'];
+
 	      const result = await lambdaUnlockable(body.tokenId, body.address);
         //console.log("Sell API: ", result);
 
         // return success
+        await logger.flush();
         return {
             statusCode: 200,
             body: JSON.stringify({
@@ -29,10 +39,12 @@ exports.handler = async(event, context) => {
     } catch (error) {
 
         // return error
+        log.error("catch", {error, body:event.body});
+        await logger.flush();
         return {
             statusCode: error.statusCode || 500,
             body: JSON.stringify({
-                message: error,
+                message: error, success: false
             }),
         };
     }
