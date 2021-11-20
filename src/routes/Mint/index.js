@@ -5,6 +5,7 @@ import {Button, Row, Col} from "antd";
 import MintMenuItem from './MintMenu';
 
 import IntlMessages from "util/IntlMessages";
+
 const { REACT_APP_VIRTUOSO_BRANCH } = process.env;
 
 
