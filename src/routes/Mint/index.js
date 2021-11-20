@@ -5,6 +5,8 @@ import {Button, Row, Col} from "antd";
 import MintMenuItem from './MintMenu';
 
 import IntlMessages from "util/IntlMessages";
+const { REACT_APP_VIRTUOSO_BRANCH } = process.env;
+
 
 const Mint = () => {
 
@@ -20,6 +22,26 @@ const Mint = () => {
 
 
   return (
+  {REACT_APP_VIRTUOSO_BRANCH==='polygon'?(
+      <div className="gx-algolia-content-inner">
+      <Row>
+
+      <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+            <MintMenuItem
+              creator="Your NFT Token"
+              title="Create your own private NFT token"
+              link="/mint/custom"
+              price="$10 for private NFT token or $100 for public NFT token"
+              description="Private NFT token will be visible only to you on NFT Virtuoso marketplace, except when you'll put it for sale. Public NFT token is always visible to everyone on NFT Virtuoso marketplace"
+              image="https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/https://content.nftvirtuoso.io/image/mintimages/private.png"
+              key="Private Mint"
+
+              />
+        </Col>
+
+      </Row>
+    </div>
+  ):(
     <div className="gx-algolia-content-inner">
       <Row>
       <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
@@ -40,7 +62,7 @@ const Mint = () => {
               creator="Your NFT Token"
               title="Create your own private NFT token"
               link="/mint/custom"
-              price="USD 10 for 10 private NFT tokens or $100 for one public NFT token"
+              price="$10 for private NFT token or $100 for public NFT token"
               description="Private NFT token will be visible only to you on NFT Virtuoso marketplace, except when you'll put it for sale. Public NFT token is always visible to everyone on NFT Virtuoso marketplace"
               image="https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/https://content.nftvirtuoso.io/image/mintimages/private.png"
               key="Private Mint"
@@ -95,7 +117,7 @@ const Mint = () => {
         </Col>
 
       </Row>
-    </div>
+    </div>)}
   );
 };
 

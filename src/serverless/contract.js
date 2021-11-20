@@ -581,7 +581,12 @@ async function txBackground(body)
 {
     //console.log("txBackground contract background: ", body);
 
-    if( body.chainId.toString() === CHAIN_ID)
+    if( CHAIN_ID === "137" && body.status === "confirmed" && body.network === "matic-main")
+    {
+         logm.info(`Loading blocknative transaction ${body.hash}`, {body, wf: "txBackground"});
+         await loadTransaction(body.hash, 137, "");
+
+    } else if( body.chainId.toString() === CHAIN_ID)
     {
           await loadTransaction(body.txData, body.chainId, body.transactionId);
     }
