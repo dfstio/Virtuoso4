@@ -51,16 +51,17 @@ exports.handler = async(event, context) => {
                    jsonMessage: true
                    //messageFormatter: ({ level, message, additionalInfo }) =>    `[${level}] : ${message} \nAdditional Info: ${JSON.stringify(additionalInfo)}}`
                };
-        //console.log("Winston", body);
+        console.log("Winston", body, "cloudwatchConfig", cloudwatchConfig);
         const transport = new WinstonCloudWatch(cloudwatchConfig);
 	      function myfunc( args ) { };
 	      transport.log(body, myfunc);
-	      //log.info("winston test");
+	      log.info("winston test", {cloudwatchConfig, body});
 	      await new Promise( (resolve) => { transport.kthxbye(resolve) } );
 
 
 
         await logger.flush();
+        console.log("Winston end");
         // return success
         return {
             statusCode: 200,
