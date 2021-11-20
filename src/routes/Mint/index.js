@@ -22,10 +22,10 @@ const Mint = () => {
 
 
   return (
-  {REACT_APP_VIRTUOSO_BRANCH==='polygon'?(
-      <div className="gx-algolia-content-inner">
-      <Row>
+  <div className="gx-algolia-content-inner">
 
+  {(REACT_APP_VIRTUOSO_BRANCH === 'polygon')?(
+    <Row>
       <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
             <MintMenuItem
               creator="Your NFT Token"
@@ -38,11 +38,8 @@ const Mint = () => {
 
               />
         </Col>
-
-      </Row>
-    </div>
+        </Row>
   ):(
-    <div className="gx-algolia-content-inner">
       <Row>
       <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
             <MintMenuItem
@@ -115,9 +112,10 @@ const Mint = () => {
 
               />
         </Col>
+        </Row>
+      )}
 
-      </Row>
-    </div>)}
+    </div>
   );
 };
 
