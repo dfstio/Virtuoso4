@@ -24,7 +24,7 @@ async function checkoutCompleted(body, headers)
            event = stripe.webhooks.constructEvent(body, sig, endpointSecret);
          }
          catch (err) {
-           log.error(`Webhook Error: ${err}`);
+           log.error(`Webhook Error: ${err}`, {err});
            return;
          }
 
@@ -38,7 +38,7 @@ async function checkoutCompleted(body, headers)
 
            default:
              // Unexpected event type
-             log.warn(`Webhook: Unhandled event type ${event.type}`);
+             log.info(`Stripe event ${event.type}`, {event, stripeEvent:true});
          }
 }
 
