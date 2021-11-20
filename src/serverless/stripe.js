@@ -14,7 +14,7 @@ const { lambdaTransferToken, lambdaAddBalance, lambdaMintItem } = require("../se
 async function checkoutCompleted(body, headers)
 {
 
-        const log = logm.child({body, headers, wf: "checkoutCompleted"});
+        const log = logm.child({body: JSON.parse(body), headers, wf: "checkoutCompleted"});
         const sig = headers['stripe-signature'];
         let endpointSecret = STRIPE_ENDPOINT_SECRET;
         if( (process.env.CONTEXT !== undefined) && (process.env.CONTEXT === 'dev') ) endpointSecret  = "whsec_z15BzPOir0nXvUcGGsavF2FuTr1diPQT";
@@ -24,7 +24,7 @@ async function checkoutCompleted(body, headers)
            event = stripe.webhooks.constructEvent(body, sig, endpointSecret);
          }
          catch (err) {
-           log.error(`Webhook Error: ${err}`);
+           log.error(`Webhook Error: ${err}`, {err});
            return;
          }
 
@@ -38,7 +38,7 @@ async function checkoutCompleted(body, headers)
 
            default:
              // Unexpected event type
-             log.warn(`Webhook: Unhandled event type ${event.type}`);
+             log.info(`${event.type}`, {event, stripeEvent:true});
          }
 }
 
