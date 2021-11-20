@@ -55,7 +55,7 @@ exports.handler = async(event, context) => {
         const transport = new WinstonCloudWatch(cloudwatchConfig);
 	      function myfunc( args ) { };
 	      transport.log(body, myfunc);
-	      log.info("winston test");
+	      //log.info("winston test");
 	      await new Promise( (resolve) => { transport.kthxbye(resolve) } );
 
 

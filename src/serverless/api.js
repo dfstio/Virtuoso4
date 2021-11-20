@@ -1,8 +1,13 @@
 /* Api methods to call /functions */
+import Notify from "bnc-notify";
 import logger from "./logger";
 //const logm = logger.info.child({ winstonModule: 'api' });
-const { REACT_APP_RELAY_KEY} = process.env;
+const { REACT_APP_RELAY_KEY, REACT_APP_BLOCKNATIVE_KEY, REACT_APP_CHAIN_ID} = process.env;
 
+const notify = Notify({
+  dappId: REACT_APP_BLOCKNATIVE_KEY,       // [String] The API key created by step one above
+  networkId: parseInt(REACT_APP_CHAIN_ID)  // [Integer] The Ethereum network ID your Dapp uses.
+});
 
 /*
 const add = (address, amount, description) => {
@@ -118,16 +123,19 @@ const hello = (txRequest) => {
 
 const txSent = (txData, chainId, transactionId = "") => {
   const data = {"txData": txData, "transactionId": transactionId, "chainId": chainId};
-  //const log = logm.child({ wf: 'txSent' });
-  //log.info("txSent api ${txData}", {data});
-  if( txData === undefined || txData === 0) return { error: "txSent error - wrong hash", success: false };
-  return fetch('/api/tx-background', {
-    body: JSON.stringify(data),
-    method: 'POST'
-  }).then(response => {
-    //if(DEBUG) console.log("txSent api response: ", response);
-    return response;
-  })
+  //const log = logm.child({ wf: 'txSent', data });
+  try{
+       notify.hash(txData);
+       //log.info("txSent api ${txData}");
+       if( txData === undefined || txData === 0) return { error: "txSent error - wrong hash", success: false };
+       return fetch('/api/tx-background', {
+         body: JSON.stringify(data),
+         method: 'POST'
+       }).then(response => {
+         //if(DEBUG) console.log("txSent api response: ", response);
+         return response;
+       })
+  } catch(error) { console.error("txSent catch", {error, data}); }
 }
 
 

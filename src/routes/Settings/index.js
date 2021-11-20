@@ -68,7 +68,14 @@ const Settings = () => {
   async function test()
   {
             //logger.meta.address = address;
-            log.info("Test clicked", {address, wf: "register"});
+            log.info("Test error clicked", {address, wf: "testerror"});
+            try{
+                throw new Error({message: "errortest"});
+           } catch (error) {
+
+             // return error
+             log.error("catch", {error});
+          }
 
   }
 
