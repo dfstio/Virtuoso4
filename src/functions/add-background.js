@@ -1,13 +1,15 @@
 const { lambdaAddBalance } = require("../serverless/lambda");
 const {  REACT_APP_RELAY_KEY } = process.env;
+const logger  = require("../serverless/winston");
+const log = logger.info.child({ winstonModule: 'add-background' });
 
 exports.handler = async(event, context) => {
 
-    console.log("Start event:", event, "context:", context);
+    //console.log("Start event:", event, "context:", context);
         // check for POST
     if (event.httpMethod !== "POST")
     {
-        console.log("POST required");
+        log.error("POST required");
         return {
             statusCode: 400,
             body: "You are not using a http POST method for this endpoint.",
@@ -16,21 +18,23 @@ exports.handler = async(event, context) => {
     }
 
     try {
+        logger.initMeta();
         // parse form data
         const body = JSON.parse(event.body);
-        console.log("body", body);
+        //log.info("body", body);
         let result = "add failed";
 	      //if( BRANCH === 'mumbai') result = await lambdaAddBalance(body.address, body.amount, body.description);
 	      if( body.key === undefined || body.key !== REACT_APP_RELAY_KEY)
 	      {
-	           console.error("wrong key");
+	           log.error("wrong key");
 	      }
 	      else
 	      {
-	          console.log("Requesting adding balance", body.address, body.amount, body.description);
+	          log.info("Requesting adding balance");
 	          result = await lambdaAddBalance(body.address, body.amount, body.description);
 	      };
-        console.log("Result: ", result);
+        log.info("Result: ", {result});
+        await logger.flush();
 
         // return success
         return {
@@ -41,7 +45,8 @@ exports.handler = async(event, context) => {
         };
 
     } catch (error) {
-        console.error("Error", error);
+        log.error("catch", {error});
+        await logger.flush();
         // return error
         return {
             statusCode: error.statusCode || 500,
