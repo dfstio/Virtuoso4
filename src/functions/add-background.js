@@ -1,4 +1,5 @@
 const { lambdaAddBalance } = require("../serverless/lambda");
+const {  BRANCH } = process.env;
 
 exports.handler = async(event, context) => {
 
@@ -14,7 +15,8 @@ exports.handler = async(event, context) => {
     try {
         // parse form data
         const body = JSON.parse(event.body);
-	      const result = await lambdaAddBalance(body.address, body.amount, body.description);
+        let result = {success: false};
+	      if( BRANCH === 'mumbai') result = await lambdaAddBalance(body.address, body.amount, body.description);
         //console.log("Sell API: ", result);
 
         // return success

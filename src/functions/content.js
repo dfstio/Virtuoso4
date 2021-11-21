@@ -35,7 +35,7 @@ exports.handler = async(event, context) => {
         };
 
 	      const result = await lambdaContent(body.tokenId, body.data);
-        log.info("Done",  {result});
+        //log.info("Done",  {result});
 
         // return success
         await logger.flush();
