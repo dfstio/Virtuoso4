@@ -81,12 +81,13 @@ const SellButton = ({item, address}) => {
     const ipfsHash = await sell.ipfs(operatorData.sale);
 
     let unlockableIPFSHash = "";
-    if( item.contains_unlockable_content === true)
+    if( item.uri.contains_unlockable_content === true)
     {
           setModalText( 'Writing unlockable information to IPFS...');
+          if(DEBUG) console.log("unlockableIPFSHash start");
           unlockableIPFSHash = await sell.unlockable(sellData, operatorData, address);
     };
-
+    if(DEBUG) console.log("unlockableIPFSHash", unlockableIPFSHash);
     setModalText( 'Writing sale information to blockchain..');
 
     const txresult = await sell.blockchain(
