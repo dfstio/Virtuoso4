@@ -1,5 +1,5 @@
 const { lambdaAddBalance } = require("../serverless/lambda");
-const {  BRANCH } = process.env;
+const {  BRANCH, REACT_APP_RELAY_KEY } = process.env;
 
 exports.handler = async(event, context) => {
 
@@ -16,14 +16,15 @@ exports.handler = async(event, context) => {
         // parse form data
         const body = JSON.parse(event.body);
         let result = {success: false};
-	      if( BRANCH === 'mumbai') result = await lambdaAddBalance(body.address, body.amount, body.description);
+	      //if( BRANCH === 'mumbai') result = await lambdaAddBalance(body.address, body.amount, body.description);
+	      if( body.key === undefined || body.key !== REACT_APP_RELAY_KEY)  console.error("wrong key");
+	      else result = await lambdaAddBalance(body.address, body.amount, body.description);
         //console.log("Sell API: ", result);
 
         // return success
         return {
             statusCode: 200,
             body: JSON.stringify({
-                success: true,
                 data: result,
             }),
         };
