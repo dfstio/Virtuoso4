@@ -3,6 +3,7 @@ const {  REACT_APP_RELAY_KEY } = process.env;
 
 exports.handler = async(event, context) => {
 
+    console.log("Start");
         // check for POST
     if (event.httpMethod !== "POST") {
         return {
@@ -15,6 +16,7 @@ exports.handler = async(event, context) => {
     try {
         // parse form data
         const body = JSON.parse(event.body);
+        console.log("body", body);
         let result = {success: false};
 	      //if( BRANCH === 'mumbai') result = await lambdaAddBalance(body.address, body.amount, body.description);
 	      if( body.key === undefined || body.key !== REACT_APP_RELAY_KEY)
