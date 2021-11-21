@@ -76,7 +76,7 @@ const unlockable = (tokenId, address) => {
     body: JSON.stringify(data),
     method: 'POST'
   }).then(response => {
-    return response.json();
+    return response;
   })
 }
 

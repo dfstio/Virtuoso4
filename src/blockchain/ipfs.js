@@ -5,7 +5,7 @@ const logm = logger.debug.child({ winstonModule: 'ipfs' });
 const { REACT_APP_INFURA_IPFS_PROJECT_ID, REACT_APP_INFURA_IPFS_PROJECT_SECRET } = process.env;
 const { BufferList } = require("bl");
 const CryptoJS = require('crypto-js');
-const sigUtil = require("eth-sig-util");
+const sigUtil = require("@metamask/eth-sig-util");
 const { v4: uuidv4 } = require('uuid');
 
 
@@ -154,11 +154,11 @@ async function encryptUnlockableContent(content, key)
 
           const buf = Buffer.from(
                  JSON.stringify(
-                     sigUtil.encrypt(
-                     key,
-                     {data: password},
-                     "x25519-xsalsa20-poly1305"
-                     )
+                     sigUtil.encrypt({
+                     publicKey: key,
+                     data: password,
+                     version: "x25519-xsalsa20-poly1305"
+                     })
                  ),
                  "utf8"
                );
