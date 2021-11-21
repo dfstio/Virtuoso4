@@ -586,9 +586,19 @@ async function txBackground(body)
          logm.info(`Loading blocknative transaction ${body.hash}`, {body, wf: "txBackground"});
          await loadTransaction(body.hash, 137, "");
 
-    } else if( body.chainId.toString() === CHAIN_ID)
+    }
+    else if( CHAIN_ID === "137" && body.network === "matic-main")
+    {
+         logm.info(`Received blocknative transaction with status ${body.status} and hash ${body.hash}`, {body, wf: "txBackground"});
+         //await loadTransaction(body.hash, 137, "");
+    }
+    else if( body.chainId !== undefined && (body.chainId.toString() === CHAIN_ID))
     {
           await loadTransaction(body.txData, body.chainId, body.transactionId);
+    }
+    else if( body.chainId === undefined )
+    {
+          logm.error(`no chain info, needs to be chain ${CHAIN_ID}`, {body, wf: "txBackground"});
     }
     else
     {
