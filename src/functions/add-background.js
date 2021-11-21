@@ -19,7 +19,7 @@ exports.handler = async(event, context) => {
         // parse form data
         const body = JSON.parse(event.body);
         console.log("body", body);
-        let result = "failed";
+        let result = "add failed";
 	      //if( BRANCH === 'mumbai') result = await lambdaAddBalance(body.address, body.amount, body.description);
 	      if( body.key === undefined || body.key !== REACT_APP_RELAY_KEY)
 	      {
@@ -27,7 +27,7 @@ exports.handler = async(event, context) => {
 	      }
 	      else
 	      {
-	          console.log("Requesting adding balance", body);
+	          console.log("Requesting adding balance", body.address, body.amount, body.description);
 	          result = await lambdaAddBalance(body.address, body.amount, body.description);
 	      };
         console.log("Result: ", result);
