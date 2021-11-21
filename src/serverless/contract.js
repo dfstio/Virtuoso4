@@ -647,11 +647,18 @@ async function getConfirmedHash(hashOriginal, transactionId)
               if( transactionId !== '' )
               {
                 const txRelay = await relayer.query(transactionId);
+                if( txRelay.status === 'failed')
+                {
+                    log.error("Transaction failed with hash ${txRelay.hash} and id ${transactionId}", {receipt, txRelay});
+                    return "";
+
+                };
+
                 if(txHash !== txRelay.hash )
                 {
                   log.warn(`tx was reverted from ${txHash} to ${txRelay.hash}`, {txHash, txRelay, status: receipt.status  });
                   txHash = txRelay.hash;
-                 };
+                 } else log.warn(`Problem with transaction status ${txRelay.status} ${txHash}`, {receipt, txRelay});
               }
               else
               {
@@ -666,11 +673,18 @@ async function getConfirmedHash(hashOriginal, transactionId)
              if( transactionId !== '' )
              {
                 const txRelay = await relayer.query(transactionId);
+                if( txRelay.status === 'failed')
+                {
+                    log.error("Transaction failed with hash ${txRelay.hash} and id ${transactionId}", {receipt, txRelay});
+                    return "";
+
+                };
+
                 if(txHash !== txRelay.hash )
                 {
                    log.warn(`tx was reverted from ${txHash} to ${txRelay.hash}`, {txHash, receipt, txRelay});
                    txHash = txRelay.hash;
-                };
+                }  else log.debug(`Transaction status ${txRelay.status} ${txHash}`, {txRelay});
              };
            }
          }

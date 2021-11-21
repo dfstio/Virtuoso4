@@ -9,7 +9,7 @@ const { Relayer } = require('defender-relay-client');
 const { ethers } = require('ethers');
 const ForwarderAbi = require('../relay/IForwarder.json');
 
-const { TypedDataUtils } = require('eth-sig-util');
+const { TypedDataUtils } = require('@metamask/eth-sig-util');
 const { bufferToHex } = require('ethereumjs-util');
 
 const EIP712DomainType = [
@@ -50,7 +50,7 @@ const GenericParams = 'address from,address to,uint256 value,uint256 gas,uint256
 const TypeName = `ForwardRequest(${GenericParams})`;
 const TypeHash = ethers.utils.id(TypeName);
 
-const DomainSeparator = bufferToHex(TypedDataUtils.hashStruct('EIP712Domain', TypedData.domain, TypedData.types));
+const DomainSeparator = bufferToHex(TypedDataUtils.hashStruct('EIP712Domain', TypedData.domain, TypedData.types, 'V4'));
 const SuffixData = '0x';
 
 async function relay(relayData) {
