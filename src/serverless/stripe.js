@@ -80,7 +80,7 @@ async function handleCheckoutCompletedTelegram(checkout )
 
 			  metadata.type = "buy";
         metadata.address = "generate";
-        metadata.saleID =  token.saleID;
+        metadata.saleID =  token.saleID.toString();
         metadata.credit =  (token.currency=='rub')?((token.amount / 75) * 70 /100):(token.amount * 70 / 100);
         metadata.currency = token.currency;
         metadata.name =  token.name;
