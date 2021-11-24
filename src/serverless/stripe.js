@@ -14,12 +14,13 @@ const { lambdaTransferToken, lambdaAddBalance, lambdaMintItem } = require("../se
 
 async function getToken(tokenId)
 {
-
+  const log = logm.child({tokenId,  wf: "getToken});
   const client = algoliasearch(REACT_APP_ALGOLIA_PROJECT, REACT_APP_ALGOLIA_KEY);
   const index = client.initIndex("virtuoso");
   const filterStr = `chainId:${CHAIN_ID} AND tokenId:${tokenId} AND contract:${CONTRACT_ADDRESS} AND (onSale:true)`;
   const objects = await index.search("", { filters: filterStr});
-  if( objects.length === 1) return objects[0];
+  log.info("Loaded token", {filterStr, objects})
+  if( objects.hits.length === 1) return objects.hits[0];
   else return null;
 
 };
@@ -74,7 +75,7 @@ async function handleCheckoutCompletedTelegram(checkout )
     	 if( metadata.chainId.toString() !== CHAIN_ID)  { log.error(`Wrong chain ${metadata.chainId}, needs to be ${CHAIN_ID}`); return; }
     	 metadata.tguser = checkout.metadata.tguser;
     	 const token = await getToken(metadata.tokenId);
-    	 log.info(`processing: ${metadata.type}`, {paymentIntent, metadata, token });
+    	 log.info(`processing buy`, {paymentIntent, metadata, token });
     	 if( !token ) { log.error("Cannot load token"); return; }
 
 			  metadata.type = "buy";
