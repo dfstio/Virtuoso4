@@ -36,16 +36,67 @@ async function checkoutCompleted(body, headers)
              await handleCheckoutCompleted(checkout1);
              break;
 
+         switch (event.type) {
+           case 'charge.succeeded':
+             const checkout2 = event.data.object;
+             if( event.data.object.metadata && event.data.object.metadata.tguser !== undefined)
+                await handleCheckoutCompletedTelegram(checkout2);
+             else log.info(`${event.type}`, {event, stripeEvent:true});
+             break;
+
+
            default:
              // Unexpected event type
              log.info(`${event.type}`, {event, stripeEvent:true});
          }
 }
 
+async function handleCheckoutCompletedTelegram(checkout )
+{
+       const log = logm.child({checkout, wf: "handleCheckoutCompletedTelegram"});
+
+
+    	 const paymentIntent = await stripe.paymentIntents.retrieve( checkout.payment_intent );
+    	 let metadata = JSON.parse(checkout.metadata.payload);
+    	 metadata.tguser = checkout.metadata.tguser;
+    	 log.info(`processing: ${metadata.type}`, {paymentIntent, metadata});
+
+
+       if( checkout.status == 'succeeded')
+       {
+
+         switch (metadata.type) {
+            case 'mint':
+            log.error(`FEATURE REMOVED: Mint: adding balance to ${metadata.address}`);
+            //await lambdaAddBalance(checkout.metadata.address, 1000, "10 NFT mint pack bought");
+            break;
+            case 'buy':
+            if( metadata.ctx &&  metadata.ctx.from )
+            {
+                log.info(`Buy token ${metadata.tokenId} for ${metadata.ctx.from.first_name} ${metadata.ctx.from.last_name}`);
+                const id = parseInt(metadata.tokenId);
+                await lambdaTransferToken(id, metadata,  "" );
+            }
+            else
+            {
+              log.error(`Buy token ${metadata.tokenId} - no user data`);
+            }
+
+            break;
+            default:
+            // Unexpected event type
+            log.error(`Unhandled event type ${metadata.type}`);
+              }
+       } else log.error(`Wrong status ${checkout.status}`);
+
+}
+
+
+
 async function handleCheckoutCompleted(checkout )
 {
        const log = logm.child({checkout, wf: "handleCheckoutCompleted"});
-       //log.info(`processing: ${checkout.metadata.type}`);
+       log.debug(`processing: ${checkout.metadata.type}`);
 
     	 const paymentIntent = await stripe.paymentIntents.retrieve( checkout.payment_intent );
 
