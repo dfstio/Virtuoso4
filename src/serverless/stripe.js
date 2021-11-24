@@ -1,6 +1,7 @@
-const { URL,  STRIPE_KEY, STRIPE_ENDPOINT_SECRET, CHAIN_ID, CONTRACT_ADDRESS } = process.env;
+const {REACT_APP_ALGOLIA_KEY, REACT_APP_ALGOLIA_PROJECT, URL,  STRIPE_KEY, STRIPE_ENDPOINT_SECRET, CHAIN_ID, CONTRACT_ADDRESS } = process.env;
 
 const stripe = require('stripe')(STRIPE_KEY);
+const algoliasearch = require('algoliasearch');
 const delayMS = 1000;
 
 const logger  = require("./winston");
@@ -9,6 +10,19 @@ const logm = logger.debug.child({ winstonModule: 'stripe' });
 
 const { addBalance, getTokenPrice } = require("./contract");
 const { lambdaTransferToken, lambdaAddBalance, lambdaMintItem } = require("../serverless/lambda");
+
+
+async function getToken(tokenId)
+{
+
+  const client = algoliasearch(REACT_APP_ALGOLIA_PROJECT, REACT_APP_ALGOLIA_KEY);
+  const index = client.initIndex("virtuoso");
+  const filterStr = `chainId:${CHAIN_ID} AND tokenId:${tokenId} AND contract:${CONTRACT_ADDRESS} AND (onSale:true)`;
+  const objects = await index.search("", { filters: filterStr});
+  if( objects.length === 1) return objects[0];
+  else return null;
+
+};
 
 
 async function checkoutCompleted(body, headers)
@@ -59,7 +73,20 @@ async function handleCheckoutCompletedTelegram(checkout )
     	 const paymentIntent = await stripe.paymentIntents.retrieve( checkout.payment_intent );
     	 let metadata = JSON.parse(checkout.metadata.payload);
     	 metadata.tguser = checkout.metadata.tguser;
-    	 log.info(`processing: ${metadata.type}`, {paymentIntent, metadata});
+    	 const token = await getToken(metadata.tokenId);
+    	 log.info(`processing: ${metadata.type}`, {paymentIntent, metadata, token });
+    	 if( !token ) log.error("Cannot load token");
+
+			  metadata.type = "buy";
+        metadata.address = "generate";
+        metadata.saleID =  token.saleID;
+        metadata.credit =  (token.currency=='rub')?((token.amount / 75) * 70 /100):(token.amount * 70 / 100);
+        metadata.currency = token.currency;
+        metadata.name =  token.name;
+        metadata.price = token.price;
+        metadata.image = token.image;
+
+
 
 
        if( checkout.status == 'succeeded')
