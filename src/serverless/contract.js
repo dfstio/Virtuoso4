@@ -654,6 +654,8 @@ async function getConfirmedHash(hashOriginal, transactionId)
            }
            else if (receipt)
            {
+              log.warn(`tx was reverted, hash ${txHash}, status ${parseInt(receipt.status)}`, {receipt, txRHash});
+              await sleep(pollInterval);
               if( transactionId !== '' )
               {
                 const txRelay = await relayer.query(transactionId);
@@ -662,7 +664,8 @@ async function getConfirmedHash(hashOriginal, transactionId)
                     log.error("Transaction failed with hash ${txRelay.hash} and id ${transactionId}", {receipt, txRelay});
                     return "";
 
-                };
+                } else log.warn(`Transaction status with hash ${txRelay.hash} and id ${transactionId} is ${txRelay.status}`, {receipt, txRelay});
+
 
                 if(txHash !== txRelay.hash )
                 {
