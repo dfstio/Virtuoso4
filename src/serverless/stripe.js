@@ -84,7 +84,7 @@ async function handleCheckoutCompletedTelegram(checkout )
         const amount = token.sale.price * 100;
         // TODO change this calculation
         metadata.credit =  (token.sale.currency==='rub')?((amount / 75) * 70 /100):(amount * 70 / 100);
-        metadata.currency = token.currency;
+        metadata.currency = token.sale.currency;
         metadata.name =  token.name;
         metadata.price = token.price;
         metadata.image = token.image;
