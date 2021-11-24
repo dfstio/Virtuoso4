@@ -71,9 +71,9 @@ async function handleCheckoutCompletedTelegram(checkout )
             //await lambdaAddBalance(checkout.metadata.address, 1000, "10 NFT mint pack bought");
             break;
             case 'buy':
-            if( metadata.ctx &&  metadata.ctx.from )
+            if( metadata.telegram &&  metadata.telegram.from )
             {
-                log.info(`Buy token ${metadata.tokenId} for ${metadata.ctx.from.first_name} ${metadata.ctx.from.last_name}`);
+                log.info(`Buy token ${metadata.tokenId} for ${metadata.telegram.from.first_name} ${metadata.telegram.from.last_name}`);
                 const id = parseInt(metadata.tokenId);
                 await lambdaTransferToken(id, metadata,  "" );
             }
