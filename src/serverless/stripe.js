@@ -14,7 +14,7 @@ const { lambdaTransferToken, lambdaAddBalance, lambdaMintItem } = require("../se
 
 async function getToken(tokenId)
 {
-  const log = logm.child({tokenId,  wf: "getToken});
+  const log = logm.child({tokenId,  wf: "getToken"});
   const client = algoliasearch(REACT_APP_ALGOLIA_PROJECT, REACT_APP_ALGOLIA_KEY);
   const index = client.initIndex("virtuoso");
   const filterStr = `chainId:${CHAIN_ID} AND tokenId:${tokenId} AND contract:${CONTRACT_ADDRESS} AND (onSale:true)`;
