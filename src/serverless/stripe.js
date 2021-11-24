@@ -72,10 +72,11 @@ async function handleCheckoutCompletedTelegram(checkout )
 
     	 const paymentIntent = await stripe.paymentIntents.retrieve( checkout.payment_intent );
     	 let metadata = JSON.parse(checkout.metadata.payload);
+    	 if( metadata.chainId.toString() !== CHAIN_ID)  { log.error(`Wrong chain ${metadata.chainId}, needs to be ${CHAIN_ID}`); return; }
     	 metadata.tguser = checkout.metadata.tguser;
     	 const token = await getToken(metadata.tokenId);
     	 log.info(`processing: ${metadata.type}`, {paymentIntent, metadata, token });
-    	 if( !token ) log.error("Cannot load token");
+    	 if( !token ) { log.error("Cannot load token"); return; }
 
 			  metadata.type = "buy";
         metadata.address = "generate";
@@ -97,19 +98,13 @@ async function handleCheckoutCompletedTelegram(checkout )
             log.error(`FEATURE REMOVED: Mint: adding balance to ${metadata.address}`);
             //await lambdaAddBalance(checkout.metadata.address, 1000, "10 NFT mint pack bought");
             break;
+
             case 'buy':
-            if( metadata.telegram &&  metadata.telegram.from )
-            {
-                log.info(`Buy token ${metadata.tokenId} for ${metadata.telegram.from.first_name} ${metadata.telegram.from.last_name}`);
+                log.info(`Buy token ${metadata.tokenId}`);
                 const id = parseInt(metadata.tokenId);
                 await lambdaTransferToken(id, metadata,  "" );
-            }
-            else
-            {
-              log.error(`Buy token ${metadata.tokenId} - no user data`);
-            }
+                break;
 
-            break;
             default:
             // Unexpected event type
             log.error(`Unhandled event type ${metadata.type}`);
