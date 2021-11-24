@@ -50,7 +50,6 @@ async function checkoutCompleted(body, headers)
              await handleCheckoutCompleted(checkout1);
              break;
 
-         switch (event.type) {
            case 'charge.succeeded':
              const checkout2 = event.data.object;
              if( event.data.object.metadata && event.data.object.metadata.tguser !== undefined)
