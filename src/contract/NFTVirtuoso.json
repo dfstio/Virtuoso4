@@ -80,7 +80,7 @@
       {
         "indexed": true,
         "internalType": "uint256",
-        "name": "_id",
+        "name": "_tokenId",
         "type": "uint256"
       }
     ],
@@ -93,7 +93,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_adr",
+        "name": "_address",
         "type": "address"
       }
     ],
@@ -106,7 +106,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_id",
+        "name": "_tokenId",
         "type": "uint256"
       }
     ],
@@ -119,7 +119,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_adr",
+        "name": "_address",
         "type": "address"
       },
       {
@@ -138,7 +138,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_id",
+        "name": "__tokenId",
         "type": "uint256"
       }
     ],
@@ -151,7 +151,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_id",
+        "name": "_tokenId",
         "type": "uint256"
       }
     ],
@@ -164,37 +164,36 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_adr",
+        "name": "_address",
         "type": "address"
-      }
-    ],
-    "name": "Owner2Changed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
+      },
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "_adr",
-        "type": "address"
-      }
-    ],
-    "name": "Owner3Changed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_adr",
-        "type": "address"
+        "internalType": "bool",
+        "name": "_status",
+        "type": "bool"
       }
     ],
     "name": "OwnerChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
     "type": "event"
   },
   {
@@ -222,7 +221,7 @@
       {
         "indexed": true,
         "internalType": "uint256",
-        "name": "_id",
+        "name": "_tokenId",
         "type": "uint256"
       }
     ],
@@ -235,7 +234,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_id",
+        "name": "_tokenId",
         "type": "uint256"
       }
     ],
@@ -248,7 +247,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_id",
+        "name": "_tokenId",
         "type": "uint256"
       }
     ],
@@ -292,7 +291,7 @@
       {
         "indexed": true,
         "internalType": "uint256",
-        "name": "_id",
+        "name": "_tokenId",
         "type": "uint256"
       }
     ],
@@ -318,7 +317,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_adr",
+        "name": "_address",
         "type": "address"
       },
       {
@@ -420,6 +419,19 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "burn",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -707,11 +719,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "forwarder",
         "type": "address"
       }
@@ -981,6 +988,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -1096,6 +1116,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -1162,7 +1189,7 @@
         "type": "uint256"
       },
       {
-        "internalType": "enum NFTVirtuoso.SaleStatus",
+        "internalType": "enum NFTVirtuosoV4.SaleStatus",
         "name": "status",
         "type": "uint8"
       },
@@ -1344,22 +1371,14 @@
         "internalType": "address",
         "name": "to",
         "type": "address"
-      }
-    ],
-    "name": "setOwner2",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
+      },
       {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
+        "internalType": "bool",
+        "name": "status",
+        "type": "bool"
       }
     ],
-    "name": "setOwner3",
+    "name": "setOwner",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1654,7 +1673,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "to",
+        "name": "newOwner",
         "type": "address"
       }
     ],

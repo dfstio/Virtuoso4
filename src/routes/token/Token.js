@@ -494,6 +494,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
   const [uattachments, setUAttachments] = useState([]);
 
   const [description, setDescription] = useState("");
+  const [descriptionMarkdown, setDescriptionMarkdown] = useState("");
   const [name, setName] = useState("");
   const [image, setImage] = useState("");
   const [firstRun, setFirstRun] = useState(true);
@@ -519,6 +520,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
               {
                 setName(item.name);
                 setDescription(item.description);
+                if( item.markdown !== undefined) setDescriptionMarkdown(item.markdown);
                 setImage("https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/" + item.image);
                 setFirstRun(false);
               };
@@ -585,7 +587,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
 
               if(DEBUG) console.log(`TokenItem content`, timedContent);
 
-              let newDescription = item.description;
+              let newDescription = (item.markdown===undefined)?"": item.markdown;
               let newName = item.name;
               let newImage = item.image;
               let newAnimation = item.animation_url; // USE IT LATER!!!
@@ -625,7 +627,7 @@ const TokenItem = ({item, small=false, preview=false}) => {
               };
 
 
-              if( description !== newDescription) setDescription(newDescription);
+              if( descriptionMarkdown !== newDescription) setDescriptionMarkdown(newDescription);
               if( name !== newName) setName(newName);
               if( image !== newImage) setImage(newImage);
               setMedia(newMedia);
@@ -1054,11 +1056,15 @@ function sleep(ms) {
             </div>
           )
         }
-
-
+        {(descriptionMarkdown==="")?(
         <div className="gx-mt-4" style={{"whiteSpace": "pre-wrap"}}>
             {description}
         </div>
+        ):(
+        <Markdown>
+            {descriptionMarkdown}
+        </Markdown>
+        )}
         <Attachments attachments={attachments}/>
 
         {/*
