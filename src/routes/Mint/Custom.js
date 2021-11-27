@@ -8,6 +8,7 @@ import {LoadingOutlined, PlusOutlined, InboxOutlined} from '@ant-design/icons';
 import {message} from 'antd';
 import IntlMessages from "util/IntlMessages";
 import fileSaver from 'file-saver';
+import Markdown from 'markdown-to-jsx';
 
 
 
@@ -554,7 +555,9 @@ const MintPrivate = () => {
 
 
                <Form.Item
-              label="Description"
+              label={<span><span>Description - supports</span><span> <a href="https://www.markdownguide.org/cheat-sheet/" target="_blank">
+                   markdown
+                   </a></span></span>}
               name="description"
               rules={[
                  {
@@ -568,6 +571,15 @@ const MintPrivate = () => {
                 autoSize={{ minRows: 2, maxRows: 10 }}
                  />
               </Form.Item>
+            <Form.Item
+              label="Description preview"
+              name="descriptionpreview"
+              >
+                 <Markdown>
+                 {token.description}
+                </Markdown>
+             </Form.Item>
+
     </Col>
 
     <Col xxl={10} xl={8} lg={10} md={10} sm={12} xs={16}>
