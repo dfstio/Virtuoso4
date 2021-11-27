@@ -785,7 +785,7 @@ async function loadTransaction(hashOriginal, chainId, transactionId)
 
                      if( parsedLog.name === 'OnMint')
                      {
-                        tokenId = parsedLog.args._id;
+                        tokenId = parseInt(parsedLog.args[0].hex);;
                         log.info(`initTokens on ${name}, tokenId ${tokenId}`, {parsedLog, hash, receipt});
                         await initAlgoliaTokens(false);
 
