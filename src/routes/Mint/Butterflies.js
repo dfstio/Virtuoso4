@@ -114,9 +114,9 @@ for (i=0; i<9; i++ )
 const MintButterfly = () => {
     const [image, setImage] = useState("https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/https://ipfs.io/ipfs/QmRXNX7PuJgPktMdzDgQoqcrULJnDNfq7QqH14NrxMCXQ8");
     const [description, setDescription] = useState(
-`Эта уникальная бабочка скрещена из двух видов:
-Морфо (Амазонка, очень редкая) - 50%
-Нимфалида (обитает везде, обычная) - 50%`);
+`Эта уникальная бабочка скрещена из двух видов:  `
+`Морфо (Амазонка, очень редкая) - 50%  `
+`Нимфалида (обитает везде, обычная) - 50%`);
     const [title, setTitle] = useState("Морфо-Нимфалида");
     const [price, setPrice] = useState(700);
     const [left, setLeft] = useState(5);
@@ -154,9 +154,9 @@ const MintButterfly = () => {
                              setPrice(prices[rare[left]] + prices[rare[right]]);
                              setTitle("Мета " + butterflies[left]+"-"+butterflies[right]);
                                                   setDescription(
-`Эта уникальная meta бабочка скрещена из двух видов:
-${names[left]}
-${names[right]}`);
+`Эта уникальная meta бабочка скрещена из двух видов:  `
+`${names[left]}  `
+`${names[right]}`);
                               	let newImageSrc = new Jimp(200, 160);
                               	let image1m = image1.clone();
                               	image1m.crop(0, 0, 100, 160);
@@ -201,9 +201,9 @@ ${names[right]}`);
                                  setTitle(butterflies[left]+"-"+butterflies[right]);
 
                                  setDescription(
-`Эта уникальная бабочка скрещена из двух видов:
-${names[left]} - ${100-slider}%
-${names[right]}  - ${slider}%`);
+`Эта уникальная бабочка скрещена из двух видов:  `
+`${names[left]} - ${100-slider}%  `
+`${names[right]}  - ${slider}%`);
 
                                  const image3 = image1.clone();
                                  image3.composite(image2, 0, 0, {
