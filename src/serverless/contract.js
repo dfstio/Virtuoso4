@@ -155,9 +155,14 @@ async function initAlgoliaTokens(force)
 
 
     let i;
+    let loaded[];
+    let maxNumber = 0;
+
 	  for( i = totalSupply - 1; i >= 0; i--)
 	  {
 	    const tokenId = await virtuoso.tokenByIndex(i);
+	    if( tokenId > maxNumber) maxNumber = tokenId;
+	    loaded[tokenId] = true;
       //if(DEBUG) console.log("initTokens Loading token ", tokenId.toString(), " i = ", i);
 
      if( force === false)
@@ -186,6 +191,20 @@ async function initAlgoliaTokens(force)
          };
        };
 	  }
+
+	  if( force === true)
+	  {
+	    	  for( i = maxNumber; i > 0; i--)
+	        {
+	            if( loaded[i] !== true )
+	            {
+	                await alDeleteToken(tokenId, TOKEN_JSON, contract, CHAIN_ID);
+	                log.warn(`Deleted burned token ${tokenId}`);
+	            };
+	        };
+
+	  };
+
     log.info(`finished, totalSupply: ${totalSupply}`);
 	  return totalSupply;
 }
@@ -781,11 +800,13 @@ async function loadTransaction(hashOriginal, chainId, transactionId)
               let receipt = await provider.getTransactionReceipt(hash);
               if(receipt.logs[2] !== undefined )
               {
-                     const parsedLog = inter.parseLog(receipt.logs[2]); // here you can add your own logic to find the correct log
+                     const parsedLog = await inter.parseLog(receipt.logs[2]); // here you can add your own logic to find the correct log
 
                      if( parsedLog.name === 'OnMint')
                      {
-                        tokenId = parseInt(parsedLog.args[0].hex);;
+                        const idStr = parsedLog.args[0];
+					              log.debug(`parsed tokenId ${idStr}`, { parsedLog, idStr});
+					              tokenId = Number(idStr);
                         log.info(`initTokens on ${name}, tokenId ${tokenId}`, {parsedLog, hash, receipt});
                         await initAlgoliaTokens(false);
 
