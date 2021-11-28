@@ -138,7 +138,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "__tokenId",
+        "name": "_tokenId",
         "type": "uint256"
       }
     ],
@@ -665,6 +665,25 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "getVirtuosoOwner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -1368,24 +1387,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "status",
-        "type": "bool"
-      }
-    ],
-    "name": "setOwner",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "string",
         "name": "key",
         "type": "string"
@@ -1410,6 +1411,24 @@
       }
     ],
     "name": "setVirtuosoOperator",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "status",
+        "type": "bool"
+      }
+    ],
+    "name": "setVirtuosoOwner",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
