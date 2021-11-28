@@ -155,7 +155,7 @@ async function initAlgoliaTokens(force)
 
 
     let i;
-    let loaded[];
+    let loaded = [];
     let maxNumber = 0;
 
 	  for( i = totalSupply - 1; i >= 0; i--)
@@ -198,8 +198,8 @@ async function initAlgoliaTokens(force)
 	        {
 	            if( loaded[i] !== true )
 	            {
-	                await alDeleteToken(tokenId, TOKEN_JSON, contract, CHAIN_ID);
-	                log.warn(`Deleted burned token ${tokenId}`);
+	                await alDeleteToken(i, TOKEN_JSON, contract, CHAIN_ID);
+	                log.warn(`Deleted burned token ${i}`);
 	            };
 	        };
 
