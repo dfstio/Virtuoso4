@@ -198,11 +198,14 @@ async function initAlgoliaTokens(force)
 	        {
 	            if( loaded[i] !== true )
 	            {
-	                await alDeleteToken(i, TOKEN_JSON, contract, CHAIN_ID);
-	                log.warn(`Deleted burned token ${i}`);
+	                  const readToken = await alReadToken(i, contract, CHAIN_ID);
+                    if( readToken.success === true )
+                    {
+                          await alDeleteToken(i, TOKEN_JSON, contract, CHAIN_ID);
+                          log.warn(`Deleted burned token ${i}`);
+                    };
 	            };
 	        };
-
 	  };
 
     log.info(`finished, totalSupply: ${totalSupply}`);
