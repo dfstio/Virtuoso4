@@ -83,7 +83,7 @@ async function relay(relayData) {
   const forwardData = forwarderInterface.encodeFunctionData('execute', args);
   const relayer = new Relayer({apiKey: RELAY_KEY, apiSecret: RELAY_SECRET});
   const tx = await relayer.sendTransaction({
-    speed: 'safeLow', //'fastest', //'safeLow', 'fast',
+    speed: 'fast', //'fastest', //'safeLow', 'fast',
     to: REACT_APP_FORWARDER_ADDRESS,
     gasLimit: 1e7,
     data: forwardData,

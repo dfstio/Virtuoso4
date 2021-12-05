@@ -1,6 +1,7 @@
 const algoliasearch = require('algoliasearch');
 const client = algoliasearch('KJYWN9CKS8', 'e362c0f63b9afb700db75abfafecb1aa');
 const index = client.initIndex('virtuoso');
+const removeMarkdown = require('remove-markdown');
 
 async function alWriteToken(tokenId, token, contract, chainId)
 {
@@ -9,10 +10,11 @@ async function alWriteToken(tokenId, token, contract, chainId)
         const lowerContractAddress = contractAddress.toLowerCase();
         const objectID = chainId.toString()+"."+lowerContractAddress+"."+tokenId.toString();
         //console.log("Algolia write start", objectID) ;
-        let shortdescription = token.uri.description;
-        if( shortdescription.length > 100)
+        let description = removeMarkdown(token.uri.description);
+        let shortdescription = description;
+        if( shortdescription.length > 70)
         {
-          shortdescription = token.uri.description.slice(0,70) + "...";
+          shortdescription = description.slice(0,70) + "...";
         };
 
         // create item to insert
@@ -25,8 +27,9 @@ async function alWriteToken(tokenId, token, contract, chainId)
                 updated: Date.now(),
                 owner: token.owner,
                 name: token.uri.name,
-                description: token.uri.description,
+                description: description,
                 shortdescription: shortdescription,
+                markdown: token.uri.description,
                 saleID: token.saleID,
                 onSale: token.onSale,
                 saleStatus: token.saleStatus,

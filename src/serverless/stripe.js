@@ -1,6 +1,7 @@
-const { URL,  STRIPE_KEY, STRIPE_ENDPOINT_SECRET, CHAIN_ID, CONTRACT_ADDRESS } = process.env;
+const {REACT_APP_ALGOLIA_KEY, REACT_APP_ALGOLIA_PROJECT, URL,  STRIPE_KEY, STRIPE_ENDPOINT_SECRET, CHAIN_ID, CONTRACT_ADDRESS } = process.env;
 
 const stripe = require('stripe')(STRIPE_KEY);
+const algoliasearch = require('algoliasearch');
 const delayMS = 1000;
 
 const logger  = require("./winston");
@@ -9,6 +10,20 @@ const logm = logger.debug.child({ winstonModule: 'stripe' });
 
 const { addBalance, getTokenPrice } = require("./contract");
 const { lambdaTransferToken, lambdaAddBalance, lambdaMintItem } = require("../serverless/lambda");
+
+
+async function getToken(tokenId)
+{
+  const log = logm.child({tokenId,  wf: "getToken"});
+  const client = algoliasearch(REACT_APP_ALGOLIA_PROJECT, REACT_APP_ALGOLIA_KEY);
+  const index = client.initIndex("virtuoso");
+  const filterStr = `chainId:${CHAIN_ID} AND tokenId:${tokenId} AND contract:${CONTRACT_ADDRESS} AND (onSale:true)`;
+  const objects = await index.search("", { filters: filterStr});
+  log.info("Loaded token", {filterStr, objects})
+  if( objects.hits.length === 1) return objects.hits[0];
+  else return null;
+
+};
 
 
 async function checkoutCompleted(body, headers)
@@ -36,16 +51,76 @@ async function checkoutCompleted(body, headers)
              await handleCheckoutCompleted(checkout1);
              break;
 
+           case 'charge.succeeded':
+             const checkout2 = event.data.object;
+             if( event.data.object.metadata && event.data.object.metadata.tguser !== undefined)
+                await handleCheckoutCompletedTelegram(checkout2);
+             else log.info(`${event.type}`, {event, stripeEvent:true});
+             break;
+
+
            default:
              // Unexpected event type
              log.info(`${event.type}`, {event, stripeEvent:true});
          }
 }
 
+async function handleCheckoutCompletedTelegram(checkout )
+{
+       const log = logm.child({checkout, wf: "handleCheckoutCompletedTelegram"});
+
+
+    	 const paymentIntent = await stripe.paymentIntents.retrieve( checkout.payment_intent );
+    	 let metadata = JSON.parse(checkout.metadata.payload);
+    	 if( metadata.chainId.toString() !== CHAIN_ID)  { log.error(`Wrong chain ${metadata.chainId}, needs to be ${CHAIN_ID}`); return; }
+    	 metadata.tguser = checkout.metadata.tguser;
+    	 const token = await getToken(metadata.tokenId);
+    	 log.info(`processing buy`, {paymentIntent, metadata, token });
+    	 if( !token ) { log.error("Cannot load token"); return; }
+
+			  metadata.type = "buy";
+        metadata.address = "generate";
+        metadata.saleID =  token.saleID.toString();
+        const amount = token.sale.price * 100;
+        // TODO change this calculation
+        metadata.credit =  (token.sale.currency==='rub')?((amount / 75) * 70 /100):(amount * 70 / 100);
+        metadata.currency = token.sale.currency;
+        metadata.name =  token.name;
+        metadata.price = token.price;
+        metadata.image = token.image;
+
+
+
+
+       if( checkout.status == 'succeeded')
+       {
+
+         switch (metadata.type) {
+            case 'mint':
+            log.error(`FEATURE REMOVED: Mint: adding balance to ${metadata.address}`);
+            //await lambdaAddBalance(checkout.metadata.address, 1000, "10 NFT mint pack bought");
+            break;
+
+            case 'buy':
+                log.info(`Buy token ${metadata.tokenId}`);
+                const id = parseInt(metadata.tokenId);
+                await lambdaTransferToken(id, metadata,  "" );
+                break;
+
+            default:
+            // Unexpected event type
+            log.error(`Unhandled event type ${metadata.type}`);
+              }
+       } else log.error(`Wrong status ${checkout.status}`);
+
+}
+
+
+
 async function handleCheckoutCompleted(checkout )
 {
        const log = logm.child({checkout, wf: "handleCheckoutCompleted"});
-       //log.info(`processing: ${checkout.metadata.type}`);
+       log.debug(`processing: ${checkout.metadata.type}`);
 
     	 const paymentIntent = await stripe.paymentIntents.retrieve( checkout.payment_intent );
 

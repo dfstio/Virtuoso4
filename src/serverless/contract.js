@@ -155,9 +155,14 @@ async function initAlgoliaTokens(force)
 
 
     let i;
+    let loaded = [];
+    let maxNumber = 0;
+
 	  for( i = totalSupply - 1; i >= 0; i--)
 	  {
 	    const tokenId = await virtuoso.tokenByIndex(i);
+	    if( tokenId > maxNumber) maxNumber = tokenId;
+	    loaded[tokenId] = true;
       //if(DEBUG) console.log("initTokens Loading token ", tokenId.toString(), " i = ", i);
 
      if( force === false)
@@ -186,6 +191,20 @@ async function initAlgoliaTokens(force)
          };
        };
 	  }
+
+	  if( force === true)
+	  {
+	    	  for( i = maxNumber; i > 0; i--)
+	        {
+	            if( loaded[i] !== true )
+	            {
+	                await alDeleteToken(i, TOKEN_JSON, contract, CHAIN_ID);
+	                log.warn(`Deleted burned token ${i}`);
+	            };
+	        };
+
+	  };
+
     log.info(`finished, totalSupply: ${totalSupply}`);
 	  return totalSupply;
 }
@@ -654,6 +673,8 @@ async function getConfirmedHash(hashOriginal, transactionId)
            }
            else if (receipt)
            {
+              log.warn(`tx was reverted, hash ${txHash}, status ${parseInt(receipt.status)}`, {receipt, txRHash});
+              await sleep(pollInterval);
               if( transactionId !== '' )
               {
                 const txRelay = await relayer.query(transactionId);
@@ -662,7 +683,8 @@ async function getConfirmedHash(hashOriginal, transactionId)
                     log.error("Transaction failed with hash ${txRelay.hash} and id ${transactionId}", {receipt, txRelay});
                     return "";
 
-                };
+                } else log.warn(`Transaction status with hash ${txRelay.hash} and id ${transactionId} is ${txRelay.status}`, {receipt, txRelay});
+
 
                 if(txHash !== txRelay.hash )
                 {
@@ -778,11 +800,13 @@ async function loadTransaction(hashOriginal, chainId, transactionId)
               let receipt = await provider.getTransactionReceipt(hash);
               if(receipt.logs[2] !== undefined )
               {
-                     const parsedLog = inter.parseLog(receipt.logs[2]); // here you can add your own logic to find the correct log
+                     const parsedLog = await inter.parseLog(receipt.logs[2]); // here you can add your own logic to find the correct log
 
                      if( parsedLog.name === 'OnMint')
                      {
-                        tokenId = parsedLog.args._id;
+                        const idStr = parsedLog.args[0];
+					              log.debug(`parsed tokenId ${idStr}`, { parsedLog, idStr});
+					              tokenId = Number(idStr);
                         log.info(`initTokens on ${name}, tokenId ${tokenId}`, {parsedLog, hash, receipt});
                         await initAlgoliaTokens(false);
 

@@ -30,9 +30,7 @@ const ProductItem = ({item}) => {
     <a href={tokenPath}>
       <div className="gx-product-image">
         <img
-          src={`https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/${
-            item.image
-            }`} alt=''
+          src={`https://res.cloudinary.com/virtuoso/image/fetch/h_300,q_100,f_auto/${item.image}`} alt=''
         />
       </div>
       </a>
