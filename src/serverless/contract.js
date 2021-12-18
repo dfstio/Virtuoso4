@@ -629,6 +629,14 @@ async function txBackground(body)
 
 }
 
+async function txSentinel(hash)
+{
+
+      logm.info(`Loading sentinel transaction ${hash}`, {hash, wf: "txSentinel"});
+      await loadTransaction(hash, CHAIN_ID, "");
+}
+
+
 async function getConfirmedHash(hashOriginal, transactionId)
 {
       const log = logm.child({hashOriginal, transactionId, wf: "getConfirmedHash"});
@@ -997,6 +1005,7 @@ module.exports = {
     getBalance,
     getTokenPrice,
     txBackground,
+    txSentinel,
     initAlgoliaTokens,
     relayCall
 }

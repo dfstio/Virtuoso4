@@ -1,4 +1,4 @@
-const { txBackground } = require("../serverless/contract");
+const { txSentinel } = require("../serverless/contract");
 const logger  = require("../serverless/winston");
 const log = logger.info.child({ winstonModule: 'sentinel' });
 
@@ -17,8 +17,10 @@ exports.handler = async(event, context) => {
         const body = JSON.parse(event.body);
         logger.initMeta();
 
-        log.info("sentinel", {body});
-        //await txBackground(body);
+        log.debug("sentinel", {body});
+        let i;
+        const N = body.events.length;
+        for (i = 0; i < N; i++) { await txSentinel(body.events[i].hash); };
         await logger.flush();
 
                 // return success
