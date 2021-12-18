@@ -198,11 +198,14 @@ async function initAlgoliaTokens(force)
 	        {
 	            if( loaded[i] !== true )
 	            {
-	                await alDeleteToken(i, TOKEN_JSON, contract, CHAIN_ID);
-	                log.warn(`Deleted burned token ${i}`);
+	                  const readToken = await alReadToken(i, contract, CHAIN_ID);
+                    if( readToken.success === true )
+                    {
+                          await alDeleteToken(i, TOKEN_JSON, contract, CHAIN_ID);
+                          log.warn(`Deleted burned token ${i}`);
+                    };
 	            };
 	        };
-
 	  };
 
     log.info(`finished, totalSupply: ${totalSupply}`);
@@ -626,6 +629,14 @@ async function txBackground(body)
 
 }
 
+async function txSentinel(hash)
+{
+
+      logm.info(`Loading sentinel transaction ${hash}`, {hash, wf: "txSentinel"});
+      await loadTransaction(hash, CHAIN_ID, "");
+}
+
+
 async function getConfirmedHash(hashOriginal, transactionId)
 {
       const log = logm.child({hashOriginal, transactionId, wf: "getConfirmedHash"});
@@ -994,6 +1005,7 @@ module.exports = {
     getBalance,
     getTokenPrice,
     txBackground,
+    txSentinel,
     initAlgoliaTokens,
     relayCall
 }
