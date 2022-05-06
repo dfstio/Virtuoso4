@@ -223,6 +223,8 @@ async function createCheckoutSession(body)
 			   cancel_url: cancel_url,
 			   client_reference_id: body.address,
 			   payment_intent_data: { capture_method: 'manual'},
+			   phone_number_collection: { enabled: true },
+			   shipping_address_collection: { allowed_countries: [ "CH", "FR"] },
 			   metadata: {
 			        type: "buy",
 			        address: body.address,
